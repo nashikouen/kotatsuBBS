@@ -1,0 +1,113 @@
+/* defualt css */
+@font-face {
+    font-family: 'saitamaar';
+    src: url('/static/fonts/Saitamaar.woff2') format('woff2');
+}
+
+body {
+    background-color: #dbff99;
+    color: #800043;
+    font-family: "MS PGothic", IPAMonaPGothic, Monapo, Mona, submona,"saitamaar", sans-serif; 
+    font-size: 12pt;
+}
+
+/* add separators to page */
+.navBar,
+#mainForm,
+.boardTitle,
+.thread{
+    border-bottom: 2px dashed #616103;
+    padding-bottom: 10px;
+}
+
+/* 
+ * below is main css constent elements. you will most likely see this applied on every page.
+ */
+.navBar{
+    display: flex;
+    justify-content: space-between; 
+    width: 100%; 
+}
+
+.boardTitle{
+    text-align: center;	
+}
+
+/* pushes board name and title together */
+.title, 
+.subtitle {
+    margin: 0; 
+}
+
+/* the coloring you see next to thread/post creation form */
+.accent{
+    background: #fff869;
+    border-bottom: 1px solid #800043;
+    border-top: 2px solid white;
+    border-right: 2px solid #800043;
+    border-left: 1px solid white;
+}
+
+/* 
+ * main css for threads and posts
+ */
+.omittedposts {
+	color: #707070;
+}
+
+.reply{
+    margin-left: auto; 
+    width: fit-content;
+	background: #fffa96;
+	border-bottom: 1px solid #800043;
+	border-right: 2px solid #800043;
+    border-left: 1px solid white;
+    border-top: 2px solid white;
+    padding: 8px; 
+    margin: 10px;
+}
+
+.postnum a {
+    color: inherit;
+}
+.postnum {
+    text-decoration: underline;
+}
+
+.name{
+    color: #ac5611;
+}
+
+.subject{
+    color: #ff8622
+}
+
+.comment {
+    word-break: break-word
+}
+
+/*
+ * section below is things that are not exactly on main listing but still is some where.
+ */
+
+ /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
+.theading,
+.theading2,
+.theading3 {
+    color: #EEE;
+    padding: 2px 0;
+    margin-top: 0.2em;
+    margin-bottom: 0.5em;
+}
+
+.theading {
+    background-color: #91b74c;
+}
+
+.theading2 {
+    background-color: #8ac9d1;
+}
+
+.theading3 {
+    background-color: #d09ac6;
+}
