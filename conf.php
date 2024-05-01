@@ -11,14 +11,18 @@ return [
         'password' => 'kodomo',
         'databaseName' => 'boarddb', 
     ],
+
+    /* this is how long a log in session last for. (1 hour) */
+    'sessionLifeTime' => 3600,
+    'loginSalt' => 'qwerty', // this is the tripsalt used for anything auth related
+
     /*
      * its best to keep logs just outside of the web path.
      * so a place like this. /var/www/logs
      */
     //'logDir' => '../logs',
-    //'rootPath' => '/',
     'auditLog' => 'auditlog.txt',
-    /* this is the name of the dir to save files. it must be in the project's root. */
+    /* this is the name of the dir to save files. it must be from the project's root. some may consider a nfs */
     'threadDir' => 'threads',
 ];
 

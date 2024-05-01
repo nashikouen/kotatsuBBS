@@ -7,32 +7,34 @@ enum roles{
 }
 
 class AuthClass {
-    // this is a singleton.
-    // these functions should be disabled. and getInstance should be used insted.
-    private function __construct() {}
-    private function __clone() {}
-    public function __wakeup() { throw new Exception("Unserialization of AuthClass instances is not allowed.");}
+    public function __construct() {}
+    public function __clone() {}
+    public function __wakeup() { throw new Exception("Unserialization of AuthClass instances is not allowed."); }
+
     private static $instance = null;
+
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new AuthClass();
         }
         return self::$instance;
     }
-    
-    private roles $role = roles::noAuth;
-
-    public function isAdmin(){
-        return $this->role == roles::Admin;
+    public function getRole() {
+        return $_SESSION['role'] ?? roles::noAuth; // Default to noAuth if not set
     }
-    public function isMod(){
-        return $this->role == roles::Mod;
+    public function setRole(roles $role) {
+        $_SESSION['role'] = $role;
     }
-    public function isJanitor(){
-        return $this->role == roles::janitor;
+    public function isAdmin() {
+        return $this->getRole() == roles::Admin;
     }
-    //person dose not have special status.
-    public function isNotAuth(){
-        return $this->role == roles::noAuth;
+    public function isMod() {
+        return $this->getRole() == roles::Mod;
+    }
+    public function isJanitor() {
+        return $this->getRole() == roles::Janitor;
+    }
+    public function isNotAuth() {
+        return $this->getRole() == roles::noAuth;
     }
 }

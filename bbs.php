@@ -34,8 +34,11 @@ define("ROOTPATH", '/'); /* Program location relitive to web root */
 define("MAX_INPUT_LENGTH", 255 - 128); /* you cant make this bigger then 255 with out changing the cap to to the db */
 define("MAX_INPUT_LENGTH_PASSWORD", 16 - 8); /* you cant make this bigger then 16 with out changing the cap to to the db */
 
-//@session_start();
+ini_set('session.cookie_lifetime', $globalConf['sessionLifeTime']);
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 function genUserPostFromRequest($conf, $thread){
 	global $AUTH;
 	global $HOOK;
