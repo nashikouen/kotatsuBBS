@@ -84,6 +84,10 @@ class PostDataClass {
         $tripcode = genTripcode($nameXpass[1], $this->config['tripcodeSalt']);
         $this->name = $nameXpass[0] . $tripcode;
     }
+    public function stripTripcodePass(){
+        $nameXpass = splitTextAtTripcodePass($this->name);
+        $this->name = $nameXpass[0];
+    }
     public function quoteLinks(){
         // I dont want to do all that db querrys!!!ヽ(`Д´)ノ 
     }

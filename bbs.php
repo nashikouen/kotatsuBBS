@@ -97,7 +97,9 @@ function genUserPostFromRequest($conf, $thread){
 	//if the board lets you tripcode, apply tripcode to name.
 	if($conf['canTripcode']){
 		$post->applyTripcode();	
-	}
+	}else{
+        $post->stripTripcodePass();
+    }
 
 	//$HOOK->executeHook("onUserPostToBoard", $post, $fileHandler);// HOOK base post fully loaded with no html
 
