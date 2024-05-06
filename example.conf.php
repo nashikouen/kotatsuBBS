@@ -14,15 +14,13 @@ return [
 
     /* this is how long a log in session last for. (1 hour) */
     'sessionLifeTime' => 3600,
-    'loginSalt' => 'qwerty', // this is the tripsalt used for anything auth related
+    'passwordSalt' => 'qwerty', // this is the salt used for anything a mod or admin needs for logging in.
 
     /*
      * its best to keep logs just outside of the web path.
      * so a place like this. /var/www/logs
+     * this will also atempt to create the logs dir if it dose not exist.
      */
-    //'logDir' => '../logs',
-    'auditLog' => 'auditlog.txt',
-    /* this is the name of the dir to save files. it must be from the project's root. some may consider a nfs */
-    'threadDir' => 'threads',
+    'logDir' => '../logs/',
 ];
 

@@ -1,3 +1,9 @@
+<?php
+if(file_exists(__DIR__ . "conf.php")){
+    echo "it seems this has already been installed. if this is a issue, edit your conf.php to valid credentals, or delete conf.php and run this php file again";
+}
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -51,7 +57,7 @@
 	error_reporting(E_ALL);
 	mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-	$conf = require __DIR__ .'/conf.php'; 
+	$conf = require __DIR__ .'/example.conf.php'; 
 	
 	function createDB($conn){
 		// SQL to create tables
