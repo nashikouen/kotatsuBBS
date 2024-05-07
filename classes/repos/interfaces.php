@@ -29,9 +29,9 @@ interface PostDataRepositoryInterface {
 }
 
 interface FileRepositoryInterface {
-    public function saveBoard($board);
-    public function loadBoards();
-    public function loadBoardByID($boardID);
-    public function deleteBoardByID($boardID);
-    public function createBoard($board);
+    //public function saveBoard($board);
+    //public function loadBoards();
+    //public function loadBoardByID($boardID);
+    //public function deleteBoardByID($boardID);
+    //public function createBoard($board);
 }

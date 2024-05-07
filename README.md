@@ -15,9 +15,44 @@ PHP: PHP7.2-PHP8.3<br>
 
 install the required packages : 
 ```
-pkg_add mariadb-server php php-mysqli php-gdb ffmpeg imagemagick
+pkg_add mariadb-server php php-mysqli php-gdb ffmpeg
 ```
 php8.2 is what i am going with foir this guide.
+since OpenBSD runs php and webstuff in a chroot. coppy ffmpeg and all of its files into the chroot
+here is a script that can do that.
+```
+#!/bin/sh
+
+# Define the paths
+CHROOT_DIR="/var/www"
+FFMPEG_BIN=$(which ffmpeg)
+
+# Function to copy files safely
+safecopy() {
+    src=$1
+    dest=$2
+    if [ -f "$src" ]; then
+        doas mkdir -p "$(dirname $dest)"
+        doas cp "$src" "$dest"
+    else
+        echo "File $src not found."
+    fi
+}
+
+# Copy FFmpeg binary
+safecopy "$FFMPEG_BIN" "$CHROOT_DIR$FFMPEG_BIN"
+
+# Copy dependencies
+for lib in $(ldd "$FFMPEG_BIN" | awk '{print $7}' | grep '^/'); do
+    safecopy "$lib" "$CHROOT_DIR$lib"
+done
+
+# Copy /bin/sh if not present
+safecopy "/bin/sh" "$CHROOT_DIR/bin/sh"
+
+echo "All necessary files have been copied to $CHROOT_DIR."
+
+```
 
 initalize and install  the mysql server 
 then start it up and run the secure instalation script

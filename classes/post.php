@@ -3,6 +3,7 @@ require_once __DIR__ .'/file.php';
 require_once __DIR__ .'/auth.php';
 require_once __DIR__ .'/../lib/postMagic.php';
 require_once __DIR__ .'/../lib/common.php';
+require_once __DIR__ .'/repos/repoFile.php';
 
 class PostDataClass {
     private int $postID;//postID 
@@ -18,6 +19,8 @@ class PostDataClass {
     private string $special;//special things like. auto sage, locked, animated gif, etc. split by a _thing_
     private $config;
 
+    private $fileRepo;
+    private $isFilesFullyLoaded;
 	public function __construct(array $config, string $name, string $email, string $subject, 
                                 string $comment, string $password, int $unixTime, string $IP, 
                                 int $threadID=-1, int $postID=-1, string $special='') {
@@ -34,6 +37,8 @@ class PostDataClass {
         $this->postID = $postID;
         $this->threadID = $threadID;
         $this->special = $special;
+        $this->fileRepo = FileRepoClass::getInstance();
+
     }
     public function __toString() {
         return  "BoardID: {$this->config['boardID']}\n" .
@@ -98,20 +103,32 @@ class PostDataClass {
             return true;
         }
     }
-/*
-    public function procssesFiles(){
-        foreach ($this->files as $file) {
-            $file->procssesFile();
-        }
-    }
+
     public function addFile(FileDataClass $file) {
         $this->files[] = $file;
     }
+    public function addFilesToRepo(){
+        foreach($this->files as $file){
+            $file->setPostID($this->postID);
+            $file->setThreadID($this->threadID);
+            $file->setConf($this->config);
 
+            $FILEREPO = FileRepoClass::getInstance();
+            $FILEREPO->createFile($this->config, $file);
+        }
+    }
+    public function moveFilesToDir($dir){
+        foreach($this->files as $file){
+            $file->moveToDir($dir);
+        }
+    }
     public function getFiles() {
+        if($this->isFilesFullyLoaded != true){
+            $this->files = $this->fileRepo->loadFilesByPostID($this->config, $this->postID);
+            $this->isFilesFullyLoaded = true;
+        }
         return $this->files;
     }
-*/
 
     public function getPostID(){
         return $this->postID;

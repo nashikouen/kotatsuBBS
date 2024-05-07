@@ -26,6 +26,7 @@ $AUTH = AuthClass::getInstance();
 $HOOK = HookClass::getInstance();
 $POSTREPO = PostRepoClass::getInstance();
 $THREADREPO = ThreadRepoClass::getInstance();
+//$FILEREPO = FileRepoClass::getInstance();
 $BOARDREPO = BoardRepoClass::getInstance();
 
 $globalConf = require __DIR__ ."/conf.php";
@@ -34,12 +35,19 @@ define("ROOTPATH", '/'); /* Program location relitive to web root */
 define("MAX_INPUT_LENGTH", 255 - 128); /* you cant make this bigger then 255 with out changing the cap to to the db */
 define("MAX_INPUT_LENGTH_PASSWORD", 16 - 8); /* you cant make this bigger then 16 with out changing the cap to to the db */
 
+define("IMAGE_EXTENTIONS", ["png", "jpg", "jpeg", "webp", "gif", "tiff", "svg"]);
+define("VIDEO_EXTENTIONS", ["mp4", "webm", "avi", "mov", "mkv"]);
+define("AUDIO_EXTENTIONS", ["mp3", "wav", "flac", "ogg"]);
+
+
 ini_set('session.cookie_lifetime', $globalConf['sessionLifeTime']);
+ini_set("memory_limit", '128M');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-function genUserPostFromRequest($conf, $thread){
+
+function genUserPostFromRequest($conf, $thread, $isOp=false){
 	global $AUTH;
 	global $HOOK;
 	global $globalConf;
@@ -80,17 +88,14 @@ function genUserPostFromRequest($conf, $thread){
 	// make sure stuff dose not blow over the db limits
 	$post->validate();
 
-	/*
-		// get the uploaded files and put them inside the post object.
-		$fileHandler = new fileHandlerClass($conf['fileConf']);
-		$uploadFiles = $fileHandler->getFilesFromPostRequest();
-		foreach ($uploadFiles as $file) {
-			$postData->addFile($file);
-		}
-		
-		// do file procssesing like make thumbnails. make hash. etc.
-		$postData->procssesFiles(); 
-	*/
+    // get the uploaded files and put them inside the post object.
+    $fileHandler = new fileHandlerClass($conf);
+    $uploadFiles = $fileHandler->getFilesFromPostRequest();
+    $procssedFiles = $fileHandler->procssesFiles($uploadFiles, $isOp); 
+
+    foreach ($procssedFiles as $file) {
+        $post->addFile($file);
+    }	
 
 	// if we are not admin or mod, remove any html tags.
 	if( !$AUTH->isAdmin() || !$AUTH->isMod()){ 	
@@ -144,6 +149,14 @@ function userPostNewPostToThread($board){
 	$POSTREPO->createPost($conf, $post);
 	$THREADREPO->updateThread($conf, $thread);
 
+    // fill in missing data we could not have known untill after comiting to repo.
+    $post->setThreadID($thread->getThreadID());
+    $POSTREPO->updatePost($conf, $post);
+
+    $threadDir = __DIR__ . "/threads/". $thread->getThreadID();
+    $post->moveFilesToDir($threadDir);
+    $post->addFilesToRepo();
+
 	return $post;
 }
 function userPostNewThread($board){
@@ -155,11 +168,20 @@ function userPostNewThread($board){
 	$thread = new threadClass($conf, time());
 
 	// create post with thread
-	$post = genUserPostFromRequest($conf, $thread);
+	$post = genUserPostFromRequest($conf, $thread, true);
 
 	// save post and thread to data base.
 	$POSTREPO->createPost($conf, $post);
 	$THREADREPO->createThread($conf, $thread, $post);
+    
+    // fill in missing data we could not have known untill after comiting to repo.
+    $post->setThreadID($thread->getThreadID());
+    $POSTREPO->updatePost($conf, $post);
+
+    $threadDir = __DIR__ . "/threads/" . $thread->getThreadID();
+    mkdir($threadDir);
+    $post->moveFilesToDir($threadDir);
+    $post->addFilesToRepo();
 
 	return $thread;
 }

@@ -44,12 +44,22 @@ body {
 	color: #707070;
 }
 
+.thread{
+	display:flow-root
+}
+.post{
+	margin: 2px;
+}
 .reply{
+	display: inline-block;
 	margin-left: auto; 
 	width: fit-content;
 	background: #f0e0d6;
 	padding: 8px; 
-	margin: 10px;
+}
+.post img{ 
+    float: left;
+    margin: 3px;
 }
 
 .postnum a {
@@ -75,7 +85,7 @@ body {
  */
 
  /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
-.theading,
+/* .theading,
 .theading2,
 .theading3 {
 	color: #EEE;
@@ -94,4 +104,4 @@ body {
 
 .theading3 {
 	background-color: #E08000;
-}
+} */

@@ -27,13 +27,18 @@ return [
             'image/gif'
             // add more mimetypes here to allow more types of files to be uploaded
         ],
-        'maxFileSize'=> 5242880, // 5mb (remember to edit php's setting to increese the limit)
-        'maxFiles'=> 3, // max amount of files a user can upload
+        'maxFileSize'=> 5242880,    // 5mb (remember to edit php's setting to increese the limit)
+        'maxFiles'=> 3,             // max amount of files a user can upload
+        'compressQuality' => 65,    // amount of compresstion added to thumbnails
+        'backgroundColor' => "#f0e0d6",  //thumbnail background color
+        'thumNailWidth' => 250,
+        'thumNailHight' => 250,
+        'allowDuplicateFiles' => false, // allow duplicate files?
     ],
 
-    'staticPath' => "/static/",     // static path on the web root
-    'defaultCSS' => '/static/css/default.css',
-    'defaultFavicon' => '/static/image/favicon.png',
+    'staticPath' => "/static/",
+    'defaultCSS' => '/static/css/default.css',  //change this to use ur own css. make sure to update backgroundColor to match post reply background color 
+    'defaultFavicon' => '/static/image/favicon.png', 
 
     'unlisted' => true,             // this will only hide your board from the nav bar. [NOTE] new boards wont respect this by defualt. you must explicitly relist your board when creating or after creation.
     'timeZone' => 'UTC',            // time zone you want your board to opporate in

@@ -1,6 +1,7 @@
 <?php
-if(file_exists(__DIR__ . "conf.php")){
+if(file_exists(__DIR__ . "/conf.php")){
     echo "it seems this has already been installed. if this is a issue, edit your conf.php to valid credentals, or delete conf.php and run this php file again";
+    die();
 }
 ?>
 
@@ -97,8 +98,10 @@ if(file_exists(__DIR__ . "conf.php")){
 				postID INT NOT NULL,
 				threadID INT NOT NULL,
 				boardID INT NOT NULL,
+                fileName VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 				filePath VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-				FOREIGN KEY (postID) REFERENCES posts(UID) ON DELETE CASCADE ON UPDATE CASCADE,  -- Note: Ensure this references the correct column
+                md5 CHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+				FOREIGN KEY (postID) REFERENCES posts(UID) ON DELETE CASCADE ON UPDATE CASCADE,
 				FOREIGN KEY (threadID) REFERENCES threads(threadID) ON DELETE CASCADE ON UPDATE CASCADE,
 				FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
@@ -160,6 +163,8 @@ if(file_exists(__DIR__ . "conf.php")){
 
 			$POSTREPO->createPost($board->getConf(), $post);
 			$THREADREPO->createThread($board->getConf(), $thread, $post);
+            $post->setThreadID($thread->getThreadID());
+            $POSTREPO->updatePost($conf, $post);
 			$post2 = new PostDataClass( $board->getConf(),"System","","check list of things",
 										"things you would want to do.<br><br>1. delete the install.php file, that can leak your database creds<br>2. edit /boardConfigs/baseConf.php and set defults (make sure to set your own salts where needed)","",$time + 1,"127.0.0.1",
 										$thread->getThreadID());

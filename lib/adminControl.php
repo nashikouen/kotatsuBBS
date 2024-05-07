@@ -53,7 +53,7 @@ function deleteThread($thread){
         deletePost($post);
     }
     $THREADREPO->deleteThreadByID($thread->getConf(), $thread->getThreadID());
-    $path = __DIR__."/../".$globalConf['threadDir']."/".$thread->getThreadID();
+    $path = __DIR__."/../threads/".$thread->getThreadID();
     if(file_exists($path)){
         rmdir($path);
     }

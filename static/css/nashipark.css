@@ -66,7 +66,9 @@ body {
     padding: 8px; 
     margin: 10px;
 }
-
+.post{
+    display: inline-block;
+}
 .postnum a {
     color: inherit;
 }

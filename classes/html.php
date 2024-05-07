@@ -147,6 +147,10 @@ class htmlclass {
             <td><textarea type="text" id="comment" name="comment" cols="48" rows="4" maxlength="'.$this->conf['maxCommentSize'].'"></textarea></td>
         </tr>
         <tr>
+            <td class="accent"><label for="files">Files</label></td>
+            <td><input type="file" name="upfile[]" multiple></td>
+        </tr>
+        <tr>
             <td class="accent"><label for="password">Password</label></td>
             <td><input type="text" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
         </tr>
@@ -179,6 +183,67 @@ class htmlclass {
             </form>
         </center>';
     }
+    private function drawFiles($files, $threadID){
+        $this->html .= '
+        <!--drawFiles-->
+        <div class="files">
+            <div class="fileName">';
+                foreach($files as $file){
+                    $webLocation = ROOTPATH.'threads/'.$threadID.'/';
+                    $this->html .= '
+                    [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
+                        download
+                    </a>]
+                    <small>'. $file->getSizeFormated() .'</small>
+                    <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
+                        '. $file->getFileName() .'
+                    </a> 
+                    <br>';
+                }
+                $this->html.='
+            </div>
+            <div class="file">';
+                foreach($files as $file){
+
+                    $webLocation = ROOTPATH.'threads/'.$threadID.'/';
+                    
+                    $thumbnailOnWeb = $webLocation. $file->getStoredTName();
+                    $fileOnWeb = $webLocation. $file->getStoredName();
+                    $thumbSWF = $this->conf['staticPath'] . "image/flash.png";
+                    $noThumnial = $this->conf['staticPath'] ."image/noThumbnail.jpg";
+
+                    if(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
+                        $this->html .= '
+                        <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                            <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
+                        </a>';
+                    }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
+                        $this->html .=
+                        '<a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                            <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
+                        </a>';
+                    }elseif($file->getFileExtention() == "swf"){
+                        $this->html .=
+                        '<a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                            <img src="'.$thumbSWF.'" title="'.$file->getStoredName().'">
+                        </a>';
+                    }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){
+                        $this->html .= '<audio loading="lazy" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
+                    }else{
+                        $this->html .= '
+                        <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                            <img src="'.$noThumnial.'" title="'.$file->getStoredName().'">
+                        </a>';
+                    }
+                        //<img src="'..'" class="postimg" title="Click to show full image">
+                    $this->html .= '
+                    </a>';
+                }
+                $this->html .= '
+            </div>
+        </div>';
+
+    }
     private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
         $this->html .= '
         <!--drawPosts()-->';
@@ -193,7 +258,11 @@ class htmlclass {
 	        $email = $post->getEmail(); 
 
             $this->html .= '
-            <div class="post '.$type.'" id="'.$postID.'">
+            <div class="post '.$type.'" id="'.$postID.'">';
+                if($isOP){
+                    $this->drawFiles($post->getFiles(), $threadID);
+                }
+                $this->html .= '
                 <div class="postinfo">
                     <input type="checkbox" name="postIDs[]" value="'.$postID.'">
                     <span class="bigger"><b class="subject">'.$post->getSubject().'</b></span>
@@ -217,13 +286,17 @@ class htmlclass {
                         ]';
                     }
                     $this->html .= '
-                </div>
+                </div>';
+                if($isOP == false){
+                    $this->drawFiles($post->getFiles(), $threadID);
+                }
+                $this->html .= '
                 <blockquote class="comment">'.$post->getComment().'</blockquote>';
                 if($isOP && $isListingMode && $omitedPosts > 0){
                     $this->html .= '<span class="omittedposts">'.$omitedPosts.' posts omitted. Click Reply to view.</span>';
                 }
                 $this->html .= '
-            </div>';
+            </div><br>';
         }
     }
     private function drawThread($thread){

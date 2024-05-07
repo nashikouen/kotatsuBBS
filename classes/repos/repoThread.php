@@ -49,11 +49,6 @@ class ThreadRepoClass implements ThreadRepositoryInterface {
             $thread->setPostCount($postCount);
             $thread->setOPPostID($post->getPostID());
 
-            $POSTREPO = PostRepoClass::getInstance();
-            $post->setThreadID($this->db->insert_id);
-            $POSTREPO->updatePost($boardConf, $post);
-
-
             $stmt->close();
             return $success;
         } catch (Exception $e) {
