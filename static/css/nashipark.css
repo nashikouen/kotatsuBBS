@@ -10,6 +10,9 @@ body {
     font-family: "MS PGothic", IPAMonaPGothic, Monapo, Mona, submona,"saitamaar", sans-serif; 
     font-size: 12pt;
 }
+.hidden {
+    display: none;
+}
 
 /* add separators to page */
 .navBar,

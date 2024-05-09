@@ -38,9 +38,13 @@ class htmlclass {
             <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="defaultcss">
             <link rel="shortcut icon" href="'. $this->conf['defaultFavicon'] .'">';
 
-            if($this->conf['allowRuffle']){
+            if($this->conf['allowRuffle'] && $this->conf['allowJS']){
                 $this->html .= '<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>';
             }
+            if($this->conf['allowJS']){
+                $this->html .= '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js"></script>';
+            }
+            
             
             $this->html .= 
             //'<link rel="alternate" type="application/rss+xml" title="RSS 2.0 Feed" href="//nashikouen.net/main/koko.php?mode=module&amp;load=mod_rss">
@@ -214,17 +218,17 @@ class htmlclass {
 
                     if(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
                         $this->html .= '
-                        <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                        <a href="'.$webLocation. $file->getStoredName().'" class="image" target="_blank" rel="nofollow">
                             <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
                         </a>';
                     }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
                         $this->html .=
-                        '<a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                        '<a href="'.$webLocation. $file->getStoredName().'" class="video" target="_blank" rel="nofollow">
                             <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
                         </a>';
                     }elseif($file->getFileExtention() == "swf"){
                         $this->html .=
-                        '<a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                        '<a href="'.$webLocation. $file->getStoredName().'"class="swf" target="_blank" rel="nofollow">
                             <img src="'.$thumbSWF.'" title="'.$file->getStoredName().'">
                         </a>';
                     }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){

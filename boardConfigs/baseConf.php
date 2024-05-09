@@ -42,7 +42,8 @@ return [
 
     'unlisted' => true,             // this will only hide your board from the nav bar. [NOTE] new boards wont respect this by defualt. you must explicitly relist your board when creating or after creation.
     'timeZone' => 'UTC',            // time zone you want your board to opporate in
-    'allowRuffle' => false,         // setting this to true will add the Ruffle js script to your board. this allows flash files to be played
+    'allowRuffle' => false,         // setting this to true will add the Ruffle js script to your board. this allows flash files to be played. you will also need to enable allowJS
+    'allowJS' => true,              // this will enbable js on the board. if you want ruffle you need this enabled too.
 
     'cookieExpireTime'=> time()+7*24*60*60, //the day the cookie will expire. default is 7days from the curent time
 

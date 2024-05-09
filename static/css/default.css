@@ -5,7 +5,9 @@ body {
 	font-family: Times New Roman;
 	font-size: 16px;
 }
-
+.hidden {
+    display: none;
+}
 /* add separators to page */
 #mainForm,
 .boardTitle,
@@ -13,7 +15,6 @@ body {
 	border-bottom: 1px solid #000;
 	padding-bottom: 10px;
 }
-
 /* 
  * below is main css constent elements. you will most likely see this applied on every page.
  */
