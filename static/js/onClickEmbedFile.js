@@ -18,7 +18,7 @@ function toggleEmbed(event, element) {
             closeLink.onclick = function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                fileE.remove();
+                fileE.remove(); // renove the file
                 thumbnailE.classList.remove('hidden');  // Show the thumbnail again
                 closeLink.parentNode.removeChild(closeLink.previousSibling); // Remove the '['
                 closeLink.parentNode.removeChild(closeLink.nextSibling); // Remove the ']'
@@ -74,37 +74,3 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
-
-/*  
-<div class="files">
-    <div class="fileName">
-        <div>
-            [<a href="locationOnServer.png" download="originalName.png">
-                download
-            </a>]
-            <small>si.ze KB (widthxhight)</small>
-            <a href="locationOnServer.png" target="_blank" rel="nofollow"> 
-                originalName.png
-            </a> 
-        </div>
-        <div>
-            [<a href="locationOnServer2.png" download="originalName2.png">
-                download
-            </a>]
-            <small>si.ze KB (widthxhight)</small>
-            <a href="locationOnServer2.png" target="_blank" rel="nofollow"> 
-                originalName2.png
-            </a> 
-        </div>
-    </div>
-    <div class="file">
-        <a href="locationOnServer.png" class="image" target="_blank" rel="nofollow">
-            <img src="thumbnailLocationOnServer.jpg" title="originalName.png">
-        </a>
-            
-        <a href="locationOnServer2.png" class="image" target="_blank" rel="nofollow">
-            <img src="thumbnailLocationOnServer.jpg" title="originalName.png">
-        </a>
-    </div>
-</div>
-*/

@@ -1,4 +1,10 @@
 <?php
+/*
+ *
+ * this file might look weird in your editor. i am using vscode and the logic lines up with the html.
+ * this is to help make it more understandable where the logic is being apply to.
+ * 
+ */
 
 require_once __DIR__ .'/hook.php';
 require_once __DIR__ .'/repos/repoThread.php';
@@ -42,7 +48,9 @@ class htmlclass {
                 $this->html .= '<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>';
             }
             if($this->conf['allowJS']){
-                $this->html .= '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js"></script>';
+                $this->html .= 
+                '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js"></script>
+                <script src="'.$this->conf['staticPath'].'js/highlight.js"></script>';
             }
             
             
@@ -190,12 +198,38 @@ class htmlclass {
     private function drawFiles($files, $threadID){
         $this->html .= '
         <!--drawFiles-->
-        <div class="files">
-            <div class="fileName">';
-                foreach($files as $file){
-                    $webLocation = ROOTPATH.'threads/'.$threadID.'/';
-                    $this->html .= '
-                    <div>
+        <div class="files">';
+        $fileNameS = "";
+        $filesS = "";
+        $count = 0;
+        $len = count($files);
+        $float = "float";
+        $inline = "";
+        if($len>1){
+            $float = "nofloat";
+            $inline = "inLine";
+        }
+        // here we will loop thu each files per post and  get the name and file elements and attach them
+        foreach($files as $file){
+            $count = $count + 1;
+            $webLocation = ROOTPATH.'threads/'.$threadID.'/';   // location where a user can make a get request to the file.
+            $fileOnWeb = $webLocation. $file->getStoredName();  // file's location on the server.
+            $thumbnail = $webLocation. $file->getStoredTName();
+
+            $SWFThumb = $this->conf['staticPath'] . "image/flash.png";
+            $unknownFileThumb = $this->conf['staticPath'] ."image/unknownFile.jpg";
+            $missingFileThumb = $this->conf['staticPath'] ."image/missingFile.png";
+
+            if($file->hasThumbnail() == false){
+                $thumbnail = $this->conf['staticPath'] ."image/noThumb.jpg";
+            }
+            if($file->isSpoiler()){
+                $thumbnail = $this->conf['staticPath'] ."image/spoiler.jpg";
+            }
+
+            $fileNameS .= 
+            '<div class="fileName" id="f'.$count.'">
+                <div>
                     [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
                         download
                     </a>]
@@ -203,51 +237,45 @@ class htmlclass {
                     <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
                         '. $file->getFileName() .'
                     </a> 
-                    </div>';
-                }
-                $this->html.='
-            </div>
-            <div class="file">';
-                foreach($files as $file){
+                </div>
+            </div>';
 
-                    $webLocation = ROOTPATH.'threads/'.$threadID.'/';
-                    
-                    $thumbnailOnWeb = $webLocation. $file->getStoredTName();
-                    $fileOnWeb = $webLocation. $file->getStoredName();
-                    $thumbSWF = $this->conf['staticPath'] . "image/flash.png";
-                    $noThumnial = $this->conf['staticPath'] ."image/noThumbnail.jpg";
-
-                    if(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
-                        $this->html .= '
-                        <a href="'.$webLocation. $file->getStoredName().'" class="image" target="_blank" rel="nofollow">
-                            <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
-                        </a>';
-                    }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
-                        $this->html .=
-                        '<a href="'.$webLocation. $file->getStoredName().'" class="video" target="_blank" rel="nofollow">
-                            <img src="'.$thumbnailOnWeb.'" title="'.$file->getStoredName().'">
-                        </a>';
-                    }elseif($file->getFileExtention() == "swf"){
-                        $this->html .=
-                        '<a href="'.$webLocation. $file->getStoredName().'"class="swf" target="_blank" rel="nofollow">
-                            <img src="'.$thumbSWF.'" title="'.$file->getStoredName().'">
-                        </a>';
-                    }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){
-                        $this->html .= '<audio loading="lazy" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
-                    }else{
-                        $this->html .= '
-                        <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
-                            <img src="'.$noThumnial.'" title="'.$file->getStoredName().'">
-                        </a>';
-                    }
-                        //<img src="'..'" class="postimg" title="Click to show full image">
-                    $this->html .= '
+            $filesS .=
+            '<div class="file '.$inline.'" id="f'.$count.'">';
+                if($file->isMissing()){
+                    $filesS .= '
+                    <img class="'.$float.'" src="'.$missingFileThumb.'">';
+                }elseif(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
+                    $filesS .= '
+                    <a href="'.$webLocation. $file->getStoredName().'" class="image" target="_blank" rel="nofollow">
+                        <img class="'.$float.'" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
+                    </a>';
+                }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
+                    $filesS .=
+                    '<a href="'.$webLocation. $file->getStoredName().'" class="video" target="_blank" rel="nofollow">
+                        <img class="'.$float.'" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
+                    </a>';
+                }elseif($file->getFileExtention() == "swf"){
+                    $filesS .=
+                    '<a href="'.$webLocation. $file->getStoredName().'"class="swf" target="_blank" rel="nofollow">
+                        <img class="'.$float.'" src="'.$SWFThumb.'" title="'.$file->getStoredName().'">
+                    </a>';
+                }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){
+                    $filesS .= '<audio loading="lazy" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
+                }else{
+                    $filesS .= '
+                    <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
+                        <img class="'.$float.'" src="'.$unknownFileThumb.'" title="'.$file->getStoredName().'">
                     </a>';
                 }
-                $this->html .= '
-            </div>
-        </div>';
+                $filesS .= 
+            '</div>';
+        }
 
+        $this->html .= 
+        $fileNameS .
+        $filesS .
+        '</div>';
     }
     private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
         $this->html .= '
@@ -263,7 +291,7 @@ class htmlclass {
 	        $email = $post->getEmail(); 
 
             $this->html .= '
-            <div class="post '.$type.'" id="'.$postID.'">';
+            <div class="post '.$type.'" id="p'.$postID.'">';
                 if($isOP){
                     $this->drawFiles($post->getFiles(), $threadID);
                     $this->html .= '<br>';

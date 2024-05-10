@@ -94,6 +94,9 @@ class FileDataClass {
         return $this->fileName;
     }
     public function getSizeFormated(){
+        if(file_exists($this->filePath) == false){
+            return "(?x?)";
+        }
         $size = filesize($this->filePath);
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $i = floor(log($size, 1024));
@@ -122,9 +125,17 @@ class FileDataClass {
     public function getStoredName(){
         return basename($this->filePath);
     }
-
     public function getFileExtention(){
         return pathinfo($this->filePath, PATHINFO_EXTENSION);
+    }
+    public function hasThumbnail(){
+        return file_exists($this->getThumbnailPath());
+    }
+    public function isMissing(){
+        return !file_exists($this->filePath);
+    }
+    public function isSpoiler(){
+        return false;
     }
 
     public function getPostID(){
@@ -140,6 +151,9 @@ class FileDataClass {
         return $this->fileID;
     }
     public function getThumbnailPath(){
+        if(is_null($this->thumnailPath)){
+            $this->thumnailPath = dirname($this->filePath). "/t".pathinfo($this->filePath, PATHINFO_FILENAME).".jpg";
+        }
         return $this->thumnailPath;
     }
 }
