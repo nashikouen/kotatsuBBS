@@ -195,6 +195,7 @@ class htmlclass {
                 foreach($files as $file){
                     $webLocation = ROOTPATH.'threads/'.$threadID.'/';
                     $this->html .= '
+                    <div>
                     [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
                         download
                     </a>]
@@ -202,7 +203,7 @@ class htmlclass {
                     <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
                         '. $file->getFileName() .'
                     </a> 
-                    <br>';
+                    </div>';
                 }
                 $this->html.='
             </div>
@@ -265,6 +266,7 @@ class htmlclass {
             <div class="post '.$type.'" id="'.$postID.'">';
                 if($isOP){
                     $this->drawFiles($post->getFiles(), $threadID);
+                    $this->html .= '<br>';
                 }
                 $this->html .= '
                 <div class="postinfo">
