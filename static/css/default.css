@@ -57,7 +57,9 @@ body {
 .reply:target{
 	background: #f0c0b0;
 }
-.post img{ 
+.post img,
+.post video,
+.post object{
     margin: 3px;
     white-space: nowrap;
     vertical-align: top;

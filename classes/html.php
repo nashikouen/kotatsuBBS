@@ -49,8 +49,8 @@ class htmlclass {
             }
             if($this->conf['allowJS']){
                 $this->html .= 
-                '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js"></script>
-                <script src="'.$this->conf['staticPath'].'js/highlight.js"></script>';
+                '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
+                <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
             
             
