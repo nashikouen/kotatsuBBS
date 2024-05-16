@@ -104,6 +104,9 @@ class FileDataClass {
     
         // Check if the file is an image
         if (exif_imagetype($this->filePath) !== false) {
+            if ($this->getFileExtention() == "swf"){
+                return $formattedSize;
+            }
             // Get image dimensions if applicable
             $imageSize = getimagesize($this->filePath);
             if ($imageSize !== false && isset($imageSize[0]) && isset($imageSize[1])) {

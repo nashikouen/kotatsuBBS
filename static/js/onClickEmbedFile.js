@@ -2,45 +2,52 @@ function toggleEmbed(event, element) {
     event.preventDefault();  
 
     var linkE = event.currentTarget;
-    var thumbnailE = linkE.querySelector('img');
-    var fileE = linkE.querySelector('.full');
+    var fileID = linkE.parentNode.getAttribute('id')
 
-    if (!fileE) {
-        fileE = element;
-        fileE.classList.add('full', 'hidden');
-        linkE.appendChild(fileE);
+    var fileNameE = linkE.parentNode.parentNode.querySelector('#' + fileID + '.fileName');
+    var fileE = linkE.parentNode.parentNode.querySelector('#' + fileID + '.file');
 
-        if (linkE.className !== 'image') {
-            // Create a close hyperlink
-            const closeLink = document.createElement('a');
-            closeLink.href = '#';
-            closeLink.textContent = 'close';
-            closeLink.onclick = function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                fileE.remove(); // renove the file
-                thumbnailE.classList.remove('hidden');  // Show the thumbnail again
-                closeLink.parentNode.removeChild(closeLink.previousSibling); // Remove the '['
-                closeLink.parentNode.removeChild(closeLink.nextSibling); // Remove the ']'
-                closeLink.parentNode.removeChild(closeLink); // Remove the close link itself
-            };
+    var thumbnailE = fileE.querySelector('img');
+    var fullE = fileE.querySelector('.full');
 
-            // Locate the corresponding 'fileName' section related to the clicked link
-            const links = document.querySelectorAll('.fileName a');
-            for (let link of links) {
-                if (link.href === linkE.href) {
-                    const fileNameDiv = link.parentNode;
-                    // why its fucking backwards? idfk but it works. i hate js and strangly chatgpt sucks with js. almost as its made bad on purpose to save bureaucracy
-                    fileNameDiv.insertAdjacentHTML("afterbegin","]");
-                    fileNameDiv.insertAdjacentElement("afterbegin",closeLink);
-                    fileNameDiv.insertAdjacentHTML("afterbegin","[");
-                    break;
-                }
-            }
-        }
+    var closeButtonExists = Array.from(fileNameE.querySelectorAll('a')).some(a => 
+        a.textContent.includes('close') && a.getAttribute('href') === '#'
+    );
+    if (closeButtonExists) {
+        return;
     }
+
+    if (fullE) {
+        thumbnailE.classList.toggle('hidden');
+        fullE.classList.toggle('hidden');
+        return
+    }
+
+    fullE = element;
+
+    if (linkE.className !== 'image') {
+        // Create a close hyperlink
+        const closeLink = document.createElement('a');
+        closeLink.href = '#';
+        closeLink.textContent = 'close';
+        closeLink.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fullE.remove(); // remove the file
+            thumbnailE.classList.remove('hidden');  // Show the thumbnail again
+            closeLink.parentNode.removeChild(closeLink.previousSibling); // Remove the '['
+            closeLink.parentNode.removeChild(closeLink.nextSibling); // Remove the ']'
+            closeLink.parentNode.removeChild(closeLink); // Remove the close link itself
+        };
+
+        fileNameE.insertAdjacentHTML("afterbegin","]");
+        fileNameE.insertAdjacentElement("afterbegin",closeLink);
+        fileNameE.insertAdjacentHTML("afterbegin","[");
+    }
+
+    fullE.classList.add('full');
     thumbnailE.classList.toggle('hidden');
-    fileE.classList.toggle('hidden');
+    linkE.appendChild(fullE);
 }
 
 document.addEventListener("DOMContentLoaded", function() {

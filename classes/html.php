@@ -229,15 +229,13 @@ class htmlclass {
 
             $fileNameS .= 
             '<div class="fileName" id="f'.$count.'">
-                <div>
-                    [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
-                        download
-                    </a>]
-                    <small>'. $file->getSizeFormated() .'</small>
-                    <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
-                        '. $file->getFileName() .'
-                    </a> 
-                </div>
+                [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
+                    download
+                </a>]
+                <small>'. $file->getSizeFormated() .'</small>
+                <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
+                    '. $file->getFileName() .'
+                </a> 
             </div>';
 
             $filesS .=
