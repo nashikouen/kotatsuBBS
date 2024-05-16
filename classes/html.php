@@ -217,14 +217,14 @@ class htmlclass {
             $thumbnail = $webLocation. $file->getStoredTName();
 
             $SWFThumb = $this->conf['staticPath'] . "image/flash.png";
-            $unknownFileThumb = $this->conf['staticPath'] ."image/unknownFile.jpg";
+            $unknownFileThumb = $this->conf['staticPath'] ."image/unknownFile.png";
             $missingFileThumb = $this->conf['staticPath'] ."image/missingFile.png";
 
             if($file->hasThumbnail() == false){
-                $thumbnail = $this->conf['staticPath'] ."image/noThumb.jpg";
+                $thumbnail = $this->conf['staticPath'] ."image/noThumb.png";
             }
             if($file->isSpoiler()){
-                $thumbnail = $this->conf['staticPath'] ."image/spoiler.jpg";
+                $thumbnail = $this->conf['staticPath'] ."image/spoiler.png";
             }
 
             $fileNameS .= 
