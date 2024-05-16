@@ -38,6 +38,9 @@ class threadClass{
     public function getThreadID(){
         return $this->threadID;
     }
+    public function getBoardID(){
+        return $this->conf['boardID'];
+    }
     public function getPostCount(){
         if($this->isPostCountFullyLoaded != true){
             $this->postCount = $this->postRepo->getPostCount($this->conf, $this->threadID);

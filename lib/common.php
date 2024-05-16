@@ -11,6 +11,17 @@ function nameIDToBoardID($nameID){
 	}
 	return '';
 }
+function boardIDToName($boardID){
+    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+
+    foreach($files as $file){
+        $conf = require($file);
+        if($conf['boardID'] == $boardID){
+            return $conf['boardNameID'];
+        }
+    }
+    return '';
+}
 function getBoardListing(){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
 	$listing = [];
@@ -23,6 +34,32 @@ function getBoardListing(){
 		$listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
 	}
 	return $listing;
+}
+function redirectToPost($post){
+    $name = boardIDToName($post->getBoardID());
+    $threadID = $post->getThreadID();
+    $postID = $post->getPostID();
+
+    $url = "$name/thread/$threadID/#p$postID";
+
+    header("Location: $url");
+    exit;
+}
+function redirectToThread($thread){
+    $name = boardIDToName($thread->getBoardID());
+    $threadID = $thread->getThreadID();
+
+    $url = "$name/thread/$threadID/";
+
+    header("Location: $url");
+    exit;
+}
+function redirectToBoard($board){
+    $name = boardIDToName($board->getBoardID);
+    $url = "$name";
+
+    header("Location: $url");
+    exit;
 }
 function drawErrorPageAndDie($txt){
 	$html ='

@@ -262,11 +262,13 @@ elseif(isset($_POST['action'])){
 		case 'postToThread':
 			$post = userPostNewPostToThread($board);
 			$thread = $board->getThreadByID($_POST['threadID']);
-			$boardHtml->drawThreadPage($thread);
+			//$boardHtml->drawThreadPage($thread);
+            redirectToPost($post);
 			break;
 		case 'postNewThread':
 			$thread = userPostNewThread($board);
-			$boardHtml->drawThreadPage($thread);
+			//$boardHtml->drawThreadPage($thread);
+            redirectToThread($thread);
 			break;
         case 'deletePosts':
             if (empty($_POST['postIDs'])) {
@@ -280,6 +282,7 @@ elseif(isset($_POST['action'])){
                 $post = $POSTREPO->loadPostByID($board->getConf(), $postId);
                 userDeletedPost($board, $post, $_POST['password']);
             }
+            redirectToBoard($board);
             break;
 		default:
 			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');

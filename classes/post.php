@@ -136,6 +136,9 @@ class PostDataClass {
     public function getThreadID(){
         return $this->threadID;
     }
+    public function getBoardID(){
+        return $this->config['boardID'];
+    }
     public function getName(){
         return $this->name;
     }

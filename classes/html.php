@@ -308,13 +308,13 @@ class htmlclass {
                     </span>
                     <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
                     <span class="postnum">
-				        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'#p'.$postID.'" class="no">No.</a>
-                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'#postForm" title="Quote">'.$postID.'</a>
+				        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
+                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
                     </span>';
                     if($isOP  && $isListingMode){
                         $this->html .= '
                         [
-                            <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'" class="no">Reply</a>
+                            <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>
                         ]';
                     }
                     $this->html .= '
