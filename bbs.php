@@ -58,16 +58,16 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 	 * $name;
 	 * if(!empty($_POST['name']))){
 	 *     $name = $_POST['name'];
-	 * }elseif ($conf['allowBlankName']){
+	 * }elseif (!$conf['requireName']){
 	 *     $name = $conf['defaultName'];
 	 * }else{
 	 *     drawErrorPageAndDie("name is a required feild");
 	 * }
 	 */
-	$name = !empty($_POST['name']) ? $_POST['name'] : ($conf['allowBlankName'] ? $conf['defaultName'] : drawErrorPageAndDie("your Name is required."));
-	$email = !empty($_POST['email']) ? $_POST['email'] : ($conf['allowBlankEmail'] ? $conf['defaultEmail'] : drawErrorPageAndDie("your Email is required."));
-	$subject = !empty($_POST['subject']) ? $_POST['subject'] : ($conf['allowBlankSubject'] ? $conf['defaultSubject'] : drawErrorPageAndDie("a Subject is required."));
-	$comment = !empty($_POST['comment']) ? $_POST['comment'] : ($conf['allowBlankComment'] ? $conf['defaultComment'] : drawErrorPageAndDie("a comment is required."));
+	$name = !empty($_POST['name']) ? $_POST['name'] : (!$conf['requireName'] ? $conf['defaultName'] : drawErrorPageAndDie("your Name is required."));
+	$email = !empty($_POST['email']) ? $_POST['email'] : (!$conf['requireEmail'] ? $conf['defaultEmail'] : drawErrorPageAndDie("your Email is required."));
+	$subject = !empty($_POST['subject']) ? $_POST['subject'] : (!$conf['requireSubject'] ? $conf['defaultSubject'] : drawErrorPageAndDie("a Subject is required."));
+	$comment = !empty($_POST['comment']) ? $_POST['comment'] : (!$conf['requireComment'] ? $conf['defaultComment'] : drawErrorPageAndDie("a comment is required."));
 	$password = !empty($_POST['password']) ? $_POST['password'] : (isset($_COOKIE['password']) ? $_COOKIE["password"] : null);
 	
 	//gen post password if none is provided
@@ -95,10 +95,21 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 
     foreach ($procssedFiles as $file) {
         $post->addFile($file);
-    }	
+    }
+
+    $noFilesUploaded = count($procssedFiles) <= 0;
+    if($conf['requireFile'] && $noFilesUploaded){
+        drawErrorPageAndDie("a file is required");
+    }
+    if($conf['opMustHaveFile'] && $isOp && $noFilesUploaded){
+        drawErrorPageAndDie("you must have a file as OP");
+    }
+    if($conf['postMustHaveFileOrComment'] && $noFilesUploaded && ($comment == $conf['defaultComment'] || $comment == "")){
+        drawErrorPageAndDie("you must have a file or a comment");
+    }
 
 	// if we are not admin or mod, remove any html tags.
-	if( !$AUTH->isAdmin() || !$AUTH->isMod()){ 	
+	if(!$AUTH->isAdmin() || !$AUTH->isMod()){ 	
 		$post->stripHtml();
 	}
 

@@ -55,10 +55,13 @@ return [
 
     'maxCommentSize' => 2048,       // this is how many characters are allowed in your comment. there is no limit in the DB
 
-    'allowBlankName' => true,       
-    'allowBlankEmail' => true,      
-    'allowBlankSubject' => true,    
-    'allowBlankComment' => false,   
+    'opMustHaveFile' => true,
+    'postMustHaveFileOrComment' => true,    // this can be over ruled by require file or require comment
+    'requireName' => false,
+    'requireEmail' => false,
+    'requireSubject' => false,
+    'requireComment' => false,
+    'requireFile' => false,
     'defaultName'=> 'Anonymous', 
     'defaultEmail'=> '', 
     'defaultSubject'=> '',
@@ -68,7 +71,7 @@ return [
     'tripcodeSalt'=> 'abc123!?_',   // change this so your secure tripcode cant be cracked easily
 
     'canFortune' => false,
-    'fortunes' => ['Very bad luck','Bad luck', 'Average luck', 'Good luck', 'Godly luck'], 
+    'fortunes' => ['Very bad luck', 'Bad luck', 'Average luck', 'Good luck', 'Godly luck'], 
 
     'allowQuoteLinking'=> true,     // allow quoting a postid to create a hyperlink to the post
     'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks
