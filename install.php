@@ -1,6 +1,6 @@
 <?php
 if(file_exists(__DIR__ . "/conf.php")){
-    echo "it seems this has already been installed. if this is a issue, edit your conf.php to valid credentals, or delete conf.php and run this php file again";
+    echo "it seems this has already been installed. if this is a issue, go to a already created board, or delete conf.php and run this php file again";
     die();
 }
 ?>
@@ -9,49 +9,9 @@ if(file_exists(__DIR__ . "/conf.php")){
 <html>
 	<head>
 		<title>KotatsuBBS Installer</title>
-		<style>
-			body {
-				background-color: #d0f0c0;
-				font-family: Arial, sans-serif;
-			}
-			.postblock {
-				padding: 20px;
-				background-color: #ffcccc;
-				border: 2px solid #ff0000;
-				margin: 10px 0;
-			}
-			.prompt {
-				padding: 20px;
-				background-color: #e6ffe6;
-				border: 2px solid #4CAF50;
-				margin: 10px 0;
-			}
-			form > div {
-				display: flex;
-				align-items: center;
-				margin-bottom: 10px;
-			}
-
-			form > div > label {
-				margin-right: 10px;
-				width: 20%;
-				min-width: 120px;
-			}
-
-			form > div > input {
-				width: 80%;
-				padding: 8px;
-				border: 1px solid #ccc;
-			}
-
-			button[type="submit"] {
-				padding: 10px 15px;
-				cursor: pointer;
-			}
-		</style>
+        <link class="linkstyle" rel="stylesheet" type="text/css" href="static/css/default.css" title="defaultcss">
 	</head>
 	<body>
-
 <?php 
 	ini_set('display_errors', 1);
 	ini_set('display_startup_errors', 1);
@@ -151,7 +111,6 @@ if(file_exists(__DIR__ . "/conf.php")){
 			require_once __DIR__ .'/classes/repos/repoPost.php'; 
 			require_once __DIR__ .'/classes/repos/repoThread.php';
 
-
 			$POSTREPO = PostRepoClass::getInstance();
 			$THREADREPO = ThreadRepoClass::getInstance();
 			$time = time();
@@ -172,11 +131,10 @@ if(file_exists(__DIR__ . "/conf.php")){
 
 
 			echo "intro board Successfully created!<br>";
-			echo "delete this install file go to ./bbs.php?boardNameID=intro<br>";
+			echo 'delete this install.php file go to <a href="./intro/">intro</a><br>';
 		} catch (Exception $e) {
 			echo "installation failed. " . $e;
 		}
-
 		echo "</div>";
 	} 
 ?>
@@ -184,7 +142,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 		<h1>KotatsuBBS Installer</h1>
 		<div class="prompt">
 			Once you have a MySQL server set up with a basic username, password, and privileges. enter in the credentals below.<br>
-			this would also update your <i>conf.php</i> to use the newly added creds.<br>
+			this would also create a <i>conf.php</i> and a board called <i>/intro/</i>. make sure you have proper rewrites in your configs<br>
 			<hr>
 			<form method="post">
 				<div>
