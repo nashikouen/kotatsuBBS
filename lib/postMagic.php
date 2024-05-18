@@ -182,32 +182,3 @@ function splitTextAtTripcodePass(string $text): array {
 function extractTripCode(string $text): string{
     return "";
 }
-
-
-
-
-    /*
-	// Tripcode crap
-	$name = str_replace('&#', '&&', $name); // otherwise HTML numeric entities will explode!
-	list($name, $trip, $sectrip) = str_replace('&%', '&#', explode('#',$name.'##'));
-	if ($trip) {
-		$trip = mb_convert_encoding($trip, 'Shift_JIS', 'UTF-8');
-		$salt = strtr(preg_replace('/[^\.-z]/', '.', substr($trip.'H.',1,2)), ':;<=>?@[\\]^_`', 'ABCDEFGabcdef');
-		$trip = '!'.substr(crypt($trip, $salt), -10);
-	}
-	if ($sectrip) {
-		if ($level=valid($sectrip)) {
-			// Moderator capcode
-			switch ($level) {
-				case 1: if (JCAPCODE_FMT) $name = sprintf(JCAPCODE_FMT, $name); break;
-				case 2: if (MCAPCODE_FMT) $name = sprintf(MCAPCODE_FMT, $name); break;
-				case 3: if (ACAPCODE_FMT) $name = sprintf(ACAPCODE_FMT, $name); break;
-			}
-		} else {
-			// User
-			$sha =str_rot13(base64_encode(pack("H*",sha1($sectrip.TRIPSALT))));
-			$sha = substr($sha,0,10);
-			$trip = '!!'.$sha;
-		}
-	}
-    */

@@ -86,7 +86,8 @@ class PostDataClass {
     }
     public function applyTripcode(){
         $nameXpass = splitTextAtTripcodePass($this->name);
-        $tripcode = genTripcode($nameXpass[1], $this->config['tripcodeSalt']);
+        $gc = require __DIR__ . '/../conf.php'; 
+        $tripcode = genTripcode($nameXpass[1], $gc['tripcodeSalt']);
         $this->name = $nameXpass[0] . $tripcode;
     }
     public function stripTripcodePass(){

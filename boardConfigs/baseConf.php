@@ -45,7 +45,7 @@ return [
     'allowRuffle' => false,         // setting this to true will add the Ruffle js script to your board. this allows flash files to be played. you will also need to enable allowJS
     'allowJS' => true,              // this will enbable js on the board. if you want ruffle you need this enabled too.
 
-    'cookieExpireTime'=> time()+7*24*60*60, //the day the cookie will expire. default is 7days from the curent time
+    'cookieExpireTime'=> 7*24*60*60,    //the day the cookie will expire. default is 7days from the curent time
 
     'threadsPerPage' => 15,         // this is how many threads will be showed per page
     'maxActiveThreads' => 150,      // this is how many threads can be active at once
@@ -55,8 +55,8 @@ return [
 
     'maxCommentSize' => 2048,       // this is how many characters are allowed in your comment. there is no limit in the DB
 
-    'opMustHaveFile' => true,
     'postMustHaveFileOrComment' => true,    // this can be over ruled by require file or require comment
+    'opMustHaveFile' => true,
     'requireName' => false,
     'requireEmail' => false,
     'requireSubject' => false,
@@ -68,8 +68,6 @@ return [
     'defaultComment'=> '', 
 
     'canTripcode' => false,         // true will allow you to tripcode
-    'tripcodeSalt'=> 'abc123!?_',   // change this so your secure tripcode cant be cracked easily
-
     'canFortune' => false,
     'fortunes' => ['Very bad luck', 'Bad luck', 'Average luck', 'Good luck', 'Godly luck'], 
 

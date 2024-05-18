@@ -55,7 +55,7 @@ function redirectToThread($thread){
     exit;
 }
 function redirectToBoard($board){
-    $name = boardIDToName($board->getBoardID);
+    $name = boardIDToName($board->getBoardID());
     $url = "$name";
 
     header("Location: $url");

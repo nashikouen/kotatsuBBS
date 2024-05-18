@@ -31,17 +31,16 @@ $BOARDREPO = BoardRepoClass::getInstance();
 
 $globalConf = require __DIR__ ."/conf.php";
 
-define("ROOTPATH", '/'); /* Program location relitive to web root */
+define("ROOTPATH", '/'); /* Program location as seen from the web root */
 define("MAX_INPUT_LENGTH", 255 - 128); /* you cant make this bigger then 255 with out changing the cap to to the db */
 define("MAX_INPUT_LENGTH_PASSWORD", 16 - 8); /* you cant make this bigger then 16 with out changing the cap to to the db */
 
-define("IMAGE_EXTENTIONS", ["png", "jpg", "jpeg", "webp", "gif", "tiff", "svg"]);
-define("VIDEO_EXTENTIONS", ["mp4", "webm", "avi", "mov", "mkv"]);
-define("AUDIO_EXTENTIONS", ["mp3", "wav", "flac", "ogg"]);
+define("IMAGE_EXTENTIONS", $globalConf['IMAGE_EXTENTIONS']);
+define("VIDEO_EXTENTIONS", $globalConf['VIDEO_EXTENTIONS']);
+define("AUDIO_EXTENTIONS", $globalConf['AUDIO_EXTENTIONS']);
 
-
-ini_set('session.cookie_lifetime', $globalConf['sessionLifeTime']);
-ini_set("memory_limit", '128M');
+ini_set('session.cookie_lifetime', time() + $globalConf['sessionLifeTime']);
+ini_set("memory_limit", $globalConf['memoryLimit']);
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -72,11 +71,13 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 	
 	//gen post password if none is provided
 	if($password == null){
+        // op's first post, he gets cookie, clicks on ip logger. now evil has an ip + time...
 		$hasinput = $_SERVER['REMOTE_ADDR'] . time() . $globalConf['passwordSalt'];
 		$hash = hash('sha256', $hasinput);
 		$password = substr($hash, -MAX_INPUT_LENGTH_PASSWORD); 
 	}
 
+    //drawErrorPageAndDie("Name: $name, Email: $email, Password: $password");
 	//cookies!!!!
 	setrawcookie('name', rawurlencode($name), $conf['cookieExpireTime']);
 	setrawcookie('email', rawurlencode($email), $conf['cookieExpireTime']);
