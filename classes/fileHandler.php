@@ -140,6 +140,7 @@ class fileHandlerClass {
             // a good moduel would be deduplication. 
             if($fileConf['allowDuplicateFiles'] == false){
                 if($FILEREPO->isDuplicateFile($this->config, $md5Hash)){
+                    drawErrorPageAndDie("duplicate file detected: ". $file->getFileName());
                     continue;
                 }
             }
