@@ -1,5 +1,8 @@
 <?php
-
+/*
+ *  DO NOT DELETE THIS FILE OR TRY TO MAKE A conf.php
+ *  install.php will create the proper files based on this.
+ */
 return [
     /*
      * this is where you put in the creds for you main data base

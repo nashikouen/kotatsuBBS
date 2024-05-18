@@ -58,7 +58,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 	error_reporting(E_ALL);
 	mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-	$conf = require __DIR__ .'/example.conf.php'; 
+	$conf = require __DIR__ .'/templet.conf.php'; 
 	
 	function createDB($conn){
 		// SQL to create tables
