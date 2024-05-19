@@ -179,6 +179,7 @@ function splitTextAtTripcodePass(string $text): array {
     }
 }
 
+// get the tripcode that is after a name "anon◆extractThisPart"
 function extractTripCode(string $text): string{
     return "";
 }
