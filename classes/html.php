@@ -71,6 +71,7 @@ class htmlclass {
     }
     private function drawNavBar(){
         global $HOOK;
+
         $conf = $this->conf;
 
         $this->html .= '
@@ -91,7 +92,7 @@ class htmlclass {
                 $this->drawNavGroup($urlGroup);
             }
             $this->drawNavGroup($conf['navLinksRight']);
-            $this->drawNavGroup(['admin' => 'admin.php?boardID='.$conf['boardID']]);
+            $this->drawNavGroup(['admin' => ROOTPATH . $conf['boardNameID'] . '/admin/' ]);
             $this->html .= '
         </span>
         </div>';

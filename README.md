@@ -105,6 +105,11 @@ server "127.0.0.1" {
 		block return 302 \
 		  "/bbs.php?boardNameID=%1&page=%2"
 	}
+    # /boardName/admin/
+    location match "^/([a-zA-Z]+)/admin/?$" {
+		request rewrite \
+		  "/admin.php?boardNameID=%1"
+	}
 }
 ```
 
