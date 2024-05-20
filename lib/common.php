@@ -41,7 +41,7 @@ function redirectToPost($post){
     $threadID = $post->getThreadID();
     $postID = $post->getPostID();
 
-    $url = "$name/thread/$threadID/#p$postID";
+    $url = ROOTPATH. "$name/thread/$threadID/#p$postID";
 
     header("Location: $url");
     exit;
@@ -50,14 +50,21 @@ function redirectToThread($thread){
     $name = boardIDToName($thread->getBoardID());
     $threadID = $thread->getThreadID();
 
-    $url = "$name/thread/$threadID/";
+    $url = ROOTPATH. "$name/thread/$threadID/";
 
     header("Location: $url");
     exit;
 }
 function redirectToBoard($board){
     $name = boardIDToName($board->getBoardID());
-    $url = "$name";
+    $url = ROOTPATH. "$name";
+
+    header("Location: $url");
+    exit;
+}
+function redirectToAdmin($board){
+    $name = boardIDToName($board->getBoardID());
+    $url = ROOTPATH. "$name/admin";
 
     header("Location: $url");
     exit;
