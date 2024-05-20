@@ -8,9 +8,25 @@ require_once __DIR__ .'/classes/auth.php';
 require_once __DIR__ .'/lib/common.php';
 require_once __DIR__ .'/lib/adminControl.php';
 
-$boardID = $_POST['boardID'] ?? @nameIDToBoardID($_GET['boardNameID']) ?? '';
+$AUTH = AuthClass::getInstance();
 
-if (!is_numeric($boardID)) {
-	drawErrorPageAndDie("you must have a boardID");
+$board = getBoardFromRequest();
+$boardHtml = new htmlclass($board->getConf(), $board);
+
+if(isset($_POST['action'])){
+	$action = $_POST['action'];
+	
+	switch ($action) {
+		case 'login':
+            redirectToPost($post);
+			break;
+		default:
+			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
+			drawErrorPageAndDie("invalid action: " . $stripedInput);
+			break;
+	}
 }
 
+if($AUTH->isNotAuth()){
+    $boardHtml->drawLoginPage();
+}

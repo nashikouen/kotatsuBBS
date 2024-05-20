@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ .'/../classes/repos/repoBoard.php';
 
 function nameIDToBoardID($nameID){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
@@ -93,4 +94,17 @@ function drawErrorPageAndDie($txt){
 	</html>';
 	echo $html;
 	die();
+}
+function getBoardFromRequest(){
+    $BOARDREPO = BoardRepoClass::getInstance();
+    $boardID = $_POST['boardID'] ?? @nameIDToBoardID($_GET['boardNameID']) ?? '';
+
+    if (!is_numeric($boardID)) {
+        drawErrorPageAndDie("you must have a boardID");
+    }
+    $board = $BOARDREPO->loadBoardByID($boardID);
+    if(is_null($board)) {
+        drawErrorPageAndDie("board with the boardID of \"".$boardID."\"dose not exist");
+    }
+    return $board;
 }

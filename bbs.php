@@ -200,18 +200,7 @@ function userDeletedPost($board, $post, $password){
  * ./moduels/ is where your hacks should be put. and then enable them through the admin pannel.
  */
 
-$boardID = $_POST['boardID'] ?? @nameIDToBoardID($_GET['boardNameID']) ?? '';
-
-if (!is_numeric($boardID)) {
-	drawErrorPageAndDie("you must have a boardID");
-}
-
-$board = $BOARDREPO->loadBoardByID($boardID);
-
-if(is_null($board)) {
-	drawErrorPageAndDie("board with the boardID of \"".$boardID."\"dose not exist");
-}
-
+$board = getBoardFromRequest();
 $boardHtml = new htmlclass($board->getConf(), $board);
 
 
@@ -279,5 +268,5 @@ else{
 		drawErrorPageAndDie("invalid page");
 	}
 	$page = abs(intval($page));
-	$boardHtml->drawPage($page);
+	$boardHtml->drawThreadListingPage($page);
 }

@@ -119,8 +119,8 @@ class htmlclass {
         $this->html .= '
         <!--postManagerWraper()-->
         <form name="managePost" id="managePost" action="'.ROOTPATH.'bbs.php" method="post">';
-        call_user_func_array($drawFunc, $parameter);
-        $this->html .= '
+            call_user_func_array($drawFunc, $parameter);
+            $this->html .= '
             <!--make dropdown with other options-->
             <table align="right">
             <tr>
@@ -184,7 +184,7 @@ class htmlclass {
     private function drawFormNewPost($threadID){
         $this->html .= '
         <!--drawFormNewPost()-->
-        [<a href="/'.$this->conf['boardNameID'].'/">Return</a>]
+        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]
         [<a href="#bottom">bottom</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
         <center id="mainForm">
@@ -399,8 +399,20 @@ class htmlclass {
         }
         $this->html .='</div>';
     }
+    private function drawLoginForm() {
+        $this->html .='
+        <!--drawLoginForm()-->
+        <center class="loginForm">
+        <form method="POST" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="login">
+            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        </center>';
+    }
 
-    private function drawBase($form, $formParams, $listing, $listingParams, $paging, $pagingParams){
+    private function drawBase($head, $headParams, $body, $bodyParams, $footer, $footerParams){
         $this->html .='
         <!DOCTYPE html>
         <html lang="en-US">';
@@ -409,14 +421,14 @@ class htmlclass {
         $this->drawNavBar();
         $this->drawBoardTitle();
 
-        if ($form !== null) {
-            call_user_func_array($form, $formParams);
+        if ($head !== null) {
+            call_user_func_array($head, $headParams);
         }
-        if ($listing !== null) {
-            $this->postManagerWraper($listing, $listingParams);
+        if ($body !== null) {
+            call_user_func_array($body, $bodyParams);
         }
-        if ($paging !== null) {
-            call_user_func_array($paging, $pagingParams);
+        if ($footer !== null) {
+            call_user_func_array($footer, $footerParams);
         }
 
         $this->html .= '[<a href="#top">top</a>]';
@@ -425,20 +437,45 @@ class htmlclass {
             $this->drawFooter();
         }
     }
-    public function drawPage($pageNumber = 0){
+    public function drawThreadListingPage($pageNumber = 0){
         global $THREADREPO;
         $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber);
 
+        $drawThreadListingWraped = function($threads){
+            $this->postManagerWraper([$this, 'drawThreadListing'], [$threads]);
+        };
+        
+
         $this->drawBase([$this, 'drawFormNewThread'], [],
-                        [$this, 'drawThreadListing'], [$threads],
+                        $drawThreadListingWraped, [$threads],
                         [$this, 'drawPageNumbers'], [$pageNumber]);
         echo $this->html;
-
     }
     public function drawThreadPage($thread){
+        $drawThreadWraped = function($thread){
+            $this->postManagerWraper([$this, 'drawThread'], [$thread]);
+        };
+
         $this->drawBase([$this, 'drawFormNewPost'], [$thread->getThreadID()],
-                        [$this, 'drawThread'] , [$thread],
-                         null, []);
+                        $drawThreadWraped , [$thread],
+                        null, []);
+        echo $this->html;
+    }
+    public function drawLoginPage(){
+        $this->drawBase([$this, 'drawLoginForm'], [],
+                        null , [],
+                        null, []);
+        echo $this->html;
+    }
+    public function drawAdminPage($thread){
+        
+        $drawThreadWraped = function($thread){
+            $this->postManagerWraper([$this, 'drawThread'], [$thread]);
+        };
+
+        $this->drawBase([$this, 'drawFormNewPost'], [$thread->getThreadID()],
+                        $drawThreadWraped , [$thread],
+                        null, []);
         echo $this->html;
     }
 }
