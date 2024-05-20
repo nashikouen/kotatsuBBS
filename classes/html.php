@@ -119,7 +119,7 @@ class htmlclass {
         $this->html .= '
         <!--postManagerWraper()-->
         <form name="managePost" id="managePost" action="'.ROOTPATH.'bbs.php" method="post">';
-        $drawFunc($parameter);
+        call_user_func_array($drawFunc, $parameter);
         $this->html .= '
             <!--make dropdown with other options-->
             <table align="right">
@@ -184,7 +184,8 @@ class htmlclass {
     private function drawFormNewPost($threadID){
         $this->html .= '
         <!--drawFormNewPost()-->
-        <a href="/'.$this->conf['boardNameID'].'/">[Return]</a>
+        [<a href="/'.$this->conf['boardNameID'].'/">Return</a>]
+        [<a href="#bottom">bottom</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
         <center id="mainForm">
             <form id="formPost" action="'.ROOTPATH.'bbs.php" method="POST" enctype="multipart/form-data">
@@ -398,45 +399,46 @@ class htmlclass {
         }
         $this->html .='</div>';
     }
+
+    private function drawBase($form, $formParams, $listing, $listingParams, $paging, $pagingParams){
+        $this->html .='
+        <!DOCTYPE html>
+        <html lang="en-US">';
+        $this->drawHead();
+        $this->html .= '<body><div id="top"></div>';
+        $this->drawNavBar();
+        $this->drawBoardTitle();
+
+        if ($form !== null) {
+            call_user_func_array($form, $formParams);
+        }
+        if ($listing !== null) {
+            $this->postManagerWraper($listing, $listingParams);
+        }
+        if ($paging !== null) {
+            call_user_func_array($paging, $pagingParams);
+        }
+
+        $this->html .= '[<a href="#top">top</a>]';
+        $this->html .= '</body><div id="bottom"></div>';
+        if ($this->conf['drawFooter']){
+            $this->drawFooter();
+        }
+    }
     public function drawPage($pageNumber = 0){
         global $THREADREPO;
         $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber);
-        
-        $this->html .='
-        <!DOCTYPE html>
-        <html lang="en-US">';
-        $this->drawHead();
-        $this->html .= '<body>';
-        $this->drawNavBar();
-        $this->drawBoardTitle();
-        $this->drawFormNewThread();
-        $this->postManagerWraper(
-            [$this, 'drawThreadListing'] , $threads
-        );
-        $this->drawPageNumbers($pageNumber);
-        $this->html .= '</body>';
-        if ($this->conf['drawFooter']){
-            $this->drawFooter();
-        }
+
+        $this->drawBase([$this, 'drawFormNewThread'], [],
+                        [$this, 'drawThreadListing'], [$threads],
+                        [$this, 'drawPageNumbers'], [$pageNumber]);
         echo $this->html;
+
     }
     public function drawThreadPage($thread){
-        $this->html .='
-        <!DOCTYPE html>
-        <html lang="en-US">';
-        $this->drawHead();
-        $this->html .= '<body>';
-        $this->drawNavBar();
-        $this->drawBoardTitle();
-        $this->drawFormNewPost($thread->getThreadID());
-        $this->postManagerWraper(
-            [$this, 'drawThread'] , $thread
-        );
-
-        $this->html .= '</body>';
-        if ($this->conf['drawFooter']){
-            $this->drawFooter();
-        }
+        $this->drawBase([$this, 'drawFormNewPost'], [$thread->getThreadID()],
+                        [$this, 'drawThread'] , [$thread],
+                         null, []);
         echo $this->html;
     }
 }
