@@ -69,7 +69,12 @@ return [
 
     'canTripcode' => false,         // true will allow you to tripcode
     'canFortune' => false,
-    'fortunes' => ['Very bad luck', 'Bad luck', 'Average luck', 'Good luck', 'Godly luck'], 
+    'fortunes' => ['Very bad luck', 'Bad luck', 'Average luck', 'Good luck', 'Godly luck'],
+
+    /* these list will hold a list like this [[hash, name], [hash, name]] */
+    'janitorHashes' => [],      // list of janitor hashes
+    'moderatorHashes' => [],    // list of moderator hashes
+    'adminHashes' => [],        // board owner hashes
 
     'allowQuoteLinking'=> true,     // allow quoting a postid to create a hyperlink to the post
     'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks

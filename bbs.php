@@ -53,7 +53,7 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 	//gen post password if none is provided
 	if($password == null){
         // op's first post, he gets cookie, clicks on ip logger. now evil has an ip + time...
-		$hasinput = $_SERVER['REMOTE_ADDR'] . time() . $globalConf['passwordSalt'];
+		$hasinput = $_SERVER['REMOTE_ADDR'] . time() . $globalConf['tripcodeSalt'];
 		$hash = hash('sha256', $hasinput);
 		$password = substr($hash, -MAX_INPUT_LENGTH_PASSWORD); 
 	}
@@ -91,7 +91,7 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
     }
 
 	// if we are not admin or mod, remove any html tags.
-	if(!$AUTH->isAdmin() || !$AUTH->isMod()){ 	
+	if(!$AUTH->isAdmin($conf['boardID']) || !$AUTH->isModerator($conf['boardID'])){ 	
 		$post->stripHtml();
 	}
 

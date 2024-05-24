@@ -142,7 +142,7 @@ function genTripcode(string $password, string $salt = ''): string{
         $hashType = 'regular';
         $password = substr($password, 1); 
     } else {
-        return '';
+        //nothing as it will fall thu all defualts.
     }
     //traditional tripcodes use shift jis
     $password = mb_convert_encoding($password, 'Shift_JIS', 'UTF-8');
@@ -160,8 +160,10 @@ function genTripcode(string $password, string $salt = ''): string{
 
     if ($hashType === 'regular') {
         return '◆'.substr($tripcode, -10);
-    }else{
+    }elseif($hashType === 'secure'){
         return '★'.substr($tripcode, -10);
+    }else{
+        return substr($tripcode, -10);
     }
 }
 

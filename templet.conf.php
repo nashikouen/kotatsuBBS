@@ -1,7 +1,8 @@
 <?php
 /*
- *  DO NOT DELETE THIS FILE OR TRY TO MAKE A conf.php
- *  install.php will create the proper files based on this.
+ *  DO NOT DELETE THIS FILE OR TRY TO MAKE A conf.php FILE FROM THIS
+ *  install.php will use this file to create the proper files. pleas edit stuff you wish to have global before installing
+ *  or update the conf.php after it is installed, [note after it is installed you loses these comments in the new file]
  */
 return [
     /*
@@ -19,8 +20,12 @@ return [
     'sessionLifeTime' => 3600,
     'memoryLimit' => '128M',    // the ammount of memeory kotatsu can use 
     'webRootPath' => '/',       // the location where the software is found relitive to your web root.
-    'passwordSalt' => 'qwerty', // this is the salt used for anything a mod or admin needs for logging in.
-    'tripcodeSalt' => 'uiop[]', // the salt for a site wide secure tripcode.
+    'tripcodeSalt' => 'uiop[]', // the salt for a site wide secure tripcode. also for admin logging in.
+    
+    /* these list will hold a list of authed users, format would look like this [[hash, name], [hash, name]] */
+    'janitorHashes' => [],      // list of janitor hashes
+    'moderatorHashes' => [],    // list of moderator hashes
+    'adminHashes' => [],        // board owner hashes
 
     /* this is to catagorize wether a file has a known drawing method in html */
     /* flash files are a odd ball and enabled by defualt */

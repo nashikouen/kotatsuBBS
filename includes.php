@@ -17,7 +17,3 @@ define("AUDIO_EXTENTIONS", $globalConf['AUDIO_EXTENTIONS']);
 
 ini_set('session.cookie_lifetime', time() + $globalConf['sessionLifeTime']);
 ini_set("memory_limit", $globalConf['memoryLimit']);
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}

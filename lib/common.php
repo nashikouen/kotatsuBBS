@@ -36,6 +36,17 @@ function getBoardListing(){
 	}
 	return $listing;
 }
+function getBoardConfByID($id){
+    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+
+	foreach($files as $file){
+		$conf = require($file);
+		if($conf['boardID'] == $id){
+			return $conf;
+		}
+	}
+	return '';
+}
 function redirectToPost($post){
     $name = boardIDToName($post->getBoardID());
     $threadID = $post->getThreadID();
