@@ -66,15 +66,12 @@ class AuthClass {
         if (!is_null($boardID)) {
             $boardConf = getBoardConfByID($boardID);
         }
-        if (empty($boardConf)) {
-            $_SESSION['authRole'] = roles::noAuth;
-            return;
-        }
 
         $matchedItem = $this->isHashInArray($hash, $boardConf['adminHashes']);
         if ($matchedItem) {
             $_SESSION['authRole'] = roles::Admin;
             $_SESSION['authBoardID'] = $boardID;
+            $_SESSION['authName'] = $matchedItem[1];
             return;
         }
 

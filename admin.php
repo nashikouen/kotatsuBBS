@@ -26,7 +26,7 @@ function userLoggingIn(){
     /*
      *  try loggin in as what ever user it is.
      */
-    $AUTH->setRoleByHash($passHash);
+    $AUTH->setRoleByHash($passHash, $board->getBoardID());
 }
 
 function userLoggingOut(){
