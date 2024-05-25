@@ -138,9 +138,15 @@ function genTripcode(string $password, string $salt = ''): string{
     if (substr($password, 0, 2) === '##') {
         $hashType = 'secure';
         $password = substr($password, 2);
+        if($password == ''){
+            return '##';
+        }
     } elseif (substr($password, 0, 1) === '#') {
         $hashType = 'regular';
-        $password = substr($password, 1); 
+        $password = substr($password, 1);
+        if($password == ''){
+            return '#';
+        }
     } else {
         //nothing as it will fall thu all defualts.
     }
