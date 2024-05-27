@@ -110,7 +110,7 @@ body {
  */
 
  /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
- .theading,
+.theading,
 .theading2,
 .theading3 {
 	color: #EEE;

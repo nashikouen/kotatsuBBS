@@ -33,7 +33,10 @@ function userLoggingOut(){
     global $AUTH;
     $AUTH->clearRole();
 }
-
+/*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
+/*
+ *  exit if we are not authenticated.
+ */
 if($AUTH->isNotAuth()){
     if(isset($_POST['action']) && $_POST['action'] == "login"){
         userLoggingIn();
@@ -43,7 +46,9 @@ if($AUTH->isNotAuth()){
     }
     exit;
 }
-
+/*
+ *  this workes exactly like bbs.php you will have a list of actions and they will map to functions.
+ */
 if(isset($_POST['action'])){
 	$action = $_POST['action'];
 	switch ($action) {

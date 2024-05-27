@@ -89,11 +89,17 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
     if($conf['postMustHaveFileOrComment'] && $noFilesUploaded && ($comment == $conf['defaultComment'] || $comment == "")){
         drawErrorPageAndDie("you must have a file or a comment");
     }
-
-	// if we are not admin or mod, remove any html tags.
+    
+    /* 
+     *  if we are not admin or mod, remove any html tags.
+     *  dont get confused. the first if statment catchs any non admins and mods.
+     *  any one getting to the second if statement should be admin or mod.
+     */
 	if(!$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){ 	
 		$post->stripHtml();
-	}
+	}elseif(isset($_POST['stripHTML'])){
+        $post->stripHtml();
+    }
 
 	//if the board lets you tripcode, apply tripcode to name.
 	if($conf['canTripcode']){

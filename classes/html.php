@@ -117,7 +117,7 @@ class htmlclass {
     }
     private function postManagerWraper($drawFunc, $parameter){
         $this->html .= '
-        <!--postManagerWraper()-->
+        <!--postManagerWraper($drawFunc, $parameter)-->
         <form name="managePost" id="managePost" action="'.ROOTPATH.'bbs.php" method="post">';
             call_user_func_array($drawFunc, $parameter);
             $this->html .= '
@@ -137,7 +137,10 @@ class htmlclass {
         </form>';
     }
     private function drawMainFormBody($buttonText){
+        global $AUTH;
+        global $board;
         $this->html .= '
+        <!--drawFormNewThread($buttonText)-->
         <table>
         <tr>
             <td class="accent"><label for="name">Name</label></td>
@@ -166,7 +169,15 @@ class htmlclass {
         <tr>
             <td class="accent"><label for="password">Password</label></td>
             <td><input type="text" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
-        </tr>
+        </tr>';
+        if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
+            $this->html .= '
+            <tr>
+                <td class="accent"><label for="stripHTML">Strip HTML</label></td>
+                <td><input type="checkbox" id="stripHTML" name="stripHTML" checked></td>
+            </tr>';
+        }
+        $this->html .= '
         </table>';
     }
     private function drawFormNewThread(){
@@ -183,7 +194,7 @@ class htmlclass {
     }
     private function drawFormNewPost($threadID){
         $this->html .= '
-        <!--drawFormNewPost()-->
+        <!--drawFormNewPost($threadID)-->
         [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]
         [<a href="#bottom">bottom</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
@@ -199,7 +210,7 @@ class htmlclass {
     }
     private function drawFiles($files, $threadID){
         $this->html .= '
-        <!--drawFiles-->
+        <!--drawFiles($files, $threadID)-->
         <div class="files">';
         $fileNameS = "";
         $filesS = "";
@@ -278,8 +289,9 @@ class htmlclass {
         '</div>';
     }
     private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
+        global $AUTH;
         $this->html .= '
-        <!--drawPosts()-->';
+        <!--drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0)-->';
         foreach($posts as $post){
             $postID = $post->getPostID();
             $type = "reply";
@@ -311,7 +323,13 @@ class htmlclass {
                     <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
                     <span class="postnum">
 				        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
-                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
+                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>';
+
+                        if($AUTH->isAuth($post->getBoardID())){
+                            $this->drawAdminViewPost($post);
+                        }
+
+                        $this->html .= '
                     </span>';
                     if($isOP  && $isListingMode){
                         $this->html .= '
@@ -337,7 +355,7 @@ class htmlclass {
         $posts = $thread->getPosts();
 
         $this->html .='
-        <!--drawThreads()-->
+        <!--drawThread($thread)-->
         <div id="t'.$thread->getThreadID().'" class="thread">';
             $this->drawPosts($thread, $posts);
             $this->html .='
@@ -346,7 +364,7 @@ class htmlclass {
     }
     private function drawThreadListing($threads){
         $this->html .='
-        <!--drawThreadListing()-->';
+        <!--drawThreadListing($threads)-->';
         foreach ($threads as $thread) {
             //NEEDS FIXING.
             // if op post and child has same time. there is a cance they will swap positions on thread listing and 2nd post will just be OP post.
@@ -369,7 +387,7 @@ class htmlclass {
         
         $pages = floor($threadCount / $maxThreadsPerPage);
         $this->html .='
-        <!--drawPageNumbers()-->
+        <!--drawPageNumbers($curentPage)-->
         <div class="pages">';
         if($curentPage > 0){
             $this->html .='
@@ -421,6 +439,12 @@ class htmlclass {
             [<button type="submit" class="hyperButton">Logout</button>]
         </form>';
     }
+    private function drawAdminViewPost($post){
+        $this->html .= '
+        <!--drawAdminViewPost($post)-->
+        <div>';
+        $this->html .= '</div>';
+    }
     private function drawAdminBar(){
         global $AUTH;
         $this->html .='
@@ -431,6 +455,7 @@ class htmlclass {
             $this->html .='
         </div>';
     }
+    /* drawBase is the defualt templet that all pages will be built from unless specifies else wize */
     private function drawBase(array $functions){
         global $AUTH;
         $this->html .='
