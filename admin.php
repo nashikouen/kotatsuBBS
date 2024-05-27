@@ -30,7 +30,8 @@ function userLoggingIn(){
 }
 
 function userLoggingOut(){
-
+    global $AUTH;
+    $AUTH->clearRole();
 }
 
 if($AUTH->isNotAuth()){

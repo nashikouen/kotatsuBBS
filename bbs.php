@@ -91,7 +91,7 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
     }
 
 	// if we are not admin or mod, remove any html tags.
-	if(!$AUTH->isAdmin($conf['boardID']) || !$AUTH->isModerator($conf['boardID'])){ 	
+	if(!$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){ 	
 		$post->stripHtml();
 	}
 
@@ -106,8 +106,8 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 
 	/* prep post for db and drawing */
 
-	// if the board allows embeding of links
-	if($conf['autoEmbedLinks']){
+	// if the board allows embeding of links. admins and mods are expeced to embed there own things since they have that power
+	if($conf['autoEmbedLinks'] && !$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){
 		$post->embedLinks();
 	}
 	// if board allows post to link to other post.

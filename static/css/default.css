@@ -20,6 +20,9 @@ body {
 	justify-content: space-between; 
 	width: 100%; 
 }
+.adminbar{
+    display: flex;
+}
 .boardTitle{
 	text-align: center;	
 }
@@ -91,6 +94,15 @@ body {
 }
 .inLine{
 	display: inline-block;
+}
+.hyperButton {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
 }
 
 /*

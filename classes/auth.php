@@ -94,6 +94,11 @@ class AuthClass {
         /* no has = no role */
         $_SESSION['authRole'] = roles::noAuth;
     }
+    public function clearRole(){
+        $_SESSION['authRole'] = roles::noAuth;
+        $_SESSION['authBoardID'] = null;
+        $_SESSION['authName'] = null;
+    }
     public function isSuper() {
         $role = $_SESSION['authRole'];
         if($role == roles::superAdmin || $role == roles::superJanitor || $role == roles::superModerator){

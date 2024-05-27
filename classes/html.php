@@ -412,12 +412,23 @@ class htmlclass {
         </form>
         </center>';
     }
+    private function drawLogOutForm(){
+        $this->html .='
+        <!--drawLogOutForm()-->
+        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="logout">
+            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            [<button type="submit" class="hyperButton">Logout</button>]
+        </form>';
+    }
     private function drawAdminBar(){
         global $AUTH;
         $this->html .='
         <!--drawAdminBar()-->
-        <div class="adminbar">
-            <b>Welcome '. $AUTH->getName() .'. you are a '. $AUTH .'</b>
+        <center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>
+        <div class="adminbar">';
+            $this->drawLogOutForm();
+            $this->html .='
         </div>';
     }
     private function drawBase(array $functions){
