@@ -24,6 +24,7 @@ class htmlclass {
         $this->board = $board;
     }
     private function drawHead(){
+        global $AUTH;
         $this->html .= '
         <!--drawHead() Hello!! If you are looking to modify this webapge. please check out kotatsu github and look in /classes/html.php-->
         <head>
@@ -52,9 +53,12 @@ class htmlclass {
                 '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
-            
+            if($AUTH->isAuth()){
+                $this->html .= '<script src="'.$this->conf['staticPath'].'js/adminForm.js"></script>';
+            }
             
             $this->html .= 
+            
             //'<link rel="alternate" type="application/rss+xml" title="RSS 2.0 Feed" href="//nashikouen.net/main/koko.php?mode=module&amp;load=mod_rss">
         '</head>';
     }
@@ -323,13 +327,7 @@ class htmlclass {
                     <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
                     <span class="postnum">
 				        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
-                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>';
-
-                        if($AUTH->isAuth($post->getBoardID())){
-                            $this->drawAdminViewPost($post);
-                        }
-
-                        $this->html .= '
+                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
                     </span>';
                     if($isOP  && $isListingMode){
                         $this->html .= '
@@ -339,6 +337,9 @@ class htmlclass {
                     }
                     $this->html .= '
                 </div>';
+                if($AUTH->isAuth($post->getBoardID())){
+                    $this->drawAdminViewPost($post);
+                }
                 if($isOP == false){
                     $this->drawFiles($post->getFiles(), $threadID);
                 }
@@ -439,10 +440,27 @@ class htmlclass {
             [<button type="submit" class="hyperButton">Logout</button>]
         </form>';
     }
+    private function drawPostIP($post){
+        global $AUTH;
+        $ip = $post->getIP();
+        $ipParts = explode('.', $ip);
+        if(!$AUTH->isAdmin($post->getBoardID())){
+            if (count($ipParts) == 4) {
+                $ip = $ipParts[0] . '.' . $ipParts[1] . '.***.***';
+            } else {
+                $ip = 'Invalid IP';
+            }
+        }
+        $this->html .= 
+        '<span>
+            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/listByIP/'.$post->getPostID().'">'.$ip.'</a>]
+        </span>';
+    }
     private function drawAdminViewPost($post){
         $this->html .= '
         <!--drawAdminViewPost($post)-->
-        <div>';
+        <div class="adminView">';
+        $this->drawPostIP($post);
         $this->html .= '</div>';
     }
     private function drawAdminBar(){

@@ -115,7 +115,10 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 	// if the board allows embeding of links. admins and mods are expeced to embed there own things since they have that power
 	if($conf['autoEmbedLinks'] && !$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){
 		$post->embedLinks();
-	}
+	}elseif(isset($_POST['stripHTML'])){
+        $post->embedLinks();
+    }
+    
 	// if board allows post to link to other post.
 	if($conf['allowQuoteLinking']){
 		$post->quoteLinks();
@@ -190,8 +193,11 @@ function userDeletedPost($board, $post, $password){
         $password = $_COOKIE['password'];
     }
     // the passwords dont match and user dose not have power.
-    if($password != $post->getPassword() && $AUTH->isNotAuth()){
+    if($password != $post->getPassword() && !$AUTH->isAuth($board->getBoardID())){
         return;
+    }
+    if($AUTH->isAuth($board->getBoardID())){
+        // to do log here
     }
     deletePost($post);
 }
@@ -230,6 +236,7 @@ if (isset($_GET['thread'])){
 	}
 
 	$boardHtml->drawThreadPage($thread);
+    return;
 }
 /*----------post action recived----------*/
 elseif(isset($_POST['action'])){

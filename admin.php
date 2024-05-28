@@ -65,6 +65,20 @@ if(isset($_POST['action'])){
 			drawErrorPageAndDie("invalid action: " . $stripedInput);
 			break;
 	}
+}elseif (isset($_GET['action'])){
+	$action = $_GET['action'];
+	switch ($action) {
+        case 'listByIP':
+            //userLoggingOut();
+            //redirectToBoard($board);
+			break;
+		default:
+			$stripedInput = htmlspecialchars($_GET['action'], ENT_QUOTES, 'UTF-8');
+			drawErrorPageAndDie("invalid action: " . $stripedInput);
+			break;
+	}
+    return;
 }
+
 
 $boardHtml->drawAdminPage();
