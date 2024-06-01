@@ -119,11 +119,30 @@ class fileHandlerClass {
         } elseif (strpos($fileType, 'video/') === 0) {
             $thumbnailPath = tempnam(sys_get_temp_dir(), 'thumbnail') . ".jpg";
             $safeFilePath = escapeshellarg($filePath);
-
-            // Ensure the environment variable is included in the command
-            $ffmpegCommand = "LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffmpeg -i {$safeFilePath} -vframes 1 -vf scale={$maxWidth}:{$maxHeight} -q:v 2 -y {$thumbnailPath} 2>&1";
+    
+            // Get video dimensions
+            $videoInfo = shell_exec("LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 {$safeFilePath}");
+            list($width, $height) = explode('x', $videoInfo);
+    
+            // Calculate new dimensions while maintaining aspect ratio
+            $newWidth = $width;
+            $newHeight = $height;
+    
+            if ($width > $maxWidth || $height > $maxHeight) {
+                $aspectRatio = $width / $height;
+    
+                if ($width > $height) {
+                    $newWidth = $maxWidth;
+                    $newHeight = $maxWidth / $aspectRatio;
+                } else {
+                    $newHeight = $maxHeight;
+                    $newWidth = $maxHeight * $aspectRatio;
+                }
+            }
+            
+            $ffmpegCommand = "LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffmpeg -i {$safeFilePath} -vframes 1 -vf scale={$newWidth}:{$newHeight} -q:v 2 -y {$thumbnailPath} 2>&1";
             exec($ffmpegCommand);
-            //drawErrorPageAndDie("<pre>$output</pre>");  // Display command output and errors
+    
             return $thumbnailPath;
         }
     
