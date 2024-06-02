@@ -34,6 +34,48 @@ function userLoggingOut(){
     $AUTH->clearRole();
 }
 
+function userCreatingBoard(){
+    global $AUTH;
+    if($AUTH->isAdmin() && $AUTH->isSuper()){
+        $name = htmlspecialchars($_POST['boardTitle']);
+        $desc = htmlspecialchars($_POST['boardTitle']);
+        $smallName = htmlspecialchars($_POST['boardURLName']);
+
+        $smallName = str_replace(' ', '', $smallName);
+        $smallName = preg_replace('/\s+/', '', $smallName);
+
+        if (empty($name)) {
+            drawErrorPageAndDie("Board title is required.");
+        }
+        if (empty($desc)) {
+            drawErrorPageAndDie("Board description is required.");
+        }
+        if (empty($smallName)) {
+            drawErrorPageAndDie("Board URL name is required.");
+        }
+
+        $isUnlisted = isset($_POST['boardUnlisted']);
+        $board = createBoard($name, $desc, $smallName, $isUnlisted);
+        return $board;
+    }
+    drawErrorPageAndDie("you are not authorized.");
+    return null;
+}
+
+function userDeletingBoard(){
+    global $AUTH;
+    if($AUTH->isAdmin() && $AUTH->isSuper()){
+        $boardID = $_POST['boardList']; 
+        if(!is_numeric($boardID)){
+            drawErrorPageAndDie("invalid board id? how?");
+        }
+        deleteBoardByID($boardID);
+        return;
+    }
+    drawErrorPageAndDie("you are not authorized.");
+    return;
+}
+
 function banByIP(){
 
 }
@@ -67,7 +109,15 @@ if(isset($_POST['action'])){
             userLoggingIn();
             redirectToAdmin($board);
 			break;
-
+        case 'createBoard':
+            $board = userCreatingBoard();
+            redirectToAdmin($board);
+            break;
+        case 'deleteBoard':
+            userDeletingBoard();
+            global $board;
+            redirectToAdmin($board);
+            break;
 		default:
 			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
 			drawErrorPageAndDie("invalid action: " . $stripedInput);

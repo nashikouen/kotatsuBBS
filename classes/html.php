@@ -4,6 +4,8 @@
  * this file might look weird in your editor. i am using vscode and the logic lines up with the html.
  * this is to help make it more understandable where the logic is being apply to.
  * 
+ * sorry you have to hunt down the functions to change peices. luckly most have comments in html of witch function was used to make peices.
+ * 
  */
 
 require_once __DIR__ .'/hook.php';
@@ -500,6 +502,7 @@ class htmlclass {
         $this->html .='
         <!--drawFormCreateBoard()-->
         <center class="adminForm">
+        <h3><b>Create board form</b></h3>
         <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="createBoard">
             <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
@@ -534,6 +537,7 @@ class htmlclass {
         $this->html .= '
         <!--drawFormDeleteBoard()-->
         <center class="adminForm">
+        <h3><b>Delete board form</b></h3>
         <form method="post" action="' . ROOTPATH . 'admin.php">
             <input type="hidden" name="action" value="deleteBoard">
             <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
@@ -551,12 +555,10 @@ class htmlclass {
                     </select>
                 </td>
                 <td><button type="submit">Delete Board</button></td>
-
             </tr>
             </table>
         </form>
         </center>';
-
     }
     private function drawFormExportDatabase(){
 
@@ -581,13 +583,14 @@ class htmlclass {
     /* drawBase is the defualt templet that all pages will be built from unless specifies else wize */
     private function drawBase(array $functions){
         global $AUTH;
+        global $board;
         $this->html .='
         <!DOCTYPE html>
         <html lang="en-US">';
         $this->drawHead();
         $this->html .= '<body><div id="top"></div>';
         $this->drawNavBar();
-        if($AUTH->isNotAuth() == false){
+        if($AUTH->isAuth($board->getBoardID())){
             $this->drawAdminBar();
         }
         $this->drawBoardTitle();
