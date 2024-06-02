@@ -33,6 +33,13 @@ function userLoggingOut(){
     global $AUTH;
     $AUTH->clearRole();
 }
+
+function banByIP(){
+
+}
+
+
+
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
 /*
  *  exit if we are not authenticated.
@@ -60,6 +67,7 @@ if(isset($_POST['action'])){
             userLoggingIn();
             redirectToAdmin($board);
 			break;
+
 		default:
 			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
 			drawErrorPageAndDie("invalid action: " . $stripedInput);
@@ -72,6 +80,14 @@ if(isset($_POST['action'])){
             //userLoggingOut();
             //redirectToBoard($board);
 			break;
+        case 'editPost':
+            //userLoggingIn();
+            //redirectToAdmin($board);
+            break;
+        case 'banPost':
+            //userLoggingIn();
+            //redirectToAdmin($board);
+            break;
 		default:
 			$stripedInput = htmlspecialchars($_GET['action'], ENT_QUOTES, 'UTF-8');
 			drawErrorPageAndDie("invalid action: " . $stripedInput);

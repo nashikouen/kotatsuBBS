@@ -419,6 +419,60 @@ class htmlclass {
         }
         $this->html .='</div>';
     }
+    
+    /* these functions below belong to admin useage */
+    private function drawAdminBar($drawThreading=true){
+        // this bar is the bard you see that will be at the top when you are logged in.
+        global $AUTH;
+        $this->html .='
+        <!--drawAdminBar()-->';
+        if($drawThreading == true){
+            $this->html .='<center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>';
+        }
+        $this->html .='
+        <div class="adminbar">';
+            $this->drawLogOutForm();
+            $this->html .='[<a href="'.ROOTPATH.'admin/postListing" >admin post view</a>]
+        </div>';
+    }
+    private function drawPostIP($post){
+        global $AUTH;
+        $ip = $post->getIP();
+        $ipParts = explode('.', $ip);
+        if(!$AUTH->isAdmin($post->getBoardID())){
+            if (count($ipParts) == 4) {
+                $ip = $ipParts[0] . '.' . $ipParts[1] . '.***.***';
+            } else {
+                $ip = 'Invalid IP';
+            }
+        }
+        $this->html .= 
+        '<span>
+            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/byIP/'.$post->getPostID().'">'.$ip.'</a>]
+        </span>';
+    }
+    private function drawBanButton($post){
+        $this->html .= 
+        '<span>
+            [<a class="banButton" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/ban/'.$post->getPostID().'">ban</a>]
+        </span>';
+    }
+    private function drawEditButton($post){
+        $this->html .= 
+        '<span>
+            [<a class="editButton" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/edit/'.$post->getPostID().'">edit</a>]
+        </span>';
+    }
+    private function drawAdminViewPost($post){
+        // this is what gets attached to every post when you are logged in
+        $this->html .= '
+        <!--drawAdminViewPost($post)-->
+        <div class="adminView">';
+        $this->drawPostIP($post);
+        $this->drawEditButton($post);
+        $this->drawBanButton($post);
+        $this->html .= '</div><br>';
+    }
     private function drawLoginForm() {
         $this->html .='
         <!--drawLoginForm()-->
@@ -440,39 +494,90 @@ class htmlclass {
             [<button type="submit" class="hyperButton">Logout</button>]
         </form>';
     }
-    private function drawPostIP($post){
-        global $AUTH;
-        $ip = $post->getIP();
-        $ipParts = explode('.', $ip);
-        if(!$AUTH->isAdmin($post->getBoardID())){
-            if (count($ipParts) == 4) {
-                $ip = $ipParts[0] . '.' . $ipParts[1] . '.***.***';
-            } else {
-                $ip = 'Invalid IP';
-            }
-        }
-        $this->html .= 
-        '<span>
-            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/listByIP/'.$post->getPostID().'">'.$ip.'</a>]
-        </span>';
-    }
-    private function drawAdminViewPost($post){
-        $this->html .= '
-        <!--drawAdminViewPost($post)-->
-        <div class="adminView">';
-        $this->drawPostIP($post);
-        $this->html .= '</div>';
-    }
-    private function drawAdminBar(){
-        global $AUTH;
+
+
+    private function drawFormCreateBoard(){
         $this->html .='
-        <!--drawAdminBar()-->
-        <center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>
-        <div class="adminbar">';
-            $this->drawLogOutForm();
-            $this->html .='
-        </div>';
+        <!--drawFormCreateBoard()-->
+        <center class="adminForm">
+        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="createBoard">
+            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <table>
+            <tr>
+                <td class="accent"><label for="boardURLName">BOARD URL NAME</label></td>
+                <td><input type="text" id="boardURLName" name="boardURLName" maxlength="'.MAX_INPUT_LENGTH.'"></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="boardTitle">BOARD TITLE</label></td>
+                <td><input type="text" id="boardTitle" name="boardTitle" maxlength="'.MAX_INPUT_LENGTH.'">
+                    <button type="submit">Create Board</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="boardDescription">BOARD DESCRIPTION</label></td>
+                <td><textarea type="text" id="boardDescription" name="boardDescription" cols="48" rows="4" maxlength="'.MAX_INPUT_LENGTH.'"></textarea></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="boardUnlisted">IS UNLISTED</label></td>
+                <td><input type="checkbox" id="boardUnlisted" name="boardUnlisted" checked></td>
+            </tr>
+            </table>
+        </form>
+        </center>';
     }
+    private function drawFormDeleteBoard(){
+        // Assuming you have a method to get all boards
+        $boardConfs = getAllBoardConfs();
+        $currentBoardID = $this->board->getBoardID();
+
+        $this->html .= '
+        <!--drawFormDeleteBoard()-->
+        <center class="adminForm">
+        <form method="post" action="' . ROOTPATH . 'admin.php">
+            <input type="hidden" name="action" value="deleteBoard">
+            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <table>
+            <tr>
+                <td class="accent"><label for="boardList">SELECT BOARD TO DELETE</label></td>
+                <td>
+                    <select id="boardList" name="boardList">';
+                        // Add options for each board
+                        foreach ($boardConfs as $boardConf) {
+                            $selected = ($boardConf['boardID'] == $currentBoardID) ? ' selected' : '';
+                            $this->html .= '<option value="' . $boardConf['boardID'] . '"' . $selected . '>' . $boardConf['boardNameID'] . '</option>';
+                        }
+                        $this->html .= '
+                    </select>
+                </td>
+                <td><button type="submit">Delete Board</button></td>
+
+            </tr>
+            </table>
+        </form>
+        </center>';
+
+    }
+    private function drawFormExportDatabase(){
+
+    }
+    private function drawFormPremoteUser(){
+
+    }
+    private function drawFormDemoteUser(){
+
+    }
+    private function drawFormChangeBoardSettings(){
+
+    }
+    private function drawFormManageBans(){
+
+    }
+    private function drawAdminPostListing(){
+
+    }
+
+
     /* drawBase is the defualt templet that all pages will be built from unless specifies else wize */
     private function drawBase(array $functions){
         global $AUTH;
@@ -536,10 +641,41 @@ class htmlclass {
 
         echo $this->html;
     }
+
+
+    public function drawBanUserPage(){
+
+    }
+    public function drawEditPostPage($post){
+        
+    }
+    public function drawAdminPostListingPage(){
+
+    }
+
+
     public function drawAdminPage(){
-        $functions = [
-            
-        ];
+        global $AUTH;
+        $this->html .='
+        <!--drawAdminPage()-->';
+
+        $functions = [];
+
+        $id = $this->board->getBoardID();
+        $isAdmin = $AUTH->isAdmin($id);
+        $isSuper = $AUTH->isSuper();
+
+        if($isAdmin){
+            if($isSuper){
+                $functions[] = ['function' => [$this, 'drawFormCreateBoard'], 'params' => []];
+                $functions[] = ['function' => [$this, 'drawFormDeleteBoard'], 'params' => []];
+                $functions[] = ['function' => [$this, 'drawFormExportDatabase'], 'params' => []];
+            }
+            $functions[] = ['function' => [$this, 'drawFormPremoteUser'], 'params' => []];
+            $functions[] = ['function' => [$this, 'drawFormDemoteUser'], 'params' => []];
+            $functions[] = ['function' => [$this, 'drawFormChangeBoardSettings'], 'params' => []];
+        }
+
         $this->drawBase($functions);
 
         echo $this->html;

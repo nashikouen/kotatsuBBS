@@ -36,6 +36,19 @@ function getBoardListing(){
 	}
 	return $listing;
 }
+function getAllBoardConfs(){
+	$files = glob(__DIR__ . '/../boardConfigs/*.php');
+	$listing = [];
+
+	foreach($files as $file){
+		$conf = include($file);
+		if($conf['boardID'] == -1 ){
+			continue;
+		}
+		$listing[] =  $conf;
+	}
+	return $listing;
+}
 function getBoardConfByID($id){
     $files = glob(__DIR__ . '/../boardConfigs/*.php');
 
