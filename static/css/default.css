@@ -22,6 +22,10 @@ body {
 }
 .adminbar{
     display: flex;
+    flex-wrap: wrap;
+}
+.unlistedBoards{
+	flex-basis: 100%; 
 }
 .boardTitle{
 	text-align: center;	

@@ -38,7 +38,7 @@ function userCreatingBoard(){
     global $AUTH;
     if($AUTH->isAdmin() && $AUTH->isSuper()){
         $name = htmlspecialchars($_POST['boardTitle']);
-        $desc = htmlspecialchars($_POST['boardTitle']);
+        $desc = htmlspecialchars($_POST['boardDescription']);
         $smallName = htmlspecialchars($_POST['boardURLName']);
 
         $smallName = str_replace(' ', '', $smallName);

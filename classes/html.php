@@ -423,16 +423,24 @@ class htmlclass {
     }
     
     /* these functions below belong to admin useage */
-    private function drawAdminBar($drawThreading=true){
+    private function drawAdminBar(){
         // this bar is the bard you see that will be at the top when you are logged in.
         global $AUTH;
         $this->html .='
         <!--drawAdminBar()-->';
-        if($drawThreading == true){
-            $this->html .='<center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>';
-        }
+        $this->html .='<center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>';
         $this->html .='
         <div class="adminbar">';
+            if($AUTH->isSuper()){
+                $this->html .='
+                <span class="unlistedBoards">
+                UNLISTED : ';
+                    $this->drawNavGroup(getBoardListing(true));
+                    $this->html .='
+                </span>';
+            } 
+            $this->html .='
+            ACTIONS :&nbsp;';
             $this->drawLogOutForm();
             $this->html .='[<a href="'.ROOTPATH.'admin/postListing" >admin post view</a>]
         </div>';
@@ -554,7 +562,7 @@ class htmlclass {
                         $this->html .= '
                     </select>
                 </td>
-                <td><button type="submit">Delete Board</button></td>
+                <td><details><summary>show delete button</summary><button type="submit">Delete Board</button></td></details>
             </tr>
             </table>
         </form>

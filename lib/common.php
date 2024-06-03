@@ -23,16 +23,21 @@ function boardIDToName($boardID){
     }
     return '';
 }
-function getBoardListing(){
+function getBoardListing($getUnlited=false){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
 	$listing = [];
 
 	foreach($files as $file){
 		$conf = include($file);
-		if($conf['boardID'] == -1 || $conf['unlisted']){
-			continue;
-		}
-		$listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
+		if($conf['boardID'] == -1){
+            continue;
+        }elseif($conf['unlisted'] == true && $getUnlited == true){
+			$listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
+            continue;
+		}elseif($conf['unlisted'] == false && $getUnlited == false){
+            $listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
+            continue;
+        }
 	}
 	return $listing;
 }
