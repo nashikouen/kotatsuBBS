@@ -25,7 +25,7 @@ class FileDataClass {
         $this->threadID = $threadID;
     }
 
-    public function moveToDir($dir,$isImport=false){
+    public function moveToDir($dir){
         // Ensure the directory ends with a slash
         $dir = rtrim($dir, '/') . '/';
 
@@ -33,28 +33,21 @@ class FileDataClass {
         if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
             throw new Exception("Failed to create directory: $dir");
         }
-
-        // Move the main file
+        
         $fileName = basename($this->filePath);
-        if(file_exists($this->filePath) == false){
-            if($isImport){
-                return;
-            }
-            throw new Exception("Failed to find file: " . $this->filePath);
-        }
         $newFilePath = $dir . $fileName;
-        if (!rename($this->filePath, $newFilePath)) {
-            throw new Exception("Failed to move file to $newFilePath");
+        if(is_null($this->filePath) == false && file_exists($this->filePath)){
+            rename($this->filePath, $newFilePath);
+        }else{
+            // LOG!!
         }
 
         $tFileName = "t". pathinfo($this->filePath, PATHINFO_FILENAME) . ".jpg"; 
         $newThumbnailPath = $dir . $tFileName ;
         if(is_null($this->thumnailPath) == false && file_exists($this->thumnailPath)){
             rename($this->thumnailPath, $newThumbnailPath);
-        }else{
-            $newThumbnailPath = "";
         }
-
+        
         // Update the object's file paths
         $this->filePath = $newFilePath;
         $this->thumnailPath = $newThumbnailPath;
