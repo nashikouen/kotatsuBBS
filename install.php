@@ -54,17 +54,17 @@ if(file_exists(__DIR__ . "/conf.php")){
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
 
 			"CREATE TABLE IF NOT EXISTS files (
-				fileID INT AUTO_INCREMENT PRIMARY KEY,
-				postID INT NOT NULL,
-				threadID INT NOT NULL,
-				boardID INT NOT NULL,
+                fileID INT AUTO_INCREMENT PRIMARY KEY,
+                postID INT NOT NULL,
+                threadID INT NOT NULL,
+                boardID INT NOT NULL,
                 fileName VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-				filePath VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                filePath VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 md5 CHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-				FOREIGN KEY (postID) REFERENCES posts(UID) ON DELETE CASCADE ON UPDATE CASCADE,
-				FOREIGN KEY (threadID) REFERENCES threads(threadID) ON DELETE CASCADE ON UPDATE CASCADE,
-				FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+                FOREIGN KEY (postID) REFERENCES posts(postID) ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY (threadID) REFERENCES threads(threadID) ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
 		];
 		// Execute each SQL command
 		foreach ($sqlCommands as $sql) {

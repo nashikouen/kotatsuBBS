@@ -103,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
 
             $opPost->moveFilesToDir($threadDir, true);
             $opPost->addFilesToRepo();
-            if($opPost->getPostID() > $biggestPost){
-                $biggestPost = $post->getPostID();
+            if($threadID > $biggestPost){
+                $biggestPost = $threadID;
             }
             unset($posts[$threadID][$threadID]);
             
@@ -113,8 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
                 $POSTREPO->createPostImport($board->getConf(), $post);
                 $post->moveFilesToDir($threadDir, true);
                 $post->addFilesToRepo();
-                if($post->getPostID() > $biggestPost){
-                    $biggestPost = $post->getPostID();
+                if($postID > $biggestPost){
+                    $biggestPost = $postID;
                 }
             }
         }
