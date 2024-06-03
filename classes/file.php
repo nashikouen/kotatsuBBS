@@ -25,7 +25,7 @@ class FileDataClass {
         $this->threadID = $threadID;
     }
 
-    public function moveToDir($dir){
+    public function moveToDir($dir,$isImport=false){
         // Ensure the directory ends with a slash
         $dir = rtrim($dir, '/') . '/';
 
@@ -36,6 +36,12 @@ class FileDataClass {
 
         // Move the main file
         $fileName = basename($this->filePath);
+        if(file_exists($this->filePath) == false){
+            if($isImport){
+                return;
+            }
+            throw new Exception("Failed to find file: " . $this->filePath);
+        }
         $newFilePath = $dir . $fileName;
         if (!rename($this->filePath, $newFilePath)) {
             throw new Exception("Failed to move file to $newFilePath");

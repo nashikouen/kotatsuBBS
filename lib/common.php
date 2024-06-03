@@ -118,7 +118,13 @@ function drawErrorPageAndDie($txt){
 	<body>
 
 	<div class="postblock">
-		<p>'. $txt .'</p>
+		<p>'; 
+            if(is_array($txt)){
+                print_r($txt);
+            }else{
+                echo($txt);
+            }
+            $html ='</p>
 	</div>
 
 	</body>

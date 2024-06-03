@@ -19,6 +19,7 @@ interface ThreadRepositoryInterface {
 
 interface PostDataRepositoryInterface {
     public function createPost($boardConf, $post);
+    public function createPostImport($boardConf, $post);
     public function loadPostByID($boardConf, $postID);
     public function loadPosts($boardConf);
     public function loadPostsByThreadID($boardConf, $threadID);

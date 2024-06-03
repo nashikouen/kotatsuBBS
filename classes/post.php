@@ -118,9 +118,9 @@ class PostDataClass {
             $FILEREPO->createFile($this->config, $file);
         }
     }
-    public function moveFilesToDir($dir){
+    public function moveFilesToDir($dir,$isImport=false){
         foreach($this->files as $file){
-            $file->moveToDir($dir);
+            $file->moveToDir($dir,$isImport);
         }
     }
     public function getFiles() {

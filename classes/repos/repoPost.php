@@ -81,6 +81,50 @@ class PostRepoClass implements PostDataRepositoryInterface {
             return false;
         }
     }
+    public function createPostImport($boardConf, $post){
+        // Start transaction
+        $this->db->begin_transaction();
+    
+        try {
+            // why is sqli like this...
+            $threadID = $post->getThreadID();
+            $postID = $post->getPostID();
+            $name = $post->getName();
+            $email = $post->getEmail();
+            $sub = $post->getSubject();
+            $comment = $post->getComment();
+            $pass = $post->getPassword();
+            $time = $post->getUnixTime();
+            $ip = $post->getIp();
+            $special = $post->getSpecial();
+    
+            // create post in db
+            $insertQuery = "INSERT INTO posts ( boardID, threadID, postID, name, 
+                                                email, subject, comment, password, 
+                                                postTime, ip, special) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertStmt = $this->db->prepare($insertQuery);
+            $insertStmt->bind_param("iiisssssiss",  $boardConf['boardID'], $threadID, $postID, $name, 
+                                                    $email, $sub, $comment, $pass, 
+                                                    $time, $ip, $special);
+            $insertSuccess = $insertStmt->execute();
+            $insertStmt->close();
+    
+            if (!$insertSuccess) {
+                throw new Exception("Failed to insert new post in post table.");
+            }
+            
+            // comit and update post object.
+            $this->db->commit();
+            
+            return true;
+        } catch (Exception $e) {
+            // Rollback the transaction on error
+            $this->db->rollback();
+            error_log($e->getMessage());
+            drawErrorPageAndDie($e->getMessage());
+            return false;
+        }
+    }
     public function loadPostByID($boardConf, $postID) {
         $stmt = $this->db->prepare("SELECT * FROM posts WHERE boardID = ? and postID = ? ");
         $stmt->bind_param("ii", $boardConf['boardID'], $postID);

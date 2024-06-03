@@ -56,6 +56,7 @@ function userCreatingBoard(){
 
         $isUnlisted = isset($_POST['boardUnlisted']);
         $board = createBoard($name, $desc, $smallName, $isUnlisted);
+        
         return $board;
     }
     drawErrorPageAndDie("you are not authorized.");

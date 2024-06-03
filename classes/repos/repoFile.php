@@ -39,7 +39,7 @@ class FileRepoClass implements FileRepositoryInterface {
         $filePath = $file->getFilePath();
         $fileName = $file->getFileName();
         $md5 = $file->getMD5();
-
+        //drawErrorPageAndDie($boardID .' '. $threadID.' '. $postID.' '. $filePath.' '. $fileName.' '. $md5);
         $insertQuery = "INSERT INTO files (boardID, threadID, postID, filePath, fileName, md5) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($insertQuery);
         $stmt->bind_param("iiisss", $boardID, $threadID, $postID, $filePath, $fileName, $md5);
