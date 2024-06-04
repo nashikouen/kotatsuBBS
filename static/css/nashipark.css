@@ -10,12 +10,7 @@ body {
     font-family: "MS PGothic", IPAMonaPGothic, Monapo, Mona, submona,"saitamaar", sans-serif; 
     font-size: 12pt;
 }
-.hidden {
-    display: none;
-}
-
 /* add separators to page */
-.navBar,
 #mainForm,
 .boardTitle,
 .thread{
@@ -31,7 +26,13 @@ body {
     justify-content: space-between; 
     width: 100%; 
 }
-
+.adminbar{
+    display: flex;
+    flex-wrap: wrap;
+}
+.unlistedBoards{
+	flex-basis: 100%; 
+}
 .boardTitle{
     text-align: center;	
 }
@@ -57,8 +58,27 @@ body {
 .omittedposts {
 	color: #707070;
 }
-
+.thread{
+	display:flow-root
+}
+.post{
+    margin: 2px;
+}
+.post img,
+.post video,
+.post object{
+    margin: 3px;
+    white-space: nowrap;
+    vertical-align: top;
+}
+.postnum a {
+    color: inherit;
+}
+.postnum {
+    text-decoration: underline;
+}
 .reply{
+    display: inline-block;
     margin-left: auto; 
     width: fit-content;
 	background: #fffa96;
@@ -67,26 +87,16 @@ body {
     border-left: 1px solid white;
     border-top: 2px solid white;
     padding: 8px; 
-    margin: 10px;
 }
-.post{
-    display: inline-block;
+.reply:target{
+	background: #fff869;
 }
-.postnum a {
-    color: inherit;
-}
-.postnum {
-    text-decoration: underline;
-}
-
 .name{
     color: #ac5611;
 }
-
 .subject{
     color: #ff8622
 }
-
 .comment {
     word-break: break-word
 }
@@ -94,7 +104,27 @@ body {
 /*
  * section below is things that are not exactly on main listing but still is some where.
  */
-
+.float{
+	float: left;
+}
+.nofloat{
+	float: none;
+}
+.hidden {
+    display: none;
+}
+.inLine{
+	display: inline-block;
+}
+.hyperButton {
+    background: none;
+    border: none;
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
  /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
 .theading,
 .theading2,
@@ -108,11 +138,13 @@ body {
 .theading {
     background-color: #91b74c;
 }
-
 .theading2 {
     background-color: #8ac9d1;
 }
-
 .theading3 {
     background-color: #d09ac6;
 }
+.adminForm{
+    padding: 5px;
+    border-bottom: 1px solid #000;
+ }

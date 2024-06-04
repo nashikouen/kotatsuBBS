@@ -72,11 +72,11 @@ class htmlclass {
         }
         $this->html .= "[";
         foreach ($URLPair as $key => $value) {
-            $this->html .= '<a class="navLink" href="'.$value.'">'.$key.'</a>';
-            $this->html .= "/";
+            $this->html .= ' <a class="navLink" href="'.$value.'">'.$key.'</a>';
+            $this->html .= " /";
         }
         $this->html = substr($this->html, 0, -1);
-        $this->html .= "]";
+        $this->html .= " ]";
     }
     private function drawNavBar(){
         global $HOOK;
