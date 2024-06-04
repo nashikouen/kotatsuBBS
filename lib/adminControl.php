@@ -38,36 +38,52 @@ function createBoard($name, $desc, $smallName, $isUnlisted=true){
     }
     return $board;
 }
+function deleteFilesInThread($thread){
+    $dir = __DIR__."/../threads/".$thread->getThreadID();
+
+    $files = scandir($dir);
+    foreach ($files as $file) {
+        if ($file != '.' && $file != '..') {
+            $filePath = $dir . '/' . $file;
+
+            if (!is_dir($filePath)) {
+                unlink($filePath);
+            }
+        }
+    }
+    rmdir($dir);
+}
 function deleteBoardByID($boardID){
     $BOARDREPO = BoardRepoClass::getInstance();
     $board = $BOARDREPO->loadBoardByID($boardID);
-    unlink($board->getConfPath());
 
+    $threads = $board->getThreads();
+    foreach($threads as $thread){
+        deleteFilesInThread($thread);
+    }
+    unlink($board->getConfPath());
     $BOARDREPO->deleteBoardByID($boardID);
 }
 function deleteThread($thread){
     global $globalConf;
     $THREADREPO = ThreadRepoClass::getInstance();
     $posts = $thread->getPosts();
-    foreach($posts as $post){
-        deletePost($post);
-    }
+    deleteFilesInThread($thread);
     $THREADREPO->deleteThreadByID($thread->getConf(), $thread->getThreadID());
-    $path = __DIR__."/../threads/".$thread->getThreadID();
-    if(file_exists($path)){
-        rmdir($path);
-    }
 }
 function deletePost($post){
-    $POSTREPO = PostRepoClass::getInstance();
-    $conf = $post->getConf();
-    $POSTREPO->deletePostByID($conf, $post->getPostID());
-
     $THREADREPO = ThreadRepoClass::getInstance();
     $thread = $THREADREPO->loadThreadByID($post->getConf(), $post->getThreadID());
     if($post->getPostID() == $thread->getOPPostID()){
         deleteThread($thread);
         return;
+    }else{
+        $conf = $post->getConf();
+        foreach($post->getFiles() as $file){
+            deleteFile($file);
+        }
+        $POSTREPO = PostRepoClass::getInstance();
+        $POSTREPO->deletePostByID($conf, $post->getPostID());
     }
 }
 
@@ -80,8 +96,9 @@ function editPost($boardID, $postID, $newComment){
     $post->setComment($newComment);
     $POSTREPO->updatePost($conf, $post);
 }
-function deleteFile($boardID, $postID, $fileID){
-
+function deleteFile($file){
+    unlink($file->getThumbnailPath());
+    unlink($file->getFilePath());
 }
 
 function moveTreadToNewBoard($orginBoardID, $orginThreadID, $newBoardID){

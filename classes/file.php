@@ -25,7 +25,7 @@ class FileDataClass {
         $this->threadID = $threadID;
     }
 
-    public function moveToDir($dir){
+    public function moveToDir($dir, $isImport=false){
         // Ensure the directory ends with a slash
         $dir = rtrim($dir, '/') . '/';
 

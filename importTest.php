@@ -84,6 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
                 $filePath = 'src/' . $filenameOnDisk . $fileExtension;
                 $fName = $fileName . $fileExtension;
                 $file = new FileDataClass($conf, $filePath ,$fName, $md5chksum);
+
+                // bc koko, you can pick your poison. why cant it be prefixed...
+                if(file_exists(__DIR__ . '/src/' . $filenameOnDisk .'s.jpg')){
+                    $file->setThumnailPath('src/' . $filenameOnDisk .'s.jpg');
+                }elseif(file_exists(__DIR__ . '/src/' . $filenameOnDisk .'s.png')){
+                    $file->setThumnailPath('src/' . $filenameOnDisk .'s.png');
+                }
                 $post->addFile($file);
             }
         }
@@ -134,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
     <h1>import koko</h1>
     <form action="importTest.php" method="post" enctype="multipart/form-data">
         <input type="file" name="log_file" accept=".gz" required>
-        <input type="hidden" name="boardID" value="7">
+        <input type="hidden" name="boardID" value="16">
 
         <input type="submit" value="Upload Log File">
     </form>
