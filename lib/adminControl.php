@@ -67,7 +67,6 @@ function deleteBoardByID($boardID){
 function deleteThread($thread){
     global $globalConf;
     $THREADREPO = ThreadRepoClass::getInstance();
-    $posts = $thread->getPosts();
     deleteFilesInThread($thread);
     $THREADREPO->deleteThreadByID($thread->getConf(), $thread->getThreadID());
 }

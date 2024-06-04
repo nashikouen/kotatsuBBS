@@ -356,6 +356,7 @@ class htmlclass {
     }
     private function drawThread($thread){
         $posts = $thread->getPosts();
+        sortPostsByTimeDesending($posts);
 
         $this->html .='
         <!--drawThread($thread)-->
@@ -373,6 +374,7 @@ class htmlclass {
             // if op post and child has same time. there is a cance they will swap positions on thread listing and 2nd post will just be OP post.
             // maybe make a paramitr for just OP and remove op from the drawing list if it exist?
             $posts = $thread->getLastNPost($this->conf['postPerThreadListing']);
+            sortPostsByTimeDesending($posts);
             $posts[0] = $thread->getPostByID($thread->getOPPostID());
             $omitedPost = $thread->getPostCount() - sizeof($posts);
 

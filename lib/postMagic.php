@@ -191,3 +191,15 @@ function splitTextAtTripcodePass(string $text): array {
 function extractTripCode(string $text): string{
     return "";
 }
+
+function sortPostsByTimeDesending(&$posts){
+    usort($posts, function ($a, $b) {
+        return $a->getUnixTime() - $b->getUnixTime();
+    });
+}
+
+function sortPostsByTimeAesending(&$posts){
+    usort($posts, function ($a, $b) {
+        return $b->getUnixTime() - $a->getUnixTime();
+    });
+}
