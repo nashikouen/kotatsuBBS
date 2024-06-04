@@ -67,6 +67,9 @@ class htmlclass {
     /*drawNavGroup expects a key,value pair. where key is displayname and value is url*/
     private function drawNavGroup($URLPair){
         //this is what i mean by grouping [ webpage1 / webpage2 / webpage3 / etc.. ]
+        if(empty($URLPair)){
+            return;
+        }
         $this->html .= "[";
         foreach ($URLPair as $key => $value) {
             $this->html .= '<a class="navLink" href="'.$value.'">'.$key.'</a>';

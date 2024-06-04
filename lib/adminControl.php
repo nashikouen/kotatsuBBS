@@ -68,12 +68,15 @@ function deleteThread($thread){
     global $globalConf;
     $THREADREPO = ThreadRepoClass::getInstance();
     deleteFilesInThread($thread);
+    foreach($thread->getPosts() as $post){
+        deletePost($post, true);
+    }
     $THREADREPO->deleteThreadByID($thread->getConf(), $thread->getThreadID());
 }
-function deletePost($post){
+function deletePost($post, $isDeletingThread=false){
     $THREADREPO = ThreadRepoClass::getInstance();
     $thread = $THREADREPO->loadThreadByID($post->getConf(), $post->getThreadID());
-    if($post->getPostID() == $thread->getOPPostID()){
+    if($post->getPostID() == $thread->getOPPostID() && $isDeletingThread == false){
         deleteThread($thread);
         return;
     }else{
