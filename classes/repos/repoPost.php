@@ -219,6 +219,7 @@ class PostRepoClass implements PostDataRepositoryInterface {
         $id = $post->getPostID();
         $ip = $post->getIp();
         $special = $post->getSpecial();
+
         $query = "UPDATE posts SET      boardID = ?, threadID = ?, name = ?, email = ?,
                                         subject = ?, comment = ?, password = ?, postTime = ?, 
                                         ip = ?, special = ?
@@ -229,8 +230,12 @@ class PostRepoClass implements PostDataRepositoryInterface {
                                         $sub, $comment, $pass, $time, 
                                         $ip, $special,
                                     $id, $boardConf['boardID']);
+        
         $success = $stmt->execute();
         $stmt->close();
+        if (!$success) {
+            throw new Exception("Failed to update post in post table.");
+        }
         return $success;
     }
     public function setPostID($boardConf, $post, $newPostID) {
