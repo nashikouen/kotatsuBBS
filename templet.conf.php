@@ -45,10 +45,11 @@ return [
     'AUDIO_EXTENTIONS' => ["mp3", "wav", "flac", "ogg"],
 
     /*
-     * its best to keep logs just outside of the web path.
-     * so a place like this. /var/www/logs
-     * this will also atempt to create the logs dir if it dose not exist.
+     * its best to keep logs just outside of the webroot.
+     * it will create a dir called kotatsuLog in the dir below and store its logs there.
+     *      ^^(you might have to make it manualy and give webserver premistions to it)
+     * if you are keeping it in the web root. make sure you hide the logs from web srever.
      */
-    'logDir' => '../logs/',
+    'logDir' => '/var/www/bbsLog/',
 ];
 

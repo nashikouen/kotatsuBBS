@@ -27,6 +27,8 @@ function userLoggingIn(){
      *  try loggin in as what ever user it is.
      */
     $AUTH->setRoleByHash($passHash, $board->getBoardID());
+    logAudit($board, $AUTH->getName() . " has logged in as a " . $AUTH);
+
 }
 
 function userLoggingOut(){
@@ -56,7 +58,9 @@ function userCreatingBoard(){
 
         $isUnlisted = isset($_POST['boardUnlisted']);
         $board = createBoard($name, $desc, $smallName, $isUnlisted);
-        
+
+        logAudit($board, $AUTH->getName() . " has created a board");
+
         return $board;
     }
     drawErrorPageAndDie("you are not authorized.");
@@ -65,14 +69,17 @@ function userCreatingBoard(){
 
 function userDeletingBoard(){
     global $AUTH;
+    global $board;
     if($AUTH->isAdmin() && $AUTH->isSuper()){
         $boardID = $_POST['boardList']; 
         if(!is_numeric($boardID)){
             drawErrorPageAndDie("invalid board id? how?");
         }
+        logAudit($board, $AUTH->getName() . " has deleted a board");
         deleteBoardByID($boardID);
         return;
     }
+    logAudit($board, $AUTH->getName() . " tried to delete a board but is not authorized...");
     drawErrorPageAndDie("you are not authorized.");
     return;
 }

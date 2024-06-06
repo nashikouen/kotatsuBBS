@@ -12,6 +12,7 @@ require_once __DIR__ .'/hook.php';
 require_once __DIR__ .'/repos/repoThread.php';
 require_once __DIR__ .'/../lib/common.php';
 require_once __DIR__ .'/auth.php';
+require_once __DIR__ .'/../lib/logging.php';
 
 $HOOK = HookClass::getInstance();
 $THREADREPO = ThreadRepoClass::getInstance();
@@ -301,6 +302,10 @@ class htmlclass {
         global $AUTH;
         $this->html .= '
         <!--drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0)-->';
+        if(empty($posts)){
+            logError($this->board, "drawPosts() empty array for posts. treadID: ".$thread->getThreadID()." boardID: ".$thread->getBoardID());
+            return;
+        }
         foreach($posts as $post){
             $postID = $post->getPostID();
             $type = "reply";

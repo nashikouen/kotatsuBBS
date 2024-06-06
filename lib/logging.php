@@ -1,34 +1,30 @@
 <?php
 
-$rootDir = __DIR__ ."/../";
-$globalConf = require $rootDir ."/conf.php";
-$loggingDir = $rootDir . $globalConf['logDir'];
+$globalConf = require __DIR__ ."/../conf.php";
+$loggingDir = $globalConf['logDir'] . 'kotatsuLog/';
 
 $auditLogPath = $loggingDir . "audit.log";
 $errorLogPath = $loggingDir . "error.log";
-//$banLogPath = $loggingDir . "ban.log";
-//$globalLogPath = $loggingDir . "globalBan.log";
 
-
-if (file_exists(!$loggingDir)){
+if (!file_exists($loggingDir)){
     mkdir($loggingDir);
 }
 
-foreach([$auditLogPath, $errorLogPath, $banLogPath, $globalLogPath] as $file){
-    if (file_exists(!$dir)){
+foreach([$auditLogPath, $errorLogPath] as $file){
+    if (!file_exists($file)){
         touch($file);
     }
 }
 
-function logError($errorMessage){
+function logError($board, $errorMessage){
     global $errorLogPath;
     $logs = fopen($errorLogPath, 'a');
-    fwrite($logs, "[" . date('Y-m-d H:i:s', time()) . "]" . $errorMessage);
+    fwrite($logs, "[" . date('Y-m-d H:i:s', time()) . "] board: " . boardIDToName($board->getBoardID()) . " boardID: " . $board->getBoardID() . " >> " . $errorMessage."\n");
     fclose($logs);
 }
-function logAudit($auditMessage){
+function logAudit( $board, $auditMessage){
     global $auditLogPath;
     $logs = fopen($auditLogPath, 'a');
-    fwrite($logs, "[" . date('Y-m-d H:i:s', time()) . "]" . $auditMessage);
+    fwrite($logs, "[" . date('Y-m-d H:i:s', time()) . "] board: " . boardIDToName($board->getBoardID()) . " boardID: " . $board->getBoardID() . " >> " . $auditMessage."\n");
     fclose($logs);
 }

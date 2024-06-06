@@ -65,6 +65,10 @@ function getBoardConfByID($id){
 	}
 	return '';
 }
+function getBoardByID($boardID){
+    $BOARDREPO = BoardRepoClass::getInstance();
+    return $BOARDREPO->loadBoardByID($boardID);
+}
 function redirectToPost($post){
     $name = boardIDToName($post->getBoardID());
     $threadID = $post->getThreadID();
