@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
             }
 
             if(empty($md5chksum) == false){
-                $filePath = 'src/' . $filenameOnDisk . $fileExtension;
+                $filePath = __DIR__ . '/src/' . $filenameOnDisk . $fileExtension;
                 $fName = $fileName . $fileExtension;
                 $file = new FileDataClass($conf, $filePath ,$fName, $md5chksum);
 

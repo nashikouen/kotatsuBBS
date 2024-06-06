@@ -33,10 +33,12 @@ class FileRepoClass implements FileRepositoryInterface {
         return $count > 0;
     }
     public function createFile($boardConf, $file) {
+        global $globalConf;
+
         $threadID = $file->getThreadID();
         $boardID = $boardConf['boardID'];
         $postID = $file->getPostID();
-        $filePath = $file->getFilePath();
+        $filePath = str_replace($globalConf['threadsDir'], '', $file->getFilePath());
         $fileName = $file->getFileName();
         $md5 = $file->getMD5();
         //drawErrorPageAndDie($boardID .' '. $threadID.' '. $postID.' '. $filePath.' '. $fileName.' '. $md5);
@@ -50,6 +52,8 @@ class FileRepoClass implements FileRepositoryInterface {
         return true;
     }
     public function loadFilesByPostID($boardConf, $postID) {
+        global $globalConf;
+
         $query = "SELECT * FROM files WHERE boardID = ? and postID = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ii", $boardConf['boardID'], $postID);
@@ -57,13 +61,15 @@ class FileRepoClass implements FileRepositoryInterface {
         $result = $stmt->get_result();
         $files = [];
         while ($row = $result->fetch_assoc()) {
-            $file = new FileDataClass($boardConf, $row['filePath'], $row['fileName'], $row['md5'], $row['fileID'], $row['postID'], $row['threadID']);
+            $file = new FileDataClass($boardConf, $globalConf['threadsDir']. $row['filePath'], $row['fileName'], $row['md5'], $row['fileID'], $row['postID'], $row['threadID']);
             $files[] = $file;
         }
         $stmt->close();
         return $files;
     }
     public function loadFilesByThreadID($boardConf, $threadID) {
+        global $globalConf;
+
         $query = "SELECT * FROM files WHERE boardID = ? and threadID = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ii", $boardConf['boardID'], $threadID);
@@ -71,18 +77,20 @@ class FileRepoClass implements FileRepositoryInterface {
         $result = $stmt->get_result();
         $files = [];
         while ($row = $result->fetch_assoc()) {
-            $file = new FileDataClass($boardConf, $row['filePath'], $row['fileName'], $row['md5'], $row['fileID'], $row['postID'], $row['threadID']);
+            $file = new FileDataClass($boardConf, $globalConf['threadsDir']. $row['filePath'], $row['fileName'], $row['md5'], $row['fileID'], $row['postID'], $row['threadID']);
             $files[] = $file;
         }
         $stmt->close();
         return $files;
     }
     public function updateFile($boardConf, $file) {
+        global $globalConf;
+
         // why is sqli like this...
         $fileID = $file->getFileID();
         $postID = $file->getFileID();
         $threadID = $file->getFileID();
-        $filePath = $file->getFileID();
+        $filePath = str_replace($globalConf['threadsDir'], '', $file->getFilePath());
         $fileName = $file->getFileID();
         $md5 = $file->getFileID();
         $query = "UPDATE files SET      boardID = ?, threadID = ?, postID = ?, filePath = ?,

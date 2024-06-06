@@ -16,6 +16,12 @@ return [
         'databaseName' => 'boarddb', 
     ],
 
+    /*
+     *  file object will be stored relitive to threads dir in the project.
+     *  you should give the absolute path to the threads folder here.
+     *  openbsd guys are /htdocs/kotatsuBBS/threads/
+     */
+    'threadsDir' => '/var/www/html/kotatsuBBS/threads/',
     /* this is how long a log in session last for. (1 hour) */
     'sessionLifeTime' => 3600,
     'memoryLimit' => '128M',    // the ammount of memeory kotatsu can use 
@@ -24,7 +30,10 @@ return [
     // the salt for a site wide secure tripcode and logging in. [note] this code below will be evaluated and saved apon install.
     'tripcodeSalt' => substr(str_replace('+', '.', base64_encode(random_bytes(6))), 0, 8), 
     
-    /* these list will hold a list of authed users, format would look like this [[hash, name], [hash, name]] */
+    /* 
+     * these list will hold a list of authed users, format would look like this [[hash, name], [hash, name]] 
+     * these use the secure tripcode hash for names.      
+     */
     'janitorHashes' => [],      // list of janitor hashes
     'moderatorHashes' => [],    // list of moderator hashes
     'adminHashes' => [],        // board owner hashes
