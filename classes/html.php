@@ -370,7 +370,7 @@ class htmlclass {
         <!--drawThread($thread)-->
         <div id="t'.$thread->getThreadID().'" class="thread">';
             if($thread->getStatus() == "archived"){
-                $this->html .='<center><h2 class="archived">this thread is archived</h2></center>';
+                $this->html .='<div class="archived">this thread is archived</div>';
             }
             $this->drawPosts($thread, $posts);
             $this->html .='
@@ -479,7 +479,7 @@ class htmlclass {
         }
         $this->html .= 
         '<span>
-            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/byIP/'.$post->getPostID().'">'.$ip.'</a>]
+            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/postListing/byIP/'.$post->getPostID().'">'.$ip.'</a>]
         </span>';
     }
     private function drawBanButton($post){

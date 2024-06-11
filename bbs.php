@@ -284,7 +284,7 @@ elseif(isset($_POST['action'])){
 }
 /*----------no action recived----------*/
 else{
-	$page = $_GET['page'] ?? $_POST['page'] ?? 0;
+	$page = $_GET['page'] ?? $_POST['page'] ?? 1;
 	if (!is_numeric($page)) {
 		drawErrorPageAndDie("invalid page");
 	}

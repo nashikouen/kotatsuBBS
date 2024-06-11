@@ -125,6 +125,14 @@ body {
     padding: 0;
     font: inherit;
 }
+.archived{
+    color: red;
+    text-align: center;
+    font-size: 30px;
+}
+.warning {
+    color: #f00;
+}
  /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
 .theading,
 .theading2,
