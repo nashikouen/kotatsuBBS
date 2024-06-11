@@ -370,7 +370,7 @@ class htmlclass {
         <!--drawThread($thread)-->
         <div id="t'.$thread->getThreadID().'" class="thread">';
             if($thread->getStatus() == "archived"){
-                $this->html .='<h2 class="archived">this thread is archived</h2>';
+                $this->html .='<center><h2 class="archived">this thread is archived</h2></center>';
             }
             $this->drawPosts($thread, $posts);
             $this->html .='
@@ -406,18 +406,20 @@ class htmlclass {
             $threadCount = $this->conf['maxActiveThreads'];
         }
         
-        $pages = floor($threadCount / $maxThreadsPerPage);
+        $pages = ceil($threadCount / $maxThreadsPerPage);
+
         $this->html .='
         <!--drawPageNumbers($curentPage)-->
         <div class="pages">';
-        if($curentPage > 0){
+        if($curentPage > 1){
             $this->html .='
-            <a href="/'. $this->conf['boardNameID'] .'/'. 0 .'">&lt;&lt;</a>
+            <a href="/'. $this->conf['boardNameID'] .'/'. 1 .'">&lt;&lt;</a>
             [
             <a href="/'. $this->conf['boardNameID'] .'/'.$curentPage - 1 .'">back</a>
             ]';
         }
-        for($i = 0; $i <=$pages ; $i++){
+
+        for($i = 1; $i <=$pages ; $i++){
             if ($curentPage == $i){
                 $this->html .='
                 [
@@ -430,6 +432,7 @@ class htmlclass {
                 ]';
             }
         }
+        
         if($curentPage < $pages){
             $this->html .='
             [
@@ -650,16 +653,17 @@ class htmlclass {
         echo $this->html;
 
     }
-    public function drawThreadListingPage($pageNumber = 0){
+    public function drawThreadListingPage($pageNumber = 1){
         global $THREADREPO;
 
         $maxPage = ceil($this->conf['maxActiveThreads'] / $this->conf['threadsPerPage']);
-        if($pageNumber > $maxPage){
+        if($pageNumber -1 >= $maxPage || $pageNumber == 0){
             echo $this->draw404("invalid page number");
             return;
         }
 
-        $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber);
+        // as the threads start at 0 but drawing starts at page 1
+        $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber -1);
 
         $drawThreadListingWraped = function($threads){
             $this->postManagerWraper([$this, 'drawThreadListing'], [$threads]);
