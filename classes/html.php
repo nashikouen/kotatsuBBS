@@ -146,7 +146,7 @@ class htmlclass {
             </table>
         </form>';
     }
-    private function drawMainFormBody($buttonText){
+    private function drawMainFormBody($buttonText,$isThread=false){
         global $AUTH;
         global $board;
         $this->html .= '
@@ -154,27 +154,54 @@ class htmlclass {
         <table>
         <tr>
             <td class="accent"><label for="name">Name</label></td>
-            <td><input type="text" id="name" name="name" maxlength="'.MAX_INPUT_LENGTH.'"></td>
+            <td><input type="text" id="name" name="name" maxlength="'.MAX_INPUT_LENGTH.'" ';
+            if($this->conf['requireName']){
+                $this->html .= 'required';
+            }
+            $this->html .= 
+            '></td>
         </tr>
         <tr>
             <td class="accent"><label for="email">Email</label></td>
             <td>
-                <input type="text" id="email" name="email" maxlength="'.MAX_INPUT_LENGTH.'">
+                <input type="text" id="email" name="email" maxlength="'.MAX_INPUT_LENGTH.'" ';
+            if($this->conf['requireEmail']){
+                $this->html .= 'required';
+            }
+            $this->html .= 
+            '">
             </td>
         </tr>
         <tr>
             <td class="accent"><label for="subject">Subject</label></td>
-	        <td><input type="text" id="subject" name="subject" maxlength="'.MAX_INPUT_LENGTH.'">
+	        <td><input type="text" id="subject" name="subject" maxlength="'.MAX_INPUT_LENGTH.'" ';
+            if($this->conf['requireSubject']){
+                $this->html .= 'required';
+            }
+            $this->html .= 
+            '>
 	            <button type="submit">'.$buttonText.'</button>
 	        </td>
         </tr>
         <tr>
             <td class="accent"><label for="comment">Comment</label></td>
-            <td><textarea type="text" id="comment" name="comment" cols="48" rows="4" maxlength="'.$this->conf['maxCommentSize'].'"></textarea></td>
+            <td><textarea type="text" id="comment" name="comment" cols="48" rows="4" maxlength="'.$this->conf['maxCommentSize'].'" ';
+            if($this->conf['requireComment']){
+                $this->html .= 'required';
+            }
+            $this->html .= 
+            '></textarea></td>
         </tr>
         <tr>
             <td class="accent"><label for="files">Files</label></td>
-            <td><input type="file" name="upfile[]" multiple></td>
+            <td><input type="file" name="upfile[]" multiple=""  ';
+            if($this->conf['requireFile']){
+                $this->html .= 'required';
+            }elseif($isThread && $this->conf['opMustHaveFile']){
+                $this->html .= 'required';
+            }
+            $this->html .= 
+            '></td>
         </tr>
         <tr>
             <td class="accent"><label for="password">Password</label></td>
@@ -197,7 +224,7 @@ class htmlclass {
             <form id="formThread" action="'.ROOTPATH.'bbs.php" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postNewThread">
             <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">';
-            $this->drawMainFormBody("New Thread");
+            $this->drawMainFormBody("New Thread", true);
             $this->html .= '
             </form>
         </center>';
