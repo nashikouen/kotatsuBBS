@@ -38,8 +38,9 @@ function createBoard($name, $desc, $smallName, $isUnlisted=true){
     }
     return $board;
 }
-function deleteFilesInThread($thread){
-    $dir = __DIR__."/../threads/".$thread->getThreadID();
+
+function deleteFilesInThreadByID($id){
+    $dir = __DIR__."/../threads/".$id;
 
     $files = scandir($dir);
     foreach ($files as $file) {
@@ -59,7 +60,7 @@ function deleteBoardByID($boardID){
 
     $threads = $board->getThreads();
     foreach($threads as $thread){
-        deleteFilesInThread($thread);
+        deleteFilesInThreadByID($thread->getThreadID());
     }
     unlink($board->getConfPath());
     $BOARDREPO->deleteBoardByID($boardID);
@@ -67,7 +68,7 @@ function deleteBoardByID($boardID){
 function deleteThread($thread){
     global $globalConf;
     $THREADREPO = ThreadRepoClass::getInstance();
-    deleteFilesInThread($thread);
+    deleteFilesInThreadByID($thread->getThreadID());
     foreach($thread->getPosts() as $post){
         deletePost($post, true);
     }

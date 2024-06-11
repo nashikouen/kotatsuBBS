@@ -8,6 +8,7 @@ require_once __DIR__ .'/repos/repoPost.php';
 class threadClass{
 	private $conf;
 	private $posts = [];
+    private $status = 'active';
     private $lastPosts = []; //flipped array. last post is first index
     private $threadID;
     private $lastBumpTime;
@@ -16,11 +17,12 @@ class threadClass{
     private $isPostsFullyLoaded=false;
     private $isPostCountFullyLoaded=false;
 	private $postRepo;
-	public function __construct($conf, $lastBumpTime, $threadID = -1, $OPPostID = -1){
+	public function __construct($conf, $lastBumpTime, $threadID = -1, $OPPostID = -1, $status = 'active'){
 		$this->conf = $conf;
         $this->threadID = $threadID;
         $this->lastBumpTime = $lastBumpTime;
         $this->OPPostID = $OPPostID;
+        $this->status = $status;
 		$this->postRepo = PostRepoClass::getInstance();
 	}
     public function bump(){
@@ -37,6 +39,9 @@ class threadClass{
     }
     public function getThreadID(){
         return $this->threadID;
+    }
+    public function getStatus(){
+        return $this->status;
     }
     public function getBoardID(){
         return $this->conf['boardID'];

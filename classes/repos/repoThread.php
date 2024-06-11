@@ -63,7 +63,7 @@ class ThreadRepoClass implements ThreadRepositoryInterface {
         $stmt->execute();
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
-            $thread = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID']);
+            $thread = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID'], $row['status']);
             $stmt->close();
             return $thread;
         } else {
@@ -78,7 +78,7 @@ class ThreadRepoClass implements ThreadRepositoryInterface {
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
-            $threads[] = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID']);
+            $threads[] = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID'], $row['status']);
         }
         $stmt->close();
         return $threads;
@@ -93,7 +93,7 @@ class ThreadRepoClass implements ThreadRepositoryInterface {
         $result = $stmt->get_result();
 
         while ($row = $result->fetch_assoc()) {
-            $threads[] = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID']);
+            $threads[] = new threadClass($boardConf, $row['lastTimePosted'], $row['threadID'], $row['opPostID'], $row['status']);
         }
 
         $stmt->close();
@@ -122,12 +122,51 @@ class ThreadRepoClass implements ThreadRepositoryInterface {
         $stmt->close();
         return $success;
     }  
-    public function deleteThreadByID($boardConf, $threadID) {
-        $stmt = $this->db->prepare("DELETE FROM threads WHERE boardID = ? AND threadID = ?");
-        $stmt->bind_param("ii", $boardConf['boardID'], $threadID);
+    public function deleteThreadByID($boardConf, $threadIDs) {
+        if (!is_array($threadIDs)) {
+            $threadIDs = [$threadIDs]; // Convert to array if single ID is passed
+        }
+
+        $placeholders = implode(',', array_fill(0, count($threadIDs), '?'));
+        $query = "DELETE FROM threads WHERE boardID = ? AND threadID IN ($placeholders)";
+        $stmt = $this->db->prepare($query);
+        $types = str_repeat('i', count($threadIDs) + 1);
+        $params = array_merge([$boardConf['boardID']], $threadIDs);
+        $stmt->bind_param($types, ...$params);
         $success = $stmt->execute();
         $stmt->close();
         return $success;
     }
+
+    public function fetchThreadIDsForDeletion($boardConf, $offset) {
+        $sql = "SELECT threadID FROM threads WHERE boardID = ? ORDER BY lastTimePosted DESC LIMIT 1000 OFFSET ". intval($offset);
+        $stmt = $this->db->prepare($sql);    
+        $stmt->bind_param('i', $boardConf['boardID']);
+        $stmt->execute();
     
+        $result = $stmt->get_result();
+        $threadIds = $result->fetch_all(MYSQLI_NUM);
+        $threadIds = array_column($threadIds, 0); // Flatten the array of arrays
+        $stmt->close();
+        return $threadIds;
+    }
+
+    public function archiveOldThreads($boardConf, $maxActiveThreads) {
+        // SQL query to mark threads as archived beyond the specified number of active threads
+        $sql = "UPDATE threads SET status = 'archived' WHERE boardID = ? AND threadID NOT IN (
+            SELECT threadID FROM (
+                SELECT threadID FROM threads 
+                WHERE boardID = ? AND status = 'active' 
+                ORDER BY lastTimePosted DESC 
+                LIMIT ?
+            ) AS subquery
+        )";
+        $stmt = $this->db->prepare($sql);
+            
+        $stmt->bind_param('iii', $boardConf['boardID'], $boardConf['boardID'], $maxActiveThreads);
+        $success = $stmt->execute();
+        $stmt->close();
+        
+        return $success;
+    }
 }

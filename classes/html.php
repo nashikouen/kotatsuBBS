@@ -369,6 +369,9 @@ class htmlclass {
         $this->html .='
         <!--drawThread($thread)-->
         <div id="t'.$thread->getThreadID().'" class="thread">';
+            if($thread->getStatus() == "archived"){
+                $this->html .='<h2 class="archived">this thread is archived</h2>';
+            }
             $this->drawPosts($thread, $posts);
             $this->html .='
         </div>';
@@ -395,8 +398,13 @@ class htmlclass {
     }
     private function drawPageNumbers($curentPage){
         global $THREADREPO;
-        $threadCount = $THREADREPO->getThreadCount($this->conf);
+
         $maxThreadsPerPage = $this->conf['threadsPerPage'];
+        $threadCount = $THREADREPO->getThreadCount($this->conf);
+
+        if($threadCount >= $this->conf['maxActiveThreads']){
+            $threadCount = $this->conf['maxActiveThreads'];
+        }
         
         $pages = floor($threadCount / $maxThreadsPerPage);
         $this->html .='
@@ -624,8 +632,33 @@ class htmlclass {
             $this->drawFooter();
         }
     }
+
+    public function draw404($text){
+        header("HTTP/1.1 404 Not Found");
+
+        $functions = [
+            ['function' => function() use ($text) {
+                $this->html .="
+                <center><h1>404 page not found</h1>
+                <h4>$text</h4></center>";
+            }, 'params' => []],
+    
+            ['function' => [$this, 'drawPageNumbers'], 'params' => [-1]]
+        ];
+        $this->drawBase($functions);
+
+        echo $this->html;
+
+    }
     public function drawThreadListingPage($pageNumber = 0){
         global $THREADREPO;
+
+        $maxPage = ceil($this->conf['maxActiveThreads'] / $this->conf['threadsPerPage']);
+        if($pageNumber > $maxPage){
+            echo $this->draw404("invalid page number");
+            return;
+        }
+
         $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber);
 
         $drawThreadListingWraped = function($threads){

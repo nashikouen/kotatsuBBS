@@ -138,7 +138,13 @@ function userPostNewPostToThread($board){
 	global $THREADREPO;
 
 	// load existing thread
-	$thread = $board->getThreadByID($_POST['threadID']);	
+	$thread = $board->getThreadByID($_POST['threadID']);
+    if(is_null($thread)){
+        drawErrorPageAndDie("the thread you are replying to dose not exist");
+    }
+    if($thread->getStatus() == 'archived'){
+        drawErrorPageAndDie("you cant reply to a archived thread");
+    }
 
 	// create post to thread
 	$post = genUserPostFromRequest($conf, $thread);
@@ -158,6 +164,7 @@ function userPostNewPostToThread($board){
     $threadDir = __DIR__ . "/threads/". $thread->getThreadID();
     $post->moveFilesToDir($threadDir);
     $post->addFilesToRepo();
+    $board->prune();
 
 	return $post;
 }
@@ -184,6 +191,7 @@ function userPostNewThread($board){
     mkdir($threadDir);
     $post->moveFilesToDir($threadDir);
     $post->addFilesToRepo();
+    $board->prune();
 
 	return $thread;
 }

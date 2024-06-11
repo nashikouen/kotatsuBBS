@@ -47,6 +47,24 @@ class boardClass{
 	public function getBoardID(){
 		return $this->boardID;
 	}
+    public function prune(){
+        $maxActiveThreads = $this->conf['maxActiveThreads'];
+        $maxArchivedThreads = $this->conf['maxArchivedThreads'];
+        $totalAllowedThreads = $maxActiveThreads + $maxArchivedThreads;
+
+        $THREADREPO = ThreadRepoClass::getInstance();
+        $count = $THREADREPO->getThreadCount($this->conf);
+
+        if($count > $totalAllowedThreads){
+            $threadIDs = $THREADREPO->fetchThreadIDsForDeletion($this->conf, $totalAllowedThreads);
+            $THREADREPO->deleteThreadByID($this->conf, $threadIDs);
+            foreach($threadIDs as $threadID){
+                deleteFilesInThreadByID($threadID);
+            }
+        }
+        $THREADREPO->archiveOldThreads($this->conf,$maxActiveThreads);
+        
+    }
 	public function setBoardID($boardID){
 		$this->boardID = $boardID;
 		$this->conf['boardID'] = $boardID;

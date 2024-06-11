@@ -15,6 +15,8 @@ interface ThreadRepositoryInterface {
     public function loadThreadsByPage($boardConf, $page);
     public function updateThread($boardConf, $thread);
     public function deleteThreadByID($boardCon, $threadID);
+    public function archiveOldThreads($boardConf, $maxActiveThreads);
+    public function fetchThreadIDsForDeletion($boardConf, $offset);
 }
 
 interface PostDataRepositoryInterface {
