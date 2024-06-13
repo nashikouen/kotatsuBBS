@@ -4,6 +4,7 @@ include __DIR__ .'/includes.php';
 
 require_once __DIR__ .'/classes/html.php';
 require_once __DIR__ .'/classes/auth.php';
+require_once __DIR__ .'/classes/repos/repoPost.php';
 
 require_once __DIR__ .'/lib/common.php';
 require_once __DIR__ .'/lib/adminControl.php';
@@ -84,7 +85,7 @@ function userDeletingBoard(){
     return;
 }
 
-function banByIP(){
+function banPost(){
 
 }
 
@@ -123,8 +124,11 @@ if(isset($_POST['action'])){
             break;
         case 'deleteBoard':
             userDeletingBoard();
-            global $board;
             redirectToAdmin($board);
+            break;
+        case 'banPost':
+            banPost();
+            redirectToBoard($board);
             break;
 		default:
 			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
@@ -143,9 +147,17 @@ if(isset($_POST['action'])){
             //redirectToAdmin($board);
             break;
         case 'banPost':
-            //userLoggingIn();
-            //redirectToAdmin($board);
-            break;
+            $postID = $_GET['postID'];
+            if(is_numeric($postID) == false){
+                drawErrorPageAndDie("not a valid post id");
+            }
+            $POSTREPO = PostRepoClass::getInstance();
+            $post = $POSTREPO->loadPostByID($board->getConf(),$postID);
+            if(is_null($post)){
+                drawErrorPageAndDie("can not find post");
+            }
+            $boardHtml->drawBanUserPage($post);
+            return;
 		default:
 			$stripedInput = htmlspecialchars($_GET['action'], ENT_QUOTES, 'UTF-8');
 			drawErrorPageAndDie("invalid action: " . $stripedInput);

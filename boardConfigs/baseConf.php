@@ -80,5 +80,9 @@ return [
     'allowQuoteLinking'=> true,     // allow quoting a postid to create a hyperlink to the post
     'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks
 
+    'allowModsToSeeIPs' => false,
+    'banMessage' => "(USER WAS BANNED FOR THIS POST)",
+    'defaultBanTime' => "1d",
+
     'drawFooter' => true,
 ];

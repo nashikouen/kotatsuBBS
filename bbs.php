@@ -164,7 +164,6 @@ function userPostNewPostToThread($board){
     $threadDir = __DIR__ . "/threads/". $thread->getThreadID();
     $post->moveFilesToDir($threadDir);
     $post->addFilesToRepo();
-    $board->prune();
 
 	return $post;
 }

@@ -33,7 +33,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 				UID INT AUTO_INCREMENT PRIMARY KEY,
 				postID INT NOT NULL,
 				boardID INT NOT NULL,
-				threadID INT NULL,  -- Temporarily remove the NOT NULL constraint
+				threadID INT NULL,
 				password VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 				name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 				email VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
@@ -64,6 +64,42 @@ if(file_exists(__DIR__ . "/conf.php")){
                 md5 CHAR(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 FOREIGN KEY (threadID) REFERENCES threads(threadID) ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            "CREATE TABLE IF NOT EXISTS ipBans (
+                banID INT AUTO_INCREMENT PRIMARY KEY,
+                ipAddress VARCHAR(45),
+                ipStart VARCHAR(45),
+                ipEnd VARCHAR(45),
+                boardID INT NULL,
+                reason TEXT,
+                category VARCHAR(20),
+                isPublic BOOLEAN DEFAULT 0,
+                createdAt INT NOT NULL,
+                expiresAt INT NULL,
+                INDEX idx_ip (ipAddress, ipStart, ipEnd),
+                INDEX idx_board (boardID)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            "CREATE TABLE IF NOT EXISTS fileBans (
+                banID INT AUTO_INCREMENT PRIMARY KEY,
+                fileHash VARCHAR(64),
+                isPerceptual BOOLEAN,
+                reason TEXT,
+                category VARCHAR(20),
+                isPublic BOOLEAN DEFAULT 0,
+                createdAt INT NOT NULL,
+                INDEX idx_file_hash (fileHash)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+
+            "CREATE TABLE IF NOT EXISTS stringBans (
+                banID INT AUTO_INCREMENT PRIMARY KEY,
+                bannedString TEXT,
+                reason TEXT,
+                category VARCHAR(20),
+                isPublic BOOLEAN DEFAULT 0,
+                createdAt INT NOT NULL,
+                INDEX idx_banned_string (bannedString(255))
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
 		];
 		// Execute each SQL command

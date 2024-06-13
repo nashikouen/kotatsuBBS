@@ -143,3 +143,14 @@ body {
     padding: 5px;
     border-bottom: 1px solid #000;
 }
+.bigRedButton {
+    font-size: larger;
+    background-color: #F00;
+    color: white;
+    cursor: pointer;
+    border-style: outset;
+    border-width: 3px;
+    outline: none;
+    font-weight: bold;
+    font-family: Verdana, Tahoma, Arial;
+}

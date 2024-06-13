@@ -325,25 +325,18 @@ class htmlclass {
         $filesS .
         '</div>';
     }
-    private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
+    private function drawPost($post, $isOP = false, $isListingMode=false, $omitedPosts=0){
         global $AUTH;
-        $this->html .= '
-        <!--drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0)-->';
-        if(empty($posts)){
-            logError($this->board, "drawPosts() empty array for posts. treadID: ".$thread->getThreadID()." boardID: ".$thread->getBoardID());
-            return;
-        }
-        foreach($posts as $post){
-            $postID = $post->getPostID();
-            $type = "reply";
-            $isOP = $postID == $thread->getOPPostID();
-            if($isOP){
-                $type = "op";
-            }
-            $threadID = $post->getThreadID();
-	        $email = $post->getEmail(); 
 
-            $this->html .= '
+        $type="reply";
+        if($isOP){
+            $type = "op";
+        }
+        $postID = $post->getPostID();
+        $threadID = $post->getThreadID();
+        $email = $post->getEmail(); 
+
+        $this->html .= '
             <div class="post '.$type.'" id="p'.$postID.'">';
                 if($isOP){
                     $this->drawFiles($post->getFiles(), $threadID);
@@ -363,13 +356,13 @@ class htmlclass {
                     </span>
                     <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
                     <span class="postnum">
-				        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
-                        <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
+				        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
+                        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
                     </span>';
                     if($isOP  && $isListingMode){
                         $this->html .= '
                         [
-                            <a href="/'.$this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>
+                            <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>
                         ]';
                     }
                     $this->html .= '
@@ -387,6 +380,19 @@ class htmlclass {
                 }
                 $this->html .= '
             </div><br>';
+
+    }
+    private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
+        global $AUTH;
+        $this->html .= '
+        <!--drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0)-->';
+        if(empty($posts)){
+            logError($this->board, "drawPosts() empty array for posts. treadID: ".$thread->getThreadID()." boardID: ".$thread->getBoardID());
+            return;
+        }
+        foreach($posts as $post){
+            $isOP = $post->getPostID() == $thread->getOPPostID();
+            $this->drawPost($post, $isOP, $isListingMode, $omitedPosts);
         }
     }
     private function drawThread($thread){
@@ -496,13 +502,18 @@ class htmlclass {
     private function drawPostIP($post){
         global $AUTH;
         $ip = $post->getIP();
-        $ipParts = explode('.', $ip);
+
         if(!$AUTH->isAdmin($post->getBoardID())){
+            $ipParts = explode('.', $ip);
+
             if (count($ipParts) == 4) {
                 $ip = $ipParts[0] . '.' . $ipParts[1] . '.***.***';
             } else {
                 $ip = 'Invalid IP';
             }
+        }
+        if($AUTH->isModerator($post->getBoardID()) && $this->conf['allowModsToSeeIPs']){
+            $ip = $post->getIP();
         }
         $this->html .= 
         '<span>
@@ -616,6 +627,60 @@ class htmlclass {
         </form>
         </center>';
     }
+    private function drawFormBanPost($post){
+        $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" src="'.$this->conf['staticPath'].'image/hammer.png">');
+        $this->html .= '
+        <!--drawFormBanPost($post)-->
+        <div class=banForm>
+        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="banPost">
+            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <input type="hidden" name="postID" value="'. $post->getPostID().'">';
+            $this->html .= '
+            <table>
+            <tr>
+                <td class="accent"><label for="banForever">BAN FOREVER?</label></td>
+                <td><input type="checkbox" id="banForever" name="banForever"></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="banFile">BAN FILES?</label></td>
+                <td><input type="checkbox" id="banFile" name="banFile"></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="domainString">BAN DOMAIN?</label></td>
+                <td><input type="checkbox" id="banDomain" name="bandomain">
+                    <input type="text" id="domainString" name="domainString">(using js? click link to add)</td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="banIP">BAN IP?</label></td>
+                <td><input type="checkbox" id="banIP" name="banIP" checked></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="deletePost">DELETE POST?</label></td>
+                <td><input type="checkbox" id="deletePost" name="deletePost"></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="banTime">BANED TIME</label></td>
+                <td><input type="text" id="banTime" name="banTime" value="'.$this->conf['defaultBanTime'].'">(ex. 1w 2d 3h 4min, 0 for warning)</td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="banReason">BAN REASON</label></td>
+                <td><textarea type="text" id="banReason" name="banReason" cols="28" rows="2">No reason given.</textarea></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="publicMessage">BAN MESSAGE</label></td>
+                <td><textarea type="text" id="publicMessage" name="publicMessage" cols="48" rows="4">'. $banMessage .'</textarea></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="addSpamdb">ADD TO SPAMDB?</label></td>
+                <td><input type="checkbox" id="addSpamdb" name="addSpamdb"></td>
+            </tr>
+            </table>
+            <label>make catagory drop down for db.</label>
+            <button type="submit" class="bigRedButton">BAN!</button>
+        </form>
+        </div>';
+    }
     private function drawFormExportDatabase(){
 
     }
@@ -728,8 +793,16 @@ class htmlclass {
     }
 
 
-    public function drawBanUserPage(){
+    public function drawBanUserPage($post){
+        $functions = [
+            ['function' => [$this, 'drawFormBanPost'], 'params' => [$post]],
+            ['function' => [$this, 'drawPost'], 'params' => [$post]],
+            //['function' => [$this, 'drawFormBanPost'], 'params' => [$post]]
 
+        ];
+        $this->drawBase($functions);
+
+        echo $this->html;
     }
     public function drawEditPostPage($post){
         
