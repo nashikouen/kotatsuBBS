@@ -86,6 +86,7 @@ body {
 }
 .quote {
     color: #789922;
+    display: inline-block;
 }
 
 /*

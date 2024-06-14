@@ -102,6 +102,7 @@ body {
 }
 .quote {
     color: #d77230;
+    display: inline-block;
 }
 /*
  * section below is things that are not exactly on main listing but still is some where.

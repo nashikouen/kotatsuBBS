@@ -63,9 +63,9 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 
     //drawErrorPageAndDie("Name: $name, Email: $email, Password: $password");
 	//cookies!!!!
-	setrawcookie('name', rawurlencode($name), $conf['cookieExpireTime']);
-	setrawcookie('email', rawurlencode($email), $conf['cookieExpireTime']);
-	setrawcookie('password', rawurlencode($password), $conf['cookieExpireTime']);
+	setrawcookie('name', rawurlencode($name), time() + $conf['cookieExpireTime']);
+	setrawcookie('email', rawurlencode($email),time() + $conf['cookieExpireTime']);
+	setrawcookie('password', rawurlencode($password), time() + $conf['cookieExpireTime']);
 
 	$post = new PostDataClass(	$conf,$name,$email,$subject,
 								$comment,$password,time(),$_SERVER['REMOTE_ADDR'],
