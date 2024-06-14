@@ -15,5 +15,5 @@ define("IMAGE_EXTENTIONS", $globalConf['IMAGE_EXTENTIONS']);
 define("VIDEO_EXTENTIONS", $globalConf['VIDEO_EXTENTIONS']);
 define("AUDIO_EXTENTIONS", $globalConf['AUDIO_EXTENTIONS']);
 
-ini_set('session.cookie_lifetime', time() + $globalConf['sessionLifeTime']);
+ini_set('session.cookie_lifetime', $globalConf['sessionLifeTime']);
 ini_set("memory_limit", $globalConf['memoryLimit']);
