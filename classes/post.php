@@ -130,7 +130,9 @@ class PostDataClass {
         }
         return $this->files;
     }
-
+    public function appendText($text){
+        $this->comment .= $text;
+    }
     public function getPostID(){
         return $this->postID;
     }

@@ -154,3 +154,13 @@ function getBoardFromRequest(){
     }
     return $board;
 }
+function durationToUnixTime($duration){
+    $starttime = $_SERVER['REQUEST_TIME'];
+    
+    $durationWeeks = preg_match("/(\d+)w/", $duration, $matchWeeks) ? (int)$matchWeeks[1] : 0;
+    $durationDays = preg_match("/(\d+)d/", $duration, $matchDays) ? (int)$matchDays[1] : 0;
+    $durationHours = preg_match("/(\d+)h/", $duration, $matchHours) ? (int)$matchHours[1] : 0;
+    $durationMinutes = preg_match("/(\d+)min/", $duration, $matchMinutes) ? (int)$matchMinutes[1] : 0;
+
+    return $starttime + ($durationWeeks * 604800) + ($durationDays * 86400) + ($durationHours * 3600) + ($durationMinutes * 60);
+}

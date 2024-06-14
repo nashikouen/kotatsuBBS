@@ -69,8 +69,7 @@ if(file_exists(__DIR__ . "/conf.php")){
             "CREATE TABLE IF NOT EXISTS ipBans (
                 banID INT AUTO_INCREMENT PRIMARY KEY,
                 ipAddress VARCHAR(45),
-                ipStart VARCHAR(45),
-                ipEnd VARCHAR(45),
+                ipRange VARCHAR(45),
                 boardID INT NULL,
                 reason TEXT,
                 category VARCHAR(20),
@@ -87,6 +86,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 isPerceptual BOOLEAN,
                 reason TEXT,
                 category VARCHAR(20),
+                boardID INT NULL,
                 isPublic BOOLEAN DEFAULT 0,
                 createdAt INT NOT NULL,
                 INDEX idx_file_hash (fileHash)
@@ -96,6 +96,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 banID INT AUTO_INCREMENT PRIMARY KEY,
                 bannedString TEXT,
                 reason TEXT,
+                boardID INT NULL,
                 category VARCHAR(20),
                 isPublic BOOLEAN DEFAULT 0,
                 createdAt INT NOT NULL,

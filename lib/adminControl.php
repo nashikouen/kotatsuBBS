@@ -6,6 +6,8 @@ require_once __DIR__ .'/../classes/board.php';
 require_once __DIR__ .'/../classes/repos/repoBoard.php';
 require_once __DIR__ .'/../classes/repos/repoThread.php';
 require_once __DIR__ .'/../classes/repos/repoPost.php';
+require_once __DIR__ .'/../classes/repos/repoFile.php';
+
 require_once __DIR__ .'/common.php';
 
 $globalConf = require __DIR__ ."/../conf.php";
@@ -89,40 +91,41 @@ function deletePost($post, $isDeletingThread=false){
         $POSTREPO->deletePostByID($conf, $post->getPostID());
     }
 }
-
-function editPost($boardID, $postID, $newComment){
-    $BOARDREPO = BoardRepoClass::getInstance();
+function updatePost($post){
     $POSTREPO = PostRepoClass::getInstance();
-    $board = $BOARDREPO->loadBoardByID($boardID);
-    $conf = $board->getConf();
-    $post = $POSTREPO->loadPostByID($conf, $postID);
+    $POSTREPO->updatePost($post->getConf(), $post);
+}
+function editPost($post, $newComment){
+    $POSTREPO = PostRepoClass::getInstance();
+
     $post->setComment($newComment);
-    $POSTREPO->updatePost($conf, $post);
+    $POSTREPO->updatePost($post->getConf(), $post);
 }
 function deleteFile($file){
+    $FILEREPO = FileRepoClass::getInstance();
+
     unlink($file->getThumbnailPath());
     unlink($file->getFilePath());
+    $FILEREPO->deleteFileByID($file->getFileID());
 }
 
-function moveTreadToNewBoard($orginBoardID, $orginThreadID, $newBoardID){
+function moveTreadToNewBoard($thread, $newBoardID){
     $BOARDREPO = BoardRepoClass::getInstance();
     $POSTREPO = PostRepoClass::getInstance();
     $THREADREPO = ThreadRepoClass::getInstance();
 
-    $srcBoard = $BOARDREPO->loadBoardByID($orginBoardID);
-    $srcThread = $srcBoard->getThreadByID($orginThreadID);
     $destBoard = $BOARDREPO->loadBoardByID($newBoardID);
 
-    $srcPosts = $srcThread->getPosts();
+    $srcPosts = $thread->getPosts();
     foreach ($srcPosts as $post){
         // we are using the dest board for configs. this has board id in it.
         $POSTREPO->createPost($destBoard->getConf(), $post);
         //make sure to add files to new posts.
     }
     //new board means new post ids for posts.
-    $srcThread->setOPPostID($srcPosts[0]->getPostID);
+    $thread->setOPPostID($srcPosts[0]->getPostID);
     //thread's uniqe id is the same just need to update its board id.
-    $THREADREPO->updateThread($destBoard->getConf(), $srcThread);
+    $THREADREPO->updateThread($destBoard->getConf(), $thread);
 
     // files should still be same link :P
 

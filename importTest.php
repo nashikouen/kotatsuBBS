@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['log_file'])) {
         gzclose($gp);
 
         $lines = explode("\n", $data);
+        $lines = array_reverse($lines);
 
         $threads = [];
         $posts = [[]];

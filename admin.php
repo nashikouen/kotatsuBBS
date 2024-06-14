@@ -5,6 +5,8 @@ include __DIR__ .'/includes.php';
 require_once __DIR__ .'/classes/html.php';
 require_once __DIR__ .'/classes/auth.php';
 require_once __DIR__ .'/classes/repos/repoPost.php';
+require_once __DIR__ .'/classes/repos/repoBan.php';
+
 
 require_once __DIR__ .'/lib/common.php';
 require_once __DIR__ .'/lib/adminControl.php';
@@ -86,7 +88,56 @@ function userDeletingBoard(){
 }
 
 function banPost(){
+    global $board;
+    $POSTREPO = PostRepoClass::getInstance();
+    $BANREPO = BanRepoClass::getInstance();
 
+    /*
+     *  this looks so ugly...
+     */
+    $post = $POSTREPO->loadPostByID($board->getConf(), $_POST['postID']);
+    $isBanForerver = isset($_POST['banForever']) ? true : false;
+    $isBanFile = isset($_POST['banFile']) ? true : false;
+    $isBanDomain = isset($_POST['banDomain']) ? true : false;
+    $domain = $_POST['domainString'];
+    $isBanIP = isset($_POST['banIP']) ? true : false;
+    $ip = $post->getIP();
+    $isDeletePost = isset($_POST['deletePost']) ? true : false;
+    $banTime = $_POST['banTime'];
+    $banReason = $_POST['banReason'];
+    $publicMessage = $_POST['publicMessage'];
+    $isAddTosSpamDB = isset($_POST['addSpamdb']) ? true : false;
+
+    if($isBanForerver){
+        $expireTime = PHP_INT_MAX;
+    }elseif(empty($banTime)){
+        $expireTime = durationToUnixTime($board->getConf()['defaultBanTime']);
+    }else{
+        $expireTime = durationToUnixTime($banTime);
+    }
+
+
+    //ban ip
+    if($isBanIP){
+        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, false, false, $isAddTosSpamDB);
+    }
+    //ban domain
+    if($isBanDomain){
+        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, false, $isAddTosSpamDB);
+    }
+    //ban file
+    if($isBanFile){
+        foreach($post->getFiles() as $file){
+            $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isAddTosSpamDB);
+        }
+    }
+    //delete post
+    if($isDeletePost){
+        deletePost($post);
+    }else{
+        $post->appendText($publicMessage);
+        updatePost($post);
+    }
 }
 
 

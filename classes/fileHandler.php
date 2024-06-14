@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ .'/repos/repoFile.php';
+require_once __DIR__ .'/repos/repoBan.php';
+
 
 class fileHandlerClass {
     private $config;
@@ -14,6 +16,9 @@ class fileHandlerClass {
         $filesGotten = [];
         $processedFilesCount = 0;
         $fileLimit = $maxFiles ?? $fileConf['maxFiles'];
+        $BANREPO = BanRepoClass::getInstance();
+
+        
 
         if (!isset($_FILES['upfile'])) {
             return $filesGotten;
@@ -46,19 +51,32 @@ class fileHandlerClass {
                 echo "Error: File {$fileName} type is not allowed.";
                 continue; 
             }
-            // File passed validation checks.
-            // make a valid name for the new file
-            // make the object and attach it to the posts list.
+
+            $md5 = md5_file($tmpName);
+            if ($BANREPO->isFileBanned(getBoardFromRequest()->getBoardID(), $md5, false)){
+                drawErrorPageAndDie("banned file uploaded");
+            }
+
+            $filesGotten [] = new fileDataClass($this->config, $tmpName, $fileName, $md5);
+            $processedFilesCount++;
+        }
+
+        foreach($filesGotten as $file){
+            $tmpName = $file->getFilePath();
+            
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $realMimeType = $finfo->file($tmpName);
+
             $fileExtention = getExtensionByMimeType($realMimeType);
             $fileNameOnDisk =  uniqid() . $fileExtention;
             $newFilePath = __DIR__ . "/../threads/staging/" . $fileNameOnDisk;
             move_uploaded_file($tmpName, $newFilePath);
-
-            $filesGotten [] = new fileDataClass($this->config, $newFilePath, $fileName, md5_file($newFilePath));
-            $processedFilesCount++;
+            $file->setFilePath($newFilePath);
         }
+
         return $filesGotten;
     }
+
     public function createThumbnail($file, $isOp) {
         // Quality and dimensions settings
         $imgConf = $this->config['fileConf'];

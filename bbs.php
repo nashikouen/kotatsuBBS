@@ -15,6 +15,7 @@ require_once __DIR__ .'/classes/html.php';
 require_once __DIR__ .'/classes/repos/repoBoard.php';
 require_once __DIR__ .'/classes/repos/repoThread.php';
 require_once __DIR__ .'/classes/repos/repoPost.php';
+require_once __DIR__ .'/classes/repos/repoBan.php';
 //require_once __DIR__ .'/classes/repos/repoFile.php';
 
 require_once __DIR__ .'/lib/common.php';
@@ -26,6 +27,8 @@ $POSTREPO = PostRepoClass::getInstance();
 $THREADREPO = ThreadRepoClass::getInstance();
 //$FILEREPO = FileRepoClass::getInstance();
 $BOARDREPO = BoardRepoClass::getInstance();
+$BANREPO = BanRepoClass::getInstance();
+
 
 function genUserPostFromRequest($conf, $thread, $isOp=false){
 	global $AUTH;
@@ -136,7 +139,11 @@ function userPostNewPostToThread($board){
 	$conf = $board->getConf();
 	global $POSTREPO;
 	global $THREADREPO;
+    global $BANREPO;
 
+    if($BANREPO->isIpBanned($board->getBoardID(), $_SERVER['REMOTE_ADDR'])){
+        drawErrorPageAndDie("you are banned");
+    }
 	// load existing thread
 	$thread = $board->getThreadByID($_POST['threadID']);
     if(is_null($thread)){
@@ -171,7 +178,11 @@ function userPostNewThread($board){
 	$conf = $board->getConf();
 	global $POSTREPO;
 	global $THREADREPO;
+    global $BANREPO;
 
+    if($BANREPO->isIpBanned($board->getBoardID(), $_SERVER['REMOTE_ADDR'])){
+        drawErrorPageAndDie("you are banned");
+    }
 	// make a new thread
 	$thread = new threadClass($conf, time());
 
