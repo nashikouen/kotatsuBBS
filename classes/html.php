@@ -54,6 +54,7 @@ class htmlclass {
             if($this->conf['allowJS']){
                 $this->html .= 
                 '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
+                <script src="'.$this->conf['staticPath'].'js/postidToForm.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
             if($AUTH->isAuth()){
