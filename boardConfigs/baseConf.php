@@ -12,12 +12,12 @@ return [
 
     //these are the hard coded nav links on each page.
     'navLinksLeft'=> [
-        'cgi' => 'https://example.net/cgi-bin/',
-        'upload' => 'https://up.example.net/', 
+        'cgi' => 'https://example.com/cgi-bin/',
+        'upload' => 'https://up.example.com/', 
         // just copy this format above to add another link.
     ],
     'navLinksRight'=> [
-        'wiki' => 'https://wiki.example.net/'
+        'wiki' => 'https://wiki.example.com/'
     ],
 
     'fileConf' =>[
@@ -68,7 +68,7 @@ return [
     'defaultSubject'=> '',
     'defaultComment'=> '', 
 
-    'canTripcode' => false,         // true will allow you to tripcode
+    'canTripcode' => true,         // true will allow you to tripcode
     'canFortune' => false,
     'fortunes' => ['Very bad luck', 'Bad luck', 'Average luck', 'Good luck', 'Very good luck'],
 
@@ -77,7 +77,9 @@ return [
     'moderatorHashes' => [],    // list of moderator hashes
     'adminHashes' => [],        // board owner hashes
 
-    'allowQuoteLinking'=> true,     // allow quoting a postid to create a hyperlink to the post
+    'allowPostLinking'=> true,      // allow quoting a postid to create a hyperlink to the post
+    'allowQuoteing' => true,        // allows text to be quoted
+    'allowBBcode' => true,          // allows users to use [s1]text[/s1]
     'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks
 
     'allowModsToSeeIPs' => false,

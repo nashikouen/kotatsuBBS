@@ -84,6 +84,9 @@ body {
 .comment {
 	word-break: break-word
 }
+.quote {
+    color: #789922;
+}
 
 /*
  * section below is things that are not exactly on main listing but still is some where.

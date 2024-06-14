@@ -93,38 +93,43 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
         drawErrorPageAndDie("you must have a file or a comment");
     }
     
-    /* 
-     *  if we are not admin or mod, remove any html tags.
-     *  dont get confused. the first if statment catchs any non admins and mods.
-     *  any one getting to the second if statement should be admin or mod.
-     */
-	if(!$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){ 	
-		$post->stripHtml();
-	}elseif(isset($_POST['stripHTML'])){
-        $post->stripHtml();
-    }
 
-	//if the board lets you tripcode, apply tripcode to name.
+    //if the board lets you tripcode, apply tripcode to name.
 	if($conf['canTripcode']){
 		$post->applyTripcode();	
 	}else{
         $post->stripTripcodePass();
     }
 
+    /* prep post for db and drawing */
+
+    /* 
+     *  if we are admin or mod and we decide to not strip html and post raw. then dont strip html and procsses.
+     *  if we are not striping html then continue as a normal users
+     */
+    if($AUTH->isAdmin($conf['boardID']) || $AUTH->isModerator($conf['boardID'])){
+        if(!isset($_POST['stripHTML'])){
+            goto skippingEmbeding;
+        }
+    }
+
+    $post->stripHtml();
+
 	//$HOOK->executeHook("onUserPostToBoard", $post, $fileHandler);// HOOK base post fully loaded with no html
 
-	/* prep post for db and drawing */
-
-	// if the board allows embeding of links. admins and mods are expeced to embed there own things since they have that power
-	if($conf['autoEmbedLinks'] && !$AUTH->isAdmin($conf['boardID']) && !$AUTH->isModerator($conf['boardID'])){
+	// if the board allows embeding of links.
+	if($conf['autoEmbedLinks']){
 		$post->embedLinks();
-	}elseif(isset($_POST['stripHTML'])){
-        $post->embedLinks();
-    }
+	}
     
 	// if board allows post to link to other post.
-	if($conf['allowQuoteLinking']){
-		$post->quoteLinks();
+	if($conf['allowPostLinking']){
+		$post->applyPostLinks();
+	}
+
+    // if board allows quoting of text.
+	if($conf['allowQuoteing']){
+		$post->applyQuoteUser();
 	}
 
 	//new lines get converted to <br>
@@ -133,6 +138,7 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 	// stuff like bb code, emotes, capcode, ID, should all be handled in moduels.
 	$HOOK->executeHook("onPostPrepForDrawing", $post);// HOOK post with html fully loaded
 
+skippingEmbeding:
 	return $post;
 }
 function userPostNewPostToThread($board){

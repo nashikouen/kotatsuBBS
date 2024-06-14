@@ -100,7 +100,9 @@ body {
 .comment {
     word-break: break-word
 }
-
+.quote {
+    color: #d77230;
+}
 /*
  * section below is things that are not exactly on main listing but still is some where.
  */

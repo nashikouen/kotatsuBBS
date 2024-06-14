@@ -94,8 +94,20 @@ class PostDataClass {
         $nameXpass = splitTextAtTripcodePass($this->name);
         $this->name = $nameXpass[0];
     }
-    public function quoteLinks(){
-        // I dont want to do all that db querrys!!!ヽ(`Д´)ノ 
+    public function applyQuoteUser(){
+        $patternQuote = '/(^|\n)&gt;(?!&gt;)([^\n]*)/';
+        $replacementQuote = '$1<div class="quote">&gt;$2</div>';
+        $this->comment = preg_replace($patternQuote, $replacementQuote, $this->comment);
+    }
+    public function applyPostLinks(){
+        // Convert post numbers starting with '&gt;&gt;'
+        $patternPost = '/&gt;&gt;(\d+)/';
+        $replacementPost = function ($matches) {
+            $postID = $matches[1];
+            $url = postResolve($this->getConf(), $postID);
+            return '<a href="' . $url . '">&gt;&gt;' . $postID . '</a>';
+        };
+        $this->comment = preg_replace_callback($patternPost, $replacementPost, $this->comment);
     }
     public function isBumpingThread(){
         if(stripos($this->getEmail(),"sage")!== false){//bc 2 was not enough...

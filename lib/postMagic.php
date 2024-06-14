@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ .'/../classes/repos/repoPost.php';
+require_once __DIR__ .'/common.php';
+
 // can return null if none is found
 function getExtensionByMimeType($mimeType): string {
     $mimeMap = [
@@ -190,6 +193,21 @@ function splitTextAtTripcodePass(string $text): array {
 // get the tripcode that is after a name "anon◆extractThisPart"
 function extractTripCode(string $text): string{
     return "";
+}
+
+function postResolve($conf, $postID){
+    $POSTREPO = PostRepoClass::getInstance();
+    $boardName = boardIDToName($conf['boardID']);
+    $post = $POSTREPO->loadPostByID($conf, $postID);
+    if(is_null($post)){
+        return "#";
+    }
+    $threadID = $post->getThreadID();
+    if(is_null($threadID)){
+        return "#";
+    }
+
+    return ROOTPATH . $boardName . '/thread/' . $threadID . '/#p' . $postID;
 }
 
 function sortPostsByTimeDesending(&$posts){
