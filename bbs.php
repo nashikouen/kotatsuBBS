@@ -270,12 +270,12 @@ elseif(isset($_POST['action'])){
 		case 'postToThread':
 			$post = userPostNewPostToThread($board);
 			$thread = $board->getThreadByID($_POST['threadID']);
-			//$boardHtml->drawThreadPage($thread);
+            postWebHook($board->getBoardID(), $thread->getThreadID(), $post->getPostID());
             redirectToPost($post);
 			break;
 		case 'postNewThread':
 			$thread = userPostNewThread($board);
-			//$boardHtml->drawThreadPage($thread);
+            postWebHook($board->getBoardID(), $thread->getThreadID(), $thread->getOPPost()->getPostID());
             redirectToThread($thread);
 			break;
         case 'deletePosts':

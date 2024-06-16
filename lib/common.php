@@ -1,6 +1,24 @@
 <?php
 require_once __DIR__ .'/../classes/repos/repoBoard.php';
 
+// idk how to get this working for openbsd...
+function postWebHook($boardID, $threadID, $postID=""){
+    global $globalConf;
+
+    $url = 'https://'.DOMAIN.ROOTPATH.boardIDToName($boardID).'/thread/'.$threadID.'/#p'.$postID;
+    
+    $stream = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => 'Content-Type: application/x-www-form-urlencoded',
+            'content' => http_build_query([
+                'content' => "new post <$url>", 
+            ]),
+        ]
+    ]);
+    
+    file_get_contents($globalConf['webhook'], false, $stream);
+}
 function nameIDToBoardID($nameID){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
 

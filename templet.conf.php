@@ -26,6 +26,8 @@ return [
     'sessionLifeTime' => 3600,
     'memoryLimit' => '128M',    // the ammount of memeory kotatsu can use 
     'webRootPath' => '/',       // the location where the software is found relitive to your web root.
+    'domain' => 'example.com',  // doamin of ur site
+    'webhook' => '',            // discord webhook
 
     // the salt for a site wide secure tripcode and logging in. [note] this code below will be evaluated and saved apon install.
     'tripcodeSalt' => substr(str_replace('+', '.', base64_encode(random_bytes(6))), 0, 8), 
