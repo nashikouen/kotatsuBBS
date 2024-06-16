@@ -1,3 +1,14 @@
+@media screen and (max-width: 650px) {
+    .post .files img,
+    .post .files video,
+    .post .files object{
+        display: block; 
+        float: none; 
+        margin: 3px;
+        white-space: nowrap;
+    }
+}
+
 /* defualt css */
 body {
 	background-color: #ffffee;
@@ -54,9 +65,12 @@ body {
 .post{
 	margin: 2px;
 }
-.post img,
-.post video,
-.post object{
+.full {
+    width: 100%;
+}
+.post .files img,
+.post .files video,
+.post .files object{
     margin: 3px;
     white-space: nowrap;
     vertical-align: top;
