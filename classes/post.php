@@ -134,7 +134,7 @@ class PostDataClass {
         // block quote
         $this->comment = preg_replace('#\[quote\](.*?)\[/quote\]#si', '<blockquote>\1</blockquote>', $this->comment);
         // scroll
-        $this->comment = preg_replace('#\[scroll\](.*?)\[/scroll\]#si', '<div style="overflow:scroll; max-height: 200px;">\1</div>', $this->comment);
+        $this->comment = preg_replace('#\[scroll\](.*?)\[/scroll\]#si', '<div class="scroll">\1</div>', $this->comment);
         // email
         $this->comment = preg_replace('#\[email\](\S+?@\S+?\\.\S+?)\[/email\]#si', '<a href="mailto:\1">\1</a>', $this->comment);
 

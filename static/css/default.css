@@ -138,7 +138,32 @@ body {
 .warning {
     color: #f00;
 }
- /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
+/* used with bbcode */
+.spoiler {
+	background-color: #000;
+	transition: .3s;
+	color: #000;
+}
+.spoiler:hover {
+	background-color: inherit;
+	color: inherit;
+}
+.code {
+	background-color: #ffffff;
+	color: #000;
+	font-family: monospace;
+	word-wrap: break-word;
+	line-height: 1;
+	padding: 10px;
+	overflow: auto;
+	resize: both;
+	max-width: 100%;
+}
+.scroll{
+    overflow:scroll; 
+    max-height: 200px;
+}
+/* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
 .theading,
 .theading2,
 .theading3 {
