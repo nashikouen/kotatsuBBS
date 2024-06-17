@@ -109,6 +109,40 @@ class PostDataClass {
         };
         $this->comment = preg_replace_callback($patternPost, $replacementPost, $this->comment);
     }
+    public function applyBBCode(){
+        // bold
+        $this->comment = preg_replace('#\[b\](.*?)\[/b\]#si', '<b>\1</b>', $this->comment);
+        // spoiler
+        $this->comment = preg_replace('#\[s\](.*?)\[/s\]#si', '<span class="spoiler">\1</span>', $this->comment);
+        $this->comment = preg_replace('#\[spoiler\](.*?)\[/spoiler\]#si', '<span class="spoiler">\1</span>', $this->comment);
+        // code
+        $this->comment = preg_replace('#\[code\](.*?)\[/code\]#si', '<pre class="code">\1</pre>', $this->comment);
+        // italics
+        $this->comment = preg_replace('#\[i\](.*?)\[/i\]#si', '<i>\1</i>', $this->comment);
+        // underlined
+        $this->comment = preg_replace('#\[u\](.*?)\[/u\]#si', '<u>\1</u>', $this->comment);
+        // paragraph
+        $this->comment = preg_replace('#\[p\](.*?)\[/p\]#si', '<p>\1</p>', $this->comment);
+        // color
+        $this->comment = preg_replace('#\[color=(\S+?)\](.*?)\[/color\]#si', '<font color="\1">\2</font>', $this->comment);
+        // size
+        $this->comment = preg_replace('#\[s([1-7])\](.*?)\[/s([1-7])\]#si', '<font size="\1">\2</font>', $this->comment);
+        // strike though
+        $this->comment = preg_replace('#\[del\](.*?)\[/del\]#si', '<del>\1</del>', $this->comment);
+        // preserve content
+        $this->comment = preg_replace('#\[pre\](.*?)\[/pre\]#si', '<pre>\1</pre>', $this->comment);
+        // block quote
+        $this->comment = preg_replace('#\[quote\](.*?)\[/quote\]#si', '<blockquote>\1</blockquote>', $this->comment);
+        // scroll
+        $this->comment = preg_replace('#\[scroll\](.*?)\[/scroll\]#si', '<div style="overflow:scroll; max-height: 200px;">\1</div>', $this->comment);
+        // email
+        $this->comment = preg_replace('#\[email\](\S+?@\S+?\\.\S+?)\[/email\]#si', '<a href="mailto:\1">\1</a>', $this->comment);
+
+        // ruby/furigana
+        $this->comment = preg_replace('#\[ruby\](.*?)\[/ruby\]#si', '<ruby>\1</ruby>', $this->comment);
+        $this->comment = preg_replace('#\[rt\](.*?)\[/rt\]#si', '<rt>\1</rt>', $this->comment);
+        $this->comment= preg_replace('#\[rp\](.*?)\[/rp\]#si', '<rp>\1</rp>', $this->comment);
+    }
     public function isBumpingThread(){
         if(stripos($this->getEmail(),"sage")!== false){//bc 2 was not enough...
             return false;

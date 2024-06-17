@@ -132,6 +132,11 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
 		$post->applyQuoteUser();
 	}
 
+    // if board allows BBcode.
+    if($conf['allowBBcode']){
+        $post->applyBBCode();
+    }
+
 	//new lines get converted to <br>
 	$post->addLineBreaks();
 
