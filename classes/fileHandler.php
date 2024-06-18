@@ -135,11 +135,17 @@ class fileHandlerClass {
     
             return $thumbnailPath;
         } elseif (strpos($fileType, 'video/') === 0) {
+            global $globalConf;
             $thumbnailPath = tempnam(sys_get_temp_dir(), 'thumbnail') . ".jpg";
             $safeFilePath = escapeshellarg($filePath);
-    
+
+            if($globalConf['isOpenBSD']){
+                $videoInfo = shell_exec("LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 {$safeFilePath}");
+            }else{
+                $videoInfo = shell_exec("ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 {$safeFilePath}");
+            }
+            
             // Get video dimensions
-            $videoInfo = shell_exec("LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 {$safeFilePath}");
             list($width, $height) = explode('x', $videoInfo);
     
             // Calculate new dimensions while maintaining aspect ratio
@@ -157,8 +163,12 @@ class fileHandlerClass {
                     $newWidth = $maxHeight * $aspectRatio;
                 }
             }
-            
-            $ffmpegCommand = "LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffmpeg -i {$safeFilePath} -vframes 1 -vf scale={$newWidth}:{$newHeight} -q:v 2 -y {$thumbnailPath} 2>&1";
+
+            if($globalConf['isOpenBSD']){
+                $ffmpegCommand = "LD_LIBRARY_PATH=/usr/local/lib:/usr/X11R6/lib /usr/local/bin/ffmpeg -i {$safeFilePath} -vframes 1 -vf scale={$newWidth}:{$newHeight} -q:v 2 -y {$thumbnailPath} 2>&1";
+            }else{
+                $ffmpegCommand = "ffmpeg -i {$safeFilePath} -vframes 1 -vf scale={$newWidth}:{$newHeight} -q:v 2 -y {$thumbnailPath} 2>&1";
+            }
             exec($ffmpegCommand);
     
             return $thumbnailPath;
