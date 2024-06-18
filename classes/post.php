@@ -113,10 +113,9 @@ class PostDataClass {
         // bold
         $this->comment = preg_replace('#\[b\](.*?)\[/b\]#si', '<b>\1</b>', $this->comment);
         // spoiler
-        $this->comment = preg_replace('#\[s\](.*?)\[/s\]#si', '<span class="spoiler">\1</span>', $this->comment);
         $this->comment = preg_replace('#\[spoiler\](.*?)\[/spoiler\]#si', '<span class="spoiler">\1</span>', $this->comment);
         // code
-        $this->comment = preg_replace('#\[code\](.*?)\[/code\]#si', '<pre class="code">\1</pre>', $this->comment);
+        $this->comment = preg_replace('#\[code\](.*?)\[/code\]#si', '<div class="code">\1</div>', $this->comment);
         // italics
         $this->comment = preg_replace('#\[i\](.*?)\[/i\]#si', '<i>\1</i>', $this->comment);
         // underlined

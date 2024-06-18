@@ -55,6 +55,7 @@ class htmlclass {
                 $this->html .= 
                 '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/postidToForm.js" defer></script>
+                <script src="'.$this->conf['staticPath'].'js/autoFillCookies.js.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
             if($AUTH->isAuth()){
@@ -206,7 +207,7 @@ class htmlclass {
         </tr>
         <tr>
             <td class="accent"><label for="password">Password</label></td>
-            <td><input type="text" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
+            <td><input type="password" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
         </tr>';
         if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
             $this->html .= '
