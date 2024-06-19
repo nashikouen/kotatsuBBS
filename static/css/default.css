@@ -172,7 +172,15 @@ body {
     overflow:scroll; 
     max-height: 200px;
 }
+.submitRules{
+    text-wrap: auto;
+    max-width: 400px;
+    line-height: 120%;
+    font-size: small;
+    text-align: left;
+}
 /* threading is what you will see in catalog or reply mode or in admin mode and other similar pages. */
+
 .theading,
 .theading2,
 .theading3 {
@@ -181,7 +189,6 @@ body {
 	margin-top: 0.2em;
 	margin-bottom: 0.5em;
 }
-
 .theading {
 	background-color: #E04000;
 }

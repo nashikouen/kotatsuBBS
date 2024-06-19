@@ -73,13 +73,14 @@ class htmlclass {
         if(empty($URLPair)){
             return;
         }
-
-        $this->html .= '<span class="nowrap">[';
+        $pairs = '<span class="nowrap">[';
         foreach ($URLPair as $key => $value) {
-            $this->html .= '&nbsp;<a class="navLink" href="'.$value.'">'.$key.'</a>&nbsp;/';
+            $pairs .= '&nbsp;<a class="navLink" href="'.$value.'">'.$key.'</a>&nbsp;/';
         }
-        $this->html = substr($this->html, 0, -1); // Remove the last "/"
-        $this->html .= ']</span>';
+        $pairs = substr($pairs, 0, -1); // Remove the last "/"
+        
+        $pairs .= ']</span>';
+        $this->html .= $pairs;
     }
     private function drawNavBar(){
         global $HOOK;
@@ -193,7 +194,9 @@ class htmlclass {
             }
             $this->html .= 
             '></textarea></td>
-        </tr>
+        </tr>';
+        if($this->conf['fileConf']['maxFiles'] >= 1){
+            $this->html .='
         <tr>
             <td class="accent"><label for="files">Files</label></td>
             <td><input type="file" name="upfile[]" multiple=""  ';
@@ -204,7 +207,9 @@ class htmlclass {
             }
             $this->html .= 
             '></td>
-        </tr>
+        </tr>';
+        }
+        $this->html .='
         <tr>
             <td class="accent"><label for="password">Password</label></td>
             <td><input type="password" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
@@ -218,6 +223,44 @@ class htmlclass {
         }
         $this->html .= '
         </table>';
+        $this->drawFormSumbitionRules();
+    }
+    private function drawFormSumbitionRules(){
+        global $AUTH;
+        global $board;
+        $this->html .= '
+            <details class="submitRules"><summary>submition rules</summary>';
+                if($this->conf['fileConf']['maxFiles'] >= 1){
+                    $listing = '<li>Allowed file types are: ';
+                    foreach($this->conf['fileConf']['allowedMimeTypes'] as $mimeType){
+                        $listing .= ' ' . getExtensionByMimeType($mimeType). ',';
+                    }
+                    $listing = substr($listing, 0, -1); // Remove the last ","
+                    $listing .= '</li>';
+
+                    $this->html .= $listing;
+
+                    $this->html .='<li>maximum files: '.$this->conf['fileConf']['maxFiles'].'</li>';
+                    $this->html .='<li>maximum upload size: '.bytesToHumanReadable($this->conf['fileConf']['maxFileSize']).'</li>';
+                    if($this->conf['fileConf']['allowDuplicateFiles'] == false){
+                        $this->html .= '<li>duplicate files are not allowed</li>';
+                    }
+                }
+                $this->html .= '<li>posts will be saved in '.$this->conf['timeZone'].' time</li>';
+                $this->html .= '<li>max comment size is '.$this->conf['maxCommentSize'].' characters</li>';
+
+                if($this->conf['canTripcode']){
+                    $this->html .= '<li>tripcodes are enabled</li>';
+                }
+                if($this->conf['canFortune']){
+                    $this->html .= '<li>fortunes are enabled</li>';
+                }
+                if($this->conf['allowBBcode']){
+                    $this->html .= '<li>BBCode is enabled</li>';
+                }
+
+                $this->html .= '
+            </details>';
     }
     private function drawFormNewThread(){
         $this->html .= '

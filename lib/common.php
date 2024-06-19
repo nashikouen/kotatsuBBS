@@ -19,6 +19,31 @@ function postWebHook($boardID, $threadID, $postID=""){
     
     file_get_contents($globalConf['webhook'], false, $stream);
 }
+function bytesToHumanReadable($size){
+    if($size == 0){
+        $format = "";
+    }
+    elseif($size <= 1024){
+        $format = $size." B";
+    }
+    elseif($size <= (1024*1024)){
+        $format = sprintf ("%d KB",($size/1024));
+    }
+    elseif($size <= (1000*1024*1024)){
+        $format = sprintf ("%.2f MB",($size/(1024*1024)));
+    }
+    elseif($size <= (1000*1024*1024*1024)){
+        $format = sprintf ("%.2f GB",($size/(1024*1024*1024)));
+    }
+    elseif($size <= (1000*1024*1024*1024*1024)  || $size >= (1000*1024*1024*1024*1024)){
+        $format = sprintf ("%.2f TB",($size/(1024*1024*1024*1024)));
+    }
+    else{ 
+        $format = $size."B";
+    }
+
+    return $format;
+}
 function nameIDToBoardID($nameID){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
 
