@@ -73,13 +73,13 @@ class htmlclass {
         if(empty($URLPair)){
             return;
         }
-        $this->html .= "[";
+
+        $this->html .= '<span class="nowrap">[';
         foreach ($URLPair as $key => $value) {
-            $this->html .= ' <a class="navLink" href="'.$value.'">'.$key.'</a>';
-            $this->html .= " /";
+            $this->html .= '&nbsp;<a class="navLink" href="'.$value.'">'.$key.'</a>&nbsp;/';
         }
-        $this->html = substr($this->html, 0, -1);
-        $this->html .= " ]";
+        $this->html = substr($this->html, 0, -1); // Remove the last "/"
+        $this->html .= ']</span>';
     }
     private function drawNavBar(){
         global $HOOK;
@@ -206,7 +206,7 @@ class htmlclass {
             '></td>
         </tr>
         <tr>
-            <td class="accent"><label for="password"><b>Password</b></label></td>
+            <td class="accent"><label for="password">Password</label></td>
             <td><input type="password" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
         </tr>';
         if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
@@ -358,14 +358,10 @@ class htmlclass {
                     </span>
                     <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
                     <span class="postnum">
-				        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>
-                        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
+                        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>&nbsp;<a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
                     </span>';
                     if($isOP  && $isListingMode){
-                        $this->html .= '
-                        [
-                            <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>
-                        ]';
+                        $this->html .= '<span>[&nbsp;<a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>&nbsp;]</span>';
                     }
                     $this->html .= '
                 </div>';
@@ -382,7 +378,6 @@ class htmlclass {
                 }
                 $this->html .= '
             </div><br>';
-
     }
     private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
         global $AUTH;
@@ -417,7 +412,7 @@ class htmlclass {
         <!--drawThreadListing($threads)-->';
         foreach ($threads as $thread) {
             //NEEDS FIXING.
-            // if op post and child has same time. there is a cance they will swap positions on thread listing and 2nd post will just be OP post.
+            // if op post and child has same time. there is a chance they will swap positions on thread listing and 2nd post will just be OP post.
             // maybe make a paramitr for just OP and remove op from the drawing list if it exist?
             $posts = $thread->getLastNPost($this->conf['postPerThreadListing']);
             sortPostsByTimeDesending($posts);
@@ -449,30 +444,22 @@ class htmlclass {
         if($curentPage > 1){
             $this->html .='
             <a href="/'. $this->conf['boardNameID'] .'/'. 1 .'">&lt;&lt;</a>
-            [
-            <a href="/'. $this->conf['boardNameID'] .'/'.$curentPage - 1 .'">back</a>
-            ]';
+            [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$curentPage - 1 .'">back</a>&nbsp;]';
         }
 
         for($i = 1; $i <=$pages ; $i++){
             if ($curentPage == $i){
                 $this->html .='
-                [
-                <b>'.$i.'</b>
-                ]';
+                [&nbsp;<b>'.$i.'</b>&nbsp;]';
             }else{
                 $this->html .='
-                [
-                <a href="/'. $this->conf['boardNameID'] .'/'.$i.'">'.$i.'</a>
-                ]';
+                [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$i.'">'.$i.'</a>&nbsp;]';
             }
         }
         
         if($curentPage < $pages){
             $this->html .='
-            [
-                <a href="/'. $this->conf['boardNameID'] .'/'.$curentPage + 1 .'">next</a>
-            ]
+            [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$curentPage + 1 .'">next</a>&nbsp;]
             <a href="/'. $this->conf['boardNameID'] .'/'. $pages .'">&gt;&gt;</a>';
         }
         $this->html .='</div>';

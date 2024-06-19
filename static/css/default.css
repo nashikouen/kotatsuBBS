@@ -1,11 +1,19 @@
 @media screen and (max-width: 650px) {
+    .hidden {
+        display: none !important;
+    }
+    
     .post .files img,
     .post .files video,
-    .post .files object{
+    .post .files object {
         display: block; 
         float: none; 
         margin: 3px;
         white-space: nowrap;
+    }
+
+    textarea#comment {
+        width: 80%;
     }
 }
 
