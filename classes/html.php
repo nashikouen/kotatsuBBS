@@ -206,7 +206,7 @@ class htmlclass {
             '></td>
         </tr>
         <tr>
-            <td class="accent"><label for="password">Password</label></td>
+            <td class="accent"><label for="password"><b>Password</b></label></td>
             <td><input type="password" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
         </tr>';
         if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
