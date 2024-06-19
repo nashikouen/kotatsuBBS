@@ -76,9 +76,6 @@ body {
 	margin: 2px;
     max-width: 90%;
 }
-.full {
-    width: 100%;
-}
 .post .files img,
 .post .files video,
 .post .files object{
