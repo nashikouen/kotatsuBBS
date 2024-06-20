@@ -97,6 +97,19 @@ function getAllBoardConfs(){
 	}
 	return $listing;
 }
+function getBoardCount(){
+    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+	$count = 0;
+
+	foreach($files as $file){
+		$conf = include($file);
+		if($conf['boardID'] == -1 ){
+			continue;
+		}
+		$count = $count + 1;
+	}
+	return $count;
+}
 function getBoardConfByID($id){
     $files = glob(__DIR__ . '/../boardConfigs/*.php');
 
@@ -145,6 +158,12 @@ function redirectToAdmin($board){
     header("Location: $url");
     exit;
 }
+function redirectToHome(){
+    $url = ROOTPATH;
+
+    header("Location: $url");
+    exit;
+}
 function drawErrorPageAndDie($txt){
 	$html ='
 	<!DOCTYPE html>
@@ -184,16 +203,20 @@ function drawErrorPageAndDie($txt){
 	echo $html;
 	die();
 }
-function getBoardFromRequest(){
+function getBoardFromRequest($allowNull=false){
     $BOARDREPO = BoardRepoClass::getInstance();
     $boardID = $_POST['boardID'] ?? @nameIDToBoardID($_GET['boardNameID']) ?? '';
 
     if (!is_numeric($boardID)) {
-        drawErrorPageAndDie("you must have a boardID");
+        if($allowNull == false){
+            drawErrorPageAndDie("you must have a boardID");
+        }
     }
     $board = $BOARDREPO->loadBoardByID($boardID);
     if(is_null($board)) {
-        drawErrorPageAndDie("board with the boardID of \"".$boardID."\"dose not exist");
+        if($allowNull == false){
+            drawErrorPageAndDie("board with the boardID of \"".$boardID."\"dose not exist");
+        }
     }
     return $board;
 }

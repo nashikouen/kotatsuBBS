@@ -12,13 +12,43 @@ require_once __DIR__ .'/lib/common.php';
 require_once __DIR__ .'/lib/adminControl.php';
 
 $AUTH = AuthClass::getInstance();
-$board = getBoardFromRequest();
+$board = getBoardFromRequest(true);
+
+/* 
+ *  x_x i really dont know, i want to have a admin log in when there is no board 
+ *  i think i have a core problom with requireing a board.. but its a imageboard, it must all have a board?
+ * 
+ *  this bad code, it is so super users can still login, they will be placed in any real board or kicked to home once they have auth.
+ *  it dose checking for get requests. and userLoggingIn()
+ */
+
+$noBoard = false;
+if(is_null($board)){
+    $noBoard = true;
+    $board = new boardClass(__DIR__ . '/boardConfigs/baseConf.php', -1, -1);
+}
+
 $boardHtml = new htmlclass($board->getConf(), $board);
 
+function goToRealboard(){
+    global $AUTH;
+    global $noBoard;
+
+    if($AUTH->isSuper() && $noBoard){
+        $board = getFirstValidBoard();
+        if(is_null($board)){
+            drawErrorPageAndDie("something is seriously wrong. contact kotatsuBBS and report this");
+        }
+        redirectToAdmin($board);
+    }else{
+        redirectToHome();
+    }
+}
 function userLoggingIn(){
     global $globalConf;
     global $AUTH;
     global $board;
+    global $noBoard;
 
     if(!isset($_POST['password'])){
         drawErrorPageAndDie("no password provided");
@@ -31,7 +61,9 @@ function userLoggingIn(){
      */
     $AUTH->setRoleByHash($passHash, $board->getBoardID());
     logAudit($board, $AUTH->getName() . " has logged in as a " . $AUTH);
-
+    if($noBoard){
+        goToRealboard();
+    }
 }
 
 function userLoggingOut(){
@@ -80,11 +112,11 @@ function userDeletingBoard(){
         }
         logAudit($board, $AUTH->getName() . " has deleted a board");
         deleteBoardByID($boardID);
-        return;
+        return $boardID;
     }
     logAudit($board, $AUTH->getName() . " tried to delete a board but is not authorized...");
     drawErrorPageAndDie("you are not authorized.");
-    return;
+    return -1;
 }
 
 function banPost(){
@@ -141,7 +173,6 @@ function banPost(){
 }
 
 
-
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
 /*
  *  exit if we are not authenticated.
@@ -149,6 +180,7 @@ function banPost(){
 if($AUTH->isNotAuth()){
     if(isset($_POST['action']) && $_POST['action'] == "login"){
         userLoggingIn();
+        
         redirectToAdmin($board);
     }else{
         $boardHtml->drawLoginPage();
@@ -174,8 +206,12 @@ if(isset($_POST['action'])){
             redirectToAdmin($board);
             break;
         case 'deleteBoard':
-            userDeletingBoard();
-            redirectToAdmin($board);
+            $id = userDeletingBoard();
+            if($id == $board->getBoardID()){
+                redirectToHome();
+            }else{
+                redirectToAdmin($board);
+            }
             break;
         case 'banPost':
             banPost();
@@ -187,6 +223,9 @@ if(isset($_POST['action'])){
 			break;
 	}
 }elseif (isset($_GET['action'])){
+    if($noBoard){
+        goToRealboard();
+    }
 	$action = $_GET['action'];
 	switch ($action) {
         case 'listByIP':
@@ -217,5 +256,8 @@ if(isset($_POST['action'])){
     return;
 }
 
-
-$boardHtml->drawAdminPage();
+if($noBoard){
+    goToRealboard();
+}else{
+    $boardHtml->drawAdminPage();
+}

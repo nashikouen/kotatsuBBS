@@ -12,6 +12,20 @@ require_once __DIR__ .'/common.php';
 
 $globalConf = require __DIR__ ."/../conf.php";
 
+function getFirstValidBoard(){
+    $BOARDREPO = BoardRepoClass::getInstance();
+
+    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+
+	foreach($files as $file){
+		$conf = include($file);
+		if($conf['boardID'] == -1 ){
+			continue;
+		}
+		return $BOARDREPO->loadBoardByID($conf['boardID']);
+	}
+	return null;
+}
 function createBoard($name, $desc, $smallName, $isUnlisted=true){
     $BOARDREPO = BoardRepoClass::getInstance();
     $confDir = realpath(__DIR__ . "/../boardConfigs/") . '/';
@@ -57,6 +71,9 @@ function deleteFilesInThreadByID($id){
     rmdir($dir);
 }
 function deleteBoardByID($boardID){
+    if(getBoardCount() <= 1){
+        drawErrorPageAndDie("can not delete. you must have one active board at any time.");
+    }
     $BOARDREPO = BoardRepoClass::getInstance();
     $board = $BOARDREPO->loadBoardByID($boardID);
 
