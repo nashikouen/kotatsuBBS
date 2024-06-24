@@ -18,6 +18,7 @@ class PostDataClass {
     private string $IP;//poster's ip
     private string $special;//special things like. auto sage, locked, animated gif, etc. split by a _thing_
     private $config;
+    private $isSaging = false;
 
     private $fileRepo;
     private $isFilesFullyLoaded;
@@ -142,8 +143,20 @@ class PostDataClass {
         $this->comment = preg_replace('#\[rt\](.*?)\[/rt\]#si', '<rt>\1</rt>', $this->comment);
         $this->comment= preg_replace('#\[rp\](.*?)\[/rp\]#si', '<rp>\1</rp>', $this->comment);
     }
+    public function isSage(){
+        if(stripos($this->getEmail(),"sage")!== false){
+            if($this->getConf()['visableSage'] == false){
+                $this->isSaging = true;
+            }
+            return true;
+        }elseif($this->isSaging == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
     public function isBumpingThread(){
-        if(stripos($this->getEmail(),"sage")!== false){//bc 2 was not enough...
+        if($this->isSage()){
             return false;
         }else{
             return true;

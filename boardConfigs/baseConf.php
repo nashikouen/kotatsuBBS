@@ -81,6 +81,7 @@ return [
     'allowQuoteing' => true,        // allows text to be quoted
     'allowBBcode' => true,          // allows users to use [s1]text[/s1]
     'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks
+    'visableSage' => true,          // when ever you sage. it will be know to others you are saging.
 
     'allowModsToSeeIPs' => false,
     'banMessage' => "(USER WAS BANNED FOR THIS POST)",

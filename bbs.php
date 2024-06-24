@@ -54,6 +54,12 @@ function applyPostFilters($post){
         $post->applyBBCode();
     }
 
+    if($conf['visableSage']){
+        if($post->isSage()){
+            $post->setName($post->getName() . ' <b><font color="#F00">SAGE!</font></b>');
+        }
+    }
+
 	//new lines get converted to <br>
 	$post->addLineBreaks();
 
