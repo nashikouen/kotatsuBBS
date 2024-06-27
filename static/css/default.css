@@ -213,3 +213,40 @@ body {
     font-weight: bold;
     font-family: Verdana, Tahoma, Arial;
 }
+
+.adminTable {
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+.adminTable tr:nth-child(odd) { 
+    background-color: #f7efea; 
+}
+.adminTable tr:first-child { 
+    background-color: #eeaa88; 
+}
+.adminTable tr:hover { 
+    background-color: #f0e0d6; 
+}
+.adminTable td {
+    padding: 4px;
+    border: 1px solid #000;
+    vertical-align: top;
+    word-wrap: break-word;
+}
+.adminTable .comment{
+    position: relative;
+    width: 100%;
+}
+.adminTable .comment-box {
+    width: 100%;
+    height: 3.6em;
+    line-height: 1.2em;
+    overflow: hidden;
+    resize: both;
+    padding: 4px;
+    box-sizing: border-box;
+}
+.adminTable .overflow-icon {
+    display: none; 
+}

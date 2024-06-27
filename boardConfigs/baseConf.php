@@ -50,7 +50,8 @@ return [
     'threadsPerPage' => 15,         // this is how many threads will be showed per page
     'maxActiveThreads' => 150,      // this is how many threads can be active at once
     'maxArchivedThreads' => 150,    // this is how many threads will be held onto after max active is reached.
-    'postPerThreadListing' => 5,    // this is how many post will be shown wh
+    'postPerThreadListing' => 5,    // this is how many post will be shown when post lisitng on main page
+    'postPerAdminPage' => 200,      // this is how many post will be shown in admin pannel
     'postUntilCantBump' => 150,     // max number of post untill thread can be bumped any more
     'timeUntilCantBump' => 7*24*60*60, // this is the number of days untill a thread cant be bumped anymore
 

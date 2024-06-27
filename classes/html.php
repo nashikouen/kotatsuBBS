@@ -528,7 +528,7 @@ class htmlclass {
             $this->html .='
             ACTIONS :&nbsp;';
             $this->drawLogOutForm();
-            $this->html .='[<a href="'.ROOTPATH.'admin/postListing" >admin post view</a>]
+            $this->html .='[<a href="'.ROOTPATH. boardIDToName($this->board->getBoardID()). '/admin/postListing" >admin post view</a>]
         </div>';
     }
     private function drawPostIP($post){
@@ -713,6 +713,101 @@ class htmlclass {
         </form>
         </div>';
     }
+    private function drawPostsAdminListing($posts){
+        $this->html .= '<!-- drawPostsAdminListing($posts)-->
+        <hr><table class="adminTable" width="100%" style="font-size:10pt;">
+        <tr>
+            <td width="3%"><tt><b>PID</b></tt></td>
+            <td width="5%"><tt><b>IP</b></tt></td>
+            <td width="8%"><tt><b>Name</b></tt></td>
+            <td width="30%"><tt><b>Comment</b></tt></td>
+            <td width="40%"><tt><b>Files</b></tt></td>
+            <td width="8%"><tt><b>Subject</b></tt></td>
+            <td width="8%"><tt><b>Email</b></tt></td>
+            <td width="4%"><tt><b>TID</b></tt></td>
+            <td width="2%"><tt><b>BID</b></tt></td>
+        </tr>';
+        foreach($posts as $post){
+            $comment = $post->getComment(); // Directly use the comment content
+            $this->html .= 
+            '<tr>
+                <td><font size="2">'. $post->getPostID() .'</font></td>
+                <td><font size="2">'. $post->getIP() .'</font></td>
+                <td><font size="2">'. $post->getName().'</font></td>
+                <td>
+                    <div class="comment">
+                        <div class="comment-box">'. $comment .'</div>
+                        <span class="overflow-icon" title="More content available">&#x21AA;</span>
+                    </div>
+                </td>
+                <td><details><summary>preview</summary>gao</details></td>
+                <td><font size="2">'. $post->getSubject() .'</font></td>
+                <td><font size="2">'. $post->getEmail() .'</font></td>
+                <td><font size="2">'. $post->getThreadID() .'</font></td>
+                <td><font size="2">'. $post->getBoardID() .'</font></td>
+            </tr>';
+        }
+        $this->html .= '</table><hr>';
+
+    }
+    /*
+    function drawFileListing($page=1){
+
+        
+        $cookie = getSplitCookie();
+        // Main header (please adjust the width if you change the display items)
+        echo 
+        '<hr><table width="100%" style="font-size:10pt;">
+        <tr>';
+            if($cookie['showDeleteButton']) echo                                    '<td width="2%"><tt><b>DELETE</b></tt></td>';
+            echo                                                                    '<td width="4%"><tt><b>FILE</b></tt></td>';
+            if($cookie['showImagePreview']) echo                                    '<td width="15%"><tt><b>PREVIEW</b></tt></td>';
+            if($cookie['showComment'])  echo                                        '<td width="15%"><tt><b>COMMENT</b></tt></td>';
+            if($cookie['showOriginalName']&& $conf['allowDrawOriginalName']) echo   '<td width="8%"><tt><b>ORIGINAL NAME</b></tt></td>';
+            if($cookie['showDateUploaded'] && $conf['allowDrawDateUploaded']) echo  '<td width="4%"><tt><b>UPLOAD DATE</b></tt></td>';
+            if($cookie['showFileSize']) echo                                        '<td width="4%"><tt><b>SIZE</b></tt></td>';
+            if($cookie['showMimeType']) echo                                        '<td width="4%"><tt><b>MIME</b></tt></td>';
+            echo 
+        '</tr>';
+    
+        $lineOffset = $currentLine + $count;
+        while ($currentLine < $lineOffset && !feof($fileHandle)) {
+            $line = fgets($fileHandle);
+            if ($line == false || trim($line) == '') {
+                continue;
+                //empty line
+            }
+            $data = createDataFromString($line);
+    
+            $fileName = $conf['prefix'] . getID($data) .'.'. getFileExtention($data);
+            $path = $conf['uploadDir'] . $fileName;
+    
+            if($cookie['showDeleteButton']) echo    '<td><small><a href='. $_SERVER['PHP_SELF'] .'?deleteFileID='.getID($data).'>■</a></small></td>';
+            echo                                    '<td><a href="'. $path .'">'.$fileName.'</a></td>';
+            
+            if($cookie['showImagePreview'] &&  in_array(getFileExtention($data), IMAGE_EXTENTIONS)){
+                echo                                '<td><details><summary>preview</summary><img loading="lazy" src="'.$path.'" width="250" height="250" title="'.$fileName.'"></td>';
+            }elseif($cookie['showImagePreview'] &&  in_array(getFileExtention($data), VIDEO_EXTENTIONS)){
+                echo                                '<td><details><summary>preview</summary><video loading="lazy" controls="controls" loop="loop" src="'.$path.'" width="250" height="250" title="'.$fileName.'"></td>';
+            }elseif($cookie['showImagePreview'] &&  in_array(getFileExtention($data), AUDIO_EXTENTIONS)){
+                echo                                '<td><details><summary>preview</summary><audio loading="lazy" controls=""><source src="'.$path.'" type="audio/mpeg"></audio></td>';
+            }elseif($cookie['showImagePreview']){
+                echo                                '<td></td>';
+            }
+            if(getComent($data)==""){$comment= $conf['defaultComment'];}else{$comment = getComent($data);}
+            if($cookie['showComment']) echo         '<td><font size=2>'. $comment .'</font></td>';
+            if($cookie['showOriginalName'] && $conf['allowDrawDateUploaded'])  echo '<td><font size=2>'. getOriginalFileName($data) .'</font></td>';
+            if($cookie['showDateUploaded'] && $conf['allowDrawDateUploaded']) echo '<td><font size=2>'.  date('Y-m-d H:i:s', getDateUploaded($data)) .'</font></td>';
+            if($cookie['showFileSize']) echo        '<td><font size=2>'. bytesToHumanReadable(getSizeInBytes($data)) .'</font></td>';
+            if($cookie['showMimeType']) echo        '<td><font size=2 color=888888>'. getMimeType($data) .'</font></td>';
+            echo                                    '</tr>';
+            $currentLine = $currentLine + 1;
+        }
+        echo "</table><hr>";
+    }
+*/
+
+
     private function drawFormExportDatabase(){
 
     }
@@ -728,9 +823,7 @@ class htmlclass {
     private function drawFormManageBans(){
 
     }
-    private function drawAdminPostListing(){
 
-    }
 
 
     /* drawBase is the defualt templet that all pages will be built from unless specifies else wize */
@@ -839,8 +932,15 @@ class htmlclass {
     public function drawEditPostPage($post){
         
     }
-    public function drawAdminPostListingPage(){
+    public function drawAdminPostListingPage($posts){
+        $functions = [
+            ['function' => [$this, 'drawPostsAdminListing'], 'params' => [$posts]],
+            //['function' => [$this, 'drawFormBanPost'], 'params' => [$post]]
 
+        ];
+        $this->drawBase($functions);
+
+        echo $this->html;
     }
 
 

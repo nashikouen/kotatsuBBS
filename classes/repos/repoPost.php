@@ -196,6 +196,23 @@ class PostRepoClass implements PostDataRepositoryInterface {
         $stmt->close();
         return $posts;
     }
+    public function loadPostsByPage($boardConf, $page=0){
+        $posts = [];
+        $offset = $page * $boardConf['postPerAdminPage'];
+
+        $stmt = $this->db->prepare("SELECT * FROM posts WHERE boardID = ? ORDER BY postTime DESC LIMIT ? OFFSET ?");
+        $stmt->bind_param("iii", $boardConf['boardID'], $boardConf['postPerAdminPage'], $offset );
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $posts[] =  new PostDataClass($boardConf, $row['name'], $row['email'], $row['subject'], 
+                                     $row['comment'], $row['password'], $row['postTime'], $row['ip'], 
+                                     $row['threadID'], $row['postID'], $row['special']);
+        }
+        
+        $stmt->close();
+        return $posts;
+    }
     public function getPostCount($boardConf, $threadID){
         $count = 0;
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM posts WHERE boardID = ? AND threadID = ?");

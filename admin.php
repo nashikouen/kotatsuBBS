@@ -13,6 +13,7 @@ require_once __DIR__ .'/lib/adminControl.php';
 
 $AUTH = AuthClass::getInstance();
 $board = getBoardFromRequest(true);
+$POSTREPO = PostRepoClass::getInstance();
 
 /* 
  *  x_x i really dont know, i want to have a admin log in when there is no board 
@@ -172,6 +173,16 @@ function banPost(){
     }
 }
 
+function userPostListing(){
+    global $POSTREPO;
+    global $board;
+    global $boardHtml;
+    $page = 0;
+    $posts = $POSTREPO->loadPostsByPage($board->getConf(), $page);
+
+    $boardHtml->drawAdminPostListingPage($posts);
+    exit();
+}
 
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
 /*
@@ -228,8 +239,8 @@ if(isset($_POST['action'])){
     }
 	$action = $_GET['action'];
 	switch ($action) {
-        case 'listByIP':
-            //userLoggingOut();
+        case 'postListing':
+            userPostListing();
             //redirectToBoard($board);
 			break;
         case 'editPost':
