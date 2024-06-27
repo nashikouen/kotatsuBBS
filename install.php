@@ -40,7 +40,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 				subject VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
 				comment TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 				ip VARCHAR(45) NOT NULL,
-				postTime INT NOT NULL,
+				postTime BIGINT NOT NULL,
 				special TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
 				FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
@@ -48,7 +48,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 			"CREATE TABLE IF NOT EXISTS threads (
 				threadID INT AUTO_INCREMENT PRIMARY KEY,
 				boardID INT NOT NULL,
-				lastTimePosted INT NOT NULL,
+				lastTimePosted BIGINT NOT NULL,
 				opPostID INT,
                 status VARCHAR(10) DEFAULT 'active',
 				FOREIGN KEY (boardID) REFERENCES boards(boardID) ON DELETE CASCADE ON UPDATE CASCADE
@@ -74,8 +74,8 @@ if(file_exists(__DIR__ . "/conf.php")){
                 reason TEXT,
                 category VARCHAR(20),
                 isPublic BOOLEAN DEFAULT 0,
-                createdAt INT NOT NULL,
-                expiresAt INT NULL,
+                createdAt BIGINT NOT NULL,
+                expiresAt BIGINT NULL,
                 INDEX idx_ip (ipAddress, ipRange),
                 INDEX idx_board (boardID)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
@@ -88,7 +88,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 category VARCHAR(20),
                 boardID INT NULL,
                 isPublic BOOLEAN DEFAULT 0,
-                createdAt INT NOT NULL,
+                createdAt BIGINT NOT NULL,
                 INDEX idx_file_hash (fileHash)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
 
@@ -99,7 +99,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 boardID INT NULL,
                 category VARCHAR(20),
                 isPublic BOOLEAN DEFAULT 0,
-                createdAt INT NOT NULL,
+                createdAt BIGINT NOT NULL,
                 INDEX idx_banned_string (bannedString(255))
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
 		];
