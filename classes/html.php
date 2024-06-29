@@ -337,28 +337,28 @@ class htmlclass {
             '<div class="file '.$inline.'" id="f'.$count.'">';
                 if($file->isMissing()){
                     $filesS .= '
-                    <img class="'.$float.'" src="'.$missingFileThumb.'">';
+                    <img class="'.$float.' media" src="'.$missingFileThumb.'">';
                 }elseif(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
                     $filesS .= '
                     <a href="'.$webLocation. $file->getStoredName().'" class="image" target="_blank" rel="nofollow">
-                        <img class="'.$float.'" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
+                        <img class="'.$float.' media" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
                     </a>';
                 }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
                     $filesS .=
                     '<a href="'.$webLocation. $file->getStoredName().'" class="video" target="_blank" rel="nofollow">
-                        <img class="'.$float.'" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
+                        <img class="'.$float.' media" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
                     </a>';
                 }elseif($file->getFileExtention() == "swf"){
                     $filesS .=
                     '<a href="'.$webLocation. $file->getStoredName().'"class="swf" target="_blank" rel="nofollow">
-                        <img class="'.$float.'" src="'.$SWFThumb.'" title="'.$file->getStoredName().'">
+                        <img class="'.$float.' media" src="'.$SWFThumb.'" title="'.$file->getStoredName().'">
                     </a>';
                 }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){
-                    $filesS .= '<audio loading="lazy" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
+                    $filesS .= '<audio loading="lazy" class="media" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
                 }else{
                     $filesS .= '
                     <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
-                        <img class="'.$float.'" src="'.$unknownFileThumb.'" title="'.$file->getStoredName().'">
+                        <img class="'.$float.' media" src="'.$unknownFileThumb.'" title="'.$file->getStoredName().'">
                     </a>';
                 }
                 $filesS .= 
@@ -552,17 +552,17 @@ class htmlclass {
             [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/postListing/byIP/'.$post->getPostID().'">'.$ip.'</a>]
         </span>';
     }
-    private function drawBanButton($post){
+    public function drawCustomButton($text, $class, $href){
         $this->html .= 
         '<span>
-            [<a class="banButton" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/ban/'.$post->getPostID().'">ban</a>]
+            [<a class="'.$class.'" href="'.$href.'">'.$text.'</a>]
         </span>';
     }
+    private function drawBanButton($post){
+        $this->drawCustomButton("ban", "banButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/ban/'.$post->getPostID());
+    }
     private function drawEditButton($post){
-        $this->html .= 
-        '<span>
-            [<a class="editButton" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/edit/'.$post->getPostID().'">edit</a>]
-        </span>';
+        $this->drawCustomButton("edit", "editButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/edit/'.$post->getPostID());
     }
     private function drawAdminViewPost($post){
         // this is what gets attached to every post when you are logged in
@@ -713,38 +713,54 @@ class htmlclass {
         </form>
         </div>';
     }
+
+    private function drawAdminFileListing($files,$threadID){
+        if(empty($files)){
+            return;
+        }
+        $this->html .= '<details><summary>preview</summary>';
+        $this->drawFiles($files, $threadID);
+        $this->html .= '</details>';
+    }
     private function drawPostsAdminListing($posts){
         $this->html .= '<!-- drawPostsAdminListing($posts)-->
         <hr><table class="adminTable" width="100%" style="font-size:10pt;">
         <tr>
             <td width="3%"><tt><b>PID</b></tt></td>
             <td width="5%"><tt><b>IP</b></tt></td>
+            <td width="8%"><tt><b>Actions</b></tt></td>
             <td width="8%"><tt><b>Name</b></tt></td>
             <td width="30%"><tt><b>Comment</b></tt></td>
-            <td width="40%"><tt><b>Files</b></tt></td>
-            <td width="8%"><tt><b>Subject</b></tt></td>
-            <td width="8%"><tt><b>Email</b></tt></td>
-            <td width="4%"><tt><b>TID</b></tt></td>
-            <td width="2%"><tt><b>BID</b></tt></td>
+            <td width="30%"><tt><b>Files</b></tt></td>
+            <td width="6%"><tt><b>Subject</b></tt></td>
+            <td width="4%"><tt><b>Email</b></tt></td>
+            <td width="4%"><tt><b>Board</b></tt></td>
+            <td width="2%"><tt><b>TID</b></tt></td>
         </tr>';
         foreach($posts as $post){
-            $comment = $post->getComment(); // Directly use the comment content
             $this->html .= 
             '<tr>
                 <td><font size="2">'. $post->getPostID() .'</font></td>
                 <td><font size="2">'. $post->getIP() .'</font></td>
+                <td>';
+                    $this->drawBanButton($post);
+                    $this->drawEditButton($post);
+                    $this->html .= 
+                '</td>
                 <td><font size="2">'. $post->getName().'</font></td>
                 <td>
                     <div class="comment">
-                        <div class="comment-box">'. $comment .'</div>
-                        <span class="overflow-icon" title="More content available">&#x21AA;</span>
+                        <div class="comment-box">'. $post->getComment() .'</div>
                     </div>
                 </td>
-                <td><details><summary>preview</summary>gao</details></td>
+                <td>';
+                $this->drawAdminFileListing($post->getFiles(), $post->getThreadID());
+                $this->html .= '
+                </td>
                 <td><font size="2">'. $post->getSubject() .'</font></td>
                 <td><font size="2">'. $post->getEmail() .'</font></td>
+                <td><font size="2">'. boardIDToName($post->getBoardID()) .'</font></td>
                 <td><font size="2">'. $post->getThreadID() .'</font></td>
-                <td><font size="2">'. $post->getBoardID() .'</font></td>
             </tr>';
         }
         $this->html .= '</table><hr>';

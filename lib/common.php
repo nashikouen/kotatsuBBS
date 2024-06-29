@@ -56,15 +56,19 @@ function nameIDToBoardID($nameID){
 	return '';
 }
 function boardIDToName($boardID){
-    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+    static $boardCache = null;
 
-    foreach($files as $file){
-        $conf = require($file);
-        if($conf['boardID'] == $boardID){
-            return $conf['boardNameID'];
+    if ($boardCache === null) {
+        $boardCache = [];
+        $files = glob(__DIR__ . '/../boardConfigs/*.php');
+
+        foreach($files as $file){
+            $conf = require($file);
+            $boardCache[$conf['boardID']] = $conf['boardNameID'];
         }
     }
-    return '';
+
+    return isset($boardCache[$boardID]) ? $boardCache[$boardID] : '';
 }
 function getBoardListing($getUnlited=false){
 	$files = glob(__DIR__ . '/../boardConfigs/*.php');
