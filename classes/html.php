@@ -741,7 +741,7 @@ class htmlclass {
             $this->html .= 
             '<tr>
                 <td><font size="2">'. $post->getPostID() .'</font></td>
-                <td><font size="2">'. $post->getIP() .'</font></td>
+                <td><font size="2">'; $this->drawPostIP($post); $this->html .= '</font></td>
                 <td>';
                     $this->drawBanButton($post);
                     $this->drawEditButton($post);
