@@ -240,7 +240,7 @@ function userDeletedPost($board, $post, $password){
         return;
     }
     if($AUTH->isAuth($board->getBoardID())){
-        logAudit($board, $AUTH->getName() . " has deleted post " . $post->postID());
+        logAudit($board, $AUTH->getName() . " has deleted post " . $post->getPostID());
     }
     deletePost($post);
 }

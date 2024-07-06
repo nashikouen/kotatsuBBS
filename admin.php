@@ -122,9 +122,10 @@ function userDeletingBoard(){
 
 function banPost(){
     global $board;
+    global $AUTH;
     $POSTREPO = PostRepoClass::getInstance();
     $BANREPO = BanRepoClass::getInstance();
-
+    $banText = "";
     /*
      *  this looks so ugly...
      */
@@ -153,24 +154,32 @@ function banPost(){
     //ban ip
     if($isBanIP){
         $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, false, false, $isAddTosSpamDB);
+        $banText .= " is IP banned untill ". $expireTime. ".";
     }
     //ban domain
     if($isBanDomain){
         $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, false, $isAddTosSpamDB);
+        $banText .= " domain has been banned.";
     }
     //ban file
     if($isBanFile){
         foreach($post->getFiles() as $file){
             $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isAddTosSpamDB);
         }
+        $banText .= " files has been banned.";
     }
+    
+    logAudit($board, $AUTH->getName() . ' a banned post. '. $banText);
+
     //delete post
     if($isDeletePost){
+        logAudit($board, $AUTH->getName() . " has deleted post " . $post->getPostID());
         deletePost($post);
     }else{
         $post->appendText($publicMessage);
         updatePost($post);
     }
+
 }
 
 function userPostListing(){
