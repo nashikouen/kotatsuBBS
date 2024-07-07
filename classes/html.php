@@ -594,6 +594,33 @@ class htmlclass {
         </form>';
     }
 
+    private function drawFormCreateCatagory(){
+        global $BANREPO;
+        $categories = $BANREPO->loadCategories();
+        $this->html .='
+        <!--drawFormCreateBoard()-->
+        <center class="adminForm">
+        <h3><b>Create Ban Catagories</b></h3>
+        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <input type="hidden" name="action" value="createCategory">
+            <table>
+            <tr>
+                <td class="accent"><label for="newCategoryName">New Category Name:</label></td>
+                <td><input type="text" id="newCategoryName" name="newCategoryName" required></td>
+                <td><button type="submit">Create Category</button></td>
+            </tr>
+            </table>
+        </form>
+        <details><summary>Current Categories</summary>';
+            foreach ($categories as $category) {
+                $this->html .= '<div>' . htmlspecialchars($category) . '</div>';
+            }
+            $this->html .= '
+        </details>
+        </center>';
+        
+    }
 
     private function drawFormCreateBoard(){
         $this->html .='
@@ -993,6 +1020,7 @@ class htmlclass {
 
         $id = $this->board->getBoardID();
         $isAdmin = $AUTH->isAdmin($id);
+        $isMod = $AUTH->isModerator($id);
         $isSuper = $AUTH->isSuper();
 
         if($isAdmin){
@@ -1004,6 +1032,11 @@ class htmlclass {
             $functions[] = ['function' => [$this, 'drawFormPremoteUser'], 'params' => []];
             $functions[] = ['function' => [$this, 'drawFormDemoteUser'], 'params' => []];
             $functions[] = ['function' => [$this, 'drawFormChangeBoardSettings'], 'params' => []];
+        }
+        if($isMod or $isAdmin){
+            if($isSuper){
+                $functions[] = ['function' => [$this, 'drawFormCreateCatagory'], 'params' => []];
+            }
         }
 
         $this->drawBase($functions);

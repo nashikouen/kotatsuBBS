@@ -119,7 +119,17 @@ function userDeletingBoard(){
     drawErrorPageAndDie("you are not authorized.");
     return -1;
 }
+function userCreateCatagory(){
+    global $BANREPO;
+    global $board;
+    global $AUTH;
 
+    $newCategoryName = $_POST['newCategoryName'];
+
+    $BANREPO->banIP(0, '', 'catagory addition', 0, false, false, false, $newCategoryName);
+
+    logAudit($board, $AUTH->getName() . ' created a new category: ' . $newCategoryName);
+}
 function banPost(){
     global $board;
     global $AUTH;
@@ -223,6 +233,10 @@ if(isset($_POST['action'])){
 			break;
         case 'createBoard':
             $board = userCreatingBoard();
+            redirectToAdmin($board);
+            break;
+        case 'createCategory':
+            userCreateCatagory();
             redirectToAdmin($board);
             break;
         case 'deleteBoard':
