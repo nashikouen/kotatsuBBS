@@ -1,30 +1,24 @@
 @import url("base.css");
 
-@font-face {
-    font-family: 'saitamaar';
-    src: url('/static/fonts/Saitamaar.woff2') format('woff2');
-}
 body {
-    background-color: #dbff99;
-    color: #800043;
-    font-family: "MS PGothic", IPAMonaPGothic, Monapo, Mona, submona,"saitamaar", sans-serif; 
-    font-size: 12pt;
+	background-color: #ffffee;
+	color: #880000;
+	font-family: Times New Roman;
+	font-size: 16px;
 }
 
+/* add separators to page */
 #mainForm,
 .boardTitle,
 .thread{
-    border-bottom: 2px dashed #616103;
+	border-bottom: 1px solid #000;
 }
 
 
 /* the coloring you see next to thread/post creation form */
 .accent{
-    background: #fff869;
-    border-bottom: 1px solid #800043;
-    border-top: 2px solid white;
-    border-right: 2px solid #800043;
-    border-left: 1px solid white;
+	background: #eeaa88;
+	border: 1px solid #800000;
 }
 /* the text you see when there is post hidden */
 .omittedposts {
@@ -35,35 +29,29 @@ body {
 /* the text decaration next to post number */
 .postnum a {
 	color: inherit;
-}
-.postnum {
-    text-decoration: underline;
+	text-decoration: none;
 }
 /* the color of a post */
 .reply{
-    background: #fffa96;
-	border-bottom: 1px solid #800043;
-	border-right: 2px solid #800043;
-    border-left: 1px solid white;
-    border-top: 2px solid white;
+	background: #f0e0d6;
 }
 /* the color of a post when you have it selected */
 .reply:target{
-	background: #fff869;
+	background: #f0c0b0;
 }
 
 
 /* color of a post name*/
 .name{
-    color: #ac5611;
+	color: #117743;
 }
 /* color of a post subject */
 .subject{
-    color: #ff8622;
+	color: #cc1105
 }
 /* color of a post quote */
 .quote {
-    color: #d77230;
+    color: #789922;
 }
 /* color of ban text */
 .warning {
@@ -77,13 +65,13 @@ body {
 }
 /* threading is the bar that spans across the screen, replay, admin mode, etc */
 .theading {
-    background-color: #91b74c;
+	background-color: #E04000;
 }
 .theading2 {
-    background-color: #8ac9d1;
+	background-color: #0040E0;
 }
 .theading3 {
-    background-color: #d09ac6;
+	background-color: #E08000;
 }
 
 
@@ -91,14 +79,14 @@ body {
  *  in admin pannel there is tables, this is the table colors for easier visability and 
  */
 .adminTable tr:first-child { 
-    background-color: #d09ac6; 
+    background-color: #eeaa88; 
 }
 .adminTable tr:nth-child(even) {
-    background-color: #fffcb9;
+    background-color: #ffffee;
 }
 .adminTable tr:nth-child(odd) { 
-    background-color: #fffa96; 
+    background-color: #f7efea; 
 }
 .adminTable tr:hover { 
-    background-color: #fff869; 
+    background-color: #f0e0d6; 
 }
