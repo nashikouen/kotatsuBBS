@@ -153,6 +153,11 @@ function banPost(){
     $banReason = $_POST['banReason'];
     $publicMessage = $_POST['publicMessage'];
     $isPublic = isset($_POST['isPublic']) ? true : false;
+    $isGlobal = isset($_POST['isGlobal']) ? true : false;
+
+    if($AUTH->isSuper() == false){
+        $isGlobal = false;
+    }
 
     if($isBanForerver){
         $expireTime = PHP_INT_MAX;
@@ -164,18 +169,18 @@ function banPost(){
 
     //ban ip
     if($isBanIP){
-        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, $rangeBan, false, $isPublic, $category);
+        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, $rangeBan, $isGlobal, $isPublic, $category);
         $banText .= " is IP banned untill ". $expireTime. ".";
     }
     //ban domain
     if($isBanDomain){
-        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, false, $isPublic, $category);
+        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, $isGlobal , $isPublic, $category);
         $banText .= " domain has been banned.";
     }
     //ban file
     if($isBanFile){
         foreach($post->getFiles() as $file){
-            $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false,false, $isPublic, $category);
+            $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isGlobal, $isPublic, $category);
         }
         $banText .= " files has been banned.";
     }

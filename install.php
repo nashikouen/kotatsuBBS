@@ -69,11 +69,11 @@ if(file_exists(__DIR__ . "/conf.php")){
             "CREATE TABLE IF NOT EXISTS ipBans (
                 banID INT AUTO_INCREMENT PRIMARY KEY,
                 ipAddress VARCHAR(45),
-                ipRange VARCHAR(45),
                 boardID INT NULL,
                 reason TEXT,
                 category VARCHAR(20),
                 isPublic BOOLEAN DEFAULT 0,
+                isGlobal BOOLEAN DEFAULT 0,
                 createdAt BIGINT NOT NULL,
                 expiresAt BIGINT NULL,
                 INDEX idx_ip (ipAddress),
@@ -88,6 +88,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 category VARCHAR(20),
                 boardID INT NULL,
                 isPublic BOOLEAN DEFAULT 0,
+                isGlobal BOOLEAN DEFAULT 0,
                 createdAt BIGINT NOT NULL,
                 INDEX idx_file_hash (fileHash)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
@@ -99,6 +100,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 boardID INT NULL,
                 category VARCHAR(20),
                 isPublic BOOLEAN DEFAULT 0,
+                isGlobal BOOLEAN DEFAULT 0,
                 createdAt BIGINT NOT NULL,
                 INDEX idx_banned_string (bannedString(255))
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"

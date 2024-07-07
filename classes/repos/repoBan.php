@@ -25,9 +25,7 @@ class BanRepoClass{
         global $globalConf;
 
         $time = time();
-        if($isGlobal){
-            $boardID = 0;
-        }
+        
         if($rangeBaned == "range1"){
             $ipParts = explode('.', $ip);
             $ip = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2] . '.*';
@@ -36,9 +34,9 @@ class BanRepoClass{
             $ip = $ipParts[0] . '.' . $ipParts[1] . '.*.*';
         }
 
-        $insertQuery = "INSERT INTO ipBans (boardID, ipAddress, reason, category, createdAt, expiresAt, isPublic) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO ipBans (boardID, ipAddress, reason, category, createdAt, expiresAt, isGlobal, isPublic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($insertQuery);
-        $stmt->bind_param("isssiii", $boardID, $ip, $reason, $category, $time, $expireTime, $isPublic);
+        $stmt->bind_param("isssiiii", $boardID, $ip, $reason, $category, $time, $expireTime, $isGlobal, $isPublic);
         $stmt->execute();
 
         return true;
@@ -47,13 +45,10 @@ class BanRepoClass{
         global $globalConf;
 
         $time = time();
-        if($isGlobal){
-            $boardID = 0;
-        }
 
-        $insertQuery = "INSERT INTO fileBans (boardID, fileHash, isPerceptual, reason, category, isPublic, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO fileBans (boardID, fileHash, isPerceptual, reason, category, isGlobal, isPublic, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($insertQuery);
-        $stmt->bind_param("isissii", $boardID, $fileHash, $isPreceptual, $reason, $category, $isPublic, $time);
+        $stmt->bind_param("isissiii", $boardID, $fileHash, $isPreceptual, $reason, $category, $isGlobal, $isPublic, $time);
         $stmt->execute();
 
         return true;
@@ -62,13 +57,10 @@ class BanRepoClass{
         global $globalConf;
 
         $time = time();
-        if($isGlobal){
-            $boardID = 0;
-        }
 
-        $insertQuery = "INSERT INTO stringBans (boardID, bannedString, reason, category, isPublic, createdAt) VALUES (?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO stringBans (boardID, bannedString, reason, category, isGlobal, isPublic, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($insertQuery);
-        $stmt->bind_param("isssii", $boardID, $domain, $reason, $category, $isPublic, $time);
+        $stmt->bind_param("isssiii", $boardID, $domain, $reason, $category, $isGlobal, $isPublic, $time);
         $stmt->execute();
 
         return true;
@@ -79,7 +71,7 @@ class BanRepoClass{
         $range = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2] .'.*';
         $range2 = $ipParts[0] . '.' . $ipParts[1] . '.*.*';
 
-        $query = "SELECT * FROM ipBans WHERE (boardID = ? OR boardID = 0) AND (ipAddress = ? OR ipAddress = ? or ipAddress = ?)";
+        $query = "SELECT * FROM ipBans WHERE (boardID = ? OR isGlobal = 1) AND (ipAddress = ? OR ipAddress = ? or ipAddress = ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("isss", $boardID, $ip, $range, $range2);
         $stmt->execute();
@@ -94,7 +86,7 @@ class BanRepoClass{
         return false;
     }
     public function isFileBanned($boardID, $fileHash, $isPreceptual=false) {
-        $query = "SELECT * FROM fileBans WHERE (boardID = ? OR boardID = 0) AND fileHash = ? AND isPerceptual = ?";
+        $query = "SELECT * FROM fileBans WHERE (boardID = ? OR isGlobal = 1) AND fileHash = ? AND isPerceptual = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("isi", $boardID, $fileHash, $isPreceptual);
         $stmt->execute();
@@ -118,7 +110,7 @@ class BanRepoClass{
             $stmt->bind_param("s", $domain);
         } else {
             // Query to check for a specific board or global ban
-            $query = "SELECT * FROM stringBans WHERE (boardID = ? OR boardID = 0) AND bannedString = ?";
+            $query = "SELECT * FROM stringBans WHERE (boardID = ? OR isGlobal = 1) AND bannedString = ?";
             $stmt = $this->db->prepare($query);
             $stmt->bind_param("is", $boardID, $domain);
         }

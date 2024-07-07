@@ -685,6 +685,7 @@ class htmlclass {
         </center>';
     }
     private function drawFormBanPost($post){
+        global $AUTH;
         global $BANREPO;
         $categories = $BANREPO->loadCategories();
         $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" src="'.$this->conf['staticPath'].'image/hammer.png">');
@@ -728,7 +729,16 @@ class htmlclass {
             <tr>
                 <td class="accent"><label for="deletePost">DELETE POST?</label></td>
                 <td><input type="checkbox" id="deletePost" name="deletePost"></td>
-            </tr>
+            </tr>';
+            if($AUTH->isSuper()){
+                $this->html .= '
+                <tr>
+                    <td class="accent"><label for="isGlobal">BAN GLOBALY?</label></td>
+                    <td><input type="checkbox" id="isGlobal" name="isGlobal"></td>
+                </tr>';
+            }
+
+            $this->html .= '
             <tr>
                 <td class="accent"><label for="banTime">BANED TIME</label></td>
                 <td><input type="text" id="banTime" name="banTime" value="'.$this->conf['defaultBanTime'].'">(ex. 1w 2d 3h 4min, 0 for warning)</td>
@@ -742,7 +752,7 @@ class htmlclass {
                 <td><textarea type="text" id="publicMessage" name="publicMessage" cols="48" rows="4">'. $banMessage .'</textarea></td>
             </tr>
             <tr>
-                <td class="accent"><label for="isPublic">MAKE PUBLIC?</label></td>
+                <td class="accent"><label for="isPublic">MAKE IP PUBLIC?</label></td>
                 <td><input type="checkbox" id="isPublic" name="isPublic"></td>
             </tr>
             <tr>
@@ -815,64 +825,7 @@ class htmlclass {
             </tr>';
         }
         $this->html .= '</table><hr>';
-
     }
-    /*
-    function drawFileListing($page=1){
-
-        
-        $cookie = getSplitCookie();
-        // Main header (please adjust the width if you change the display items)
-        echo 
-        '<hr><table width="100%" style="font-size:10pt;">
-        <tr>';
-            if($cookie['showDeleteButton']) echo                                    '<td width="2%"><tt><b>DELETE</b></tt></td>';
-            echo                                                                    '<td width="4%"><tt><b>FILE</b></tt></td>';
-            if($cookie['showImagePreview']) echo                                    '<td width="15%"><tt><b>PREVIEW</b></tt></td>';
-            if($cookie['showComment'])  echo                                        '<td width="15%"><tt><b>COMMENT</b></tt></td>';
-            if($cookie['showOriginalName']&& $conf['allowDrawOriginalName']) echo   '<td width="8%"><tt><b>ORIGINAL NAME</b></tt></td>';
-            if($cookie['showDateUploaded'] && $conf['allowDrawDateUploaded']) echo  '<td width="4%"><tt><b>UPLOAD DATE</b></tt></td>';
-            if($cookie['showFileSize']) echo                                        '<td width="4%"><tt><b>SIZE</b></tt></td>';
-            if($cookie['showMimeType']) echo                                        '<td width="4%"><tt><b>MIME</b></tt></td>';
-            echo 
-        '</tr>';
-    
-        $lineOffset = $currentLine + $count;
-        while ($currentLine < $lineOffset && !feof($fileHandle)) {
-            $line = fgets($fileHandle);
-            if ($line == false || trim($line) == '') {
-                continue;
-                //empty line
-            }
-            $data = createDataFromString($line);
-    
-            $fileName = $conf['prefix'] . getID($data) .'.'. getFileExtention($data);
-            $path = $conf['uploadDir'] . $fileName;
-    
-            if($cookie['showDeleteButton']) echo    '<td><small><a href='. $_SERVER['PHP_SELF'] .'?deleteFileID='.getID($data).'>■</a></small></td>';
-            echo                                    '<td><a href="'. $path .'">'.$fileName.'</a></td>';
-            
-            if($cookie['showImagePreview'] &&  in_array(getFileExtention($data), IMAGE_EXTENTIONS)){
-                echo                                '<td><details><summary>preview</summary><img loading="lazy" src="'.$path.'" width="250" height="250" title="'.$fileName.'"></td>';
-            }elseif($cookie['showImagePreview'] &&  in_array(getFileExtention($data), VIDEO_EXTENTIONS)){
-                echo                                '<td><details><summary>preview</summary><video loading="lazy" controls="controls" loop="loop" src="'.$path.'" width="250" height="250" title="'.$fileName.'"></td>';
-            }elseif($cookie['showImagePreview'] &&  in_array(getFileExtention($data), AUDIO_EXTENTIONS)){
-                echo                                '<td><details><summary>preview</summary><audio loading="lazy" controls=""><source src="'.$path.'" type="audio/mpeg"></audio></td>';
-            }elseif($cookie['showImagePreview']){
-                echo                                '<td></td>';
-            }
-            if(getComent($data)==""){$comment= $conf['defaultComment'];}else{$comment = getComent($data);}
-            if($cookie['showComment']) echo         '<td><font size=2>'. $comment .'</font></td>';
-            if($cookie['showOriginalName'] && $conf['allowDrawDateUploaded'])  echo '<td><font size=2>'. getOriginalFileName($data) .'</font></td>';
-            if($cookie['showDateUploaded'] && $conf['allowDrawDateUploaded']) echo '<td><font size=2>'.  date('Y-m-d H:i:s', getDateUploaded($data)) .'</font></td>';
-            if($cookie['showFileSize']) echo        '<td><font size=2>'. bytesToHumanReadable(getSizeInBytes($data)) .'</font></td>';
-            if($cookie['showMimeType']) echo        '<td><font size=2 color=888888>'. getMimeType($data) .'</font></td>';
-            echo                                    '</tr>';
-            $currentLine = $currentLine + 1;
-        }
-        echo "</table><hr>";
-    }
-*/
 
 
     private function drawFormExportDatabase(){
