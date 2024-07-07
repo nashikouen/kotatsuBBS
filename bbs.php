@@ -31,8 +31,17 @@ $BANREPO = BanRepoClass::getInstance();
 
 function applyPostFilters($post){
     global $HOOK;
+    global $BANREPO;
     $conf = $post->getConf();
     $post->stripHtml();
+
+    $domains = extractUniqueDomainsFromComment($post->getComment());
+
+    foreach ($domains as $domain) {
+        if ($BANREPO->isDomainBanned($conf['boardID'], $domain, true)) {
+            drawErrorPageAndDie("domain is not allowed on this site");
+        }
+    }
 
 	// if the board allows embeding of links.
 	if($conf['autoEmbedLinks']){

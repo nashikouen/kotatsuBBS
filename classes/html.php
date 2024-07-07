@@ -10,12 +10,14 @@
 
 require_once __DIR__ .'/hook.php';
 require_once __DIR__ .'/repos/repoThread.php';
+require_once __DIR__ .'/repos/repoBan.php';
 require_once __DIR__ .'/../lib/common.php';
 require_once __DIR__ .'/auth.php';
 require_once __DIR__ .'/../lib/logging.php';
 
 $HOOK = HookClass::getInstance();
 $THREADREPO = ThreadRepoClass::getInstance();
+$BANREPO = BanRepoClass::getInstance();
 $AUTH = AuthClass::getInstance();
 
 class htmlclass {
@@ -58,10 +60,6 @@ class htmlclass {
                 <script src="'.$this->conf['staticPath'].'js/autoFillCookies.js.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
-            if($AUTH->isAuth()){
-                $this->html .= '<script src="'.$this->conf['staticPath'].'js/adminForm.js"></script>';
-            }
-            
             $this->html .= 
             
             //'<link rel="alternate" type="application/rss+xml" title="RSS 2.0 Feed" href="//nashikouen.net/main/koko.php?mode=module&amp;load=mod_rss">
@@ -660,9 +658,12 @@ class htmlclass {
         </center>';
     }
     private function drawFormBanPost($post){
+        global $BANREPO;
+        $categories = $BANREPO->loadCategories();
         $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" src="'.$this->conf['staticPath'].'image/hammer.png">');
         $this->html .= '
         <!--drawFormBanPost($post)-->
+        <script src="'.$this->conf['staticPath'].'js/adminForm.js"></script>
         <div class=banForm>
         <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="banPost">
@@ -688,6 +689,16 @@ class htmlclass {
                 <td><input type="checkbox" id="banIP" name="banIP" checked></td>
             </tr>
             <tr>
+                <td class="accent"><label for="rangeBan">RANGE BAN</label></td>
+                <td>
+                    <select id="rangeBan" name="rangeBan">
+                        <option value="none" selected>No Range Ban</option>
+                        <option value="range1">0.0.0.*</option>
+                        <option value="range2">0.0.*</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td class="accent"><label for="deletePost">DELETE POST?</label></td>
                 <td><input type="checkbox" id="deletePost" name="deletePost"></td>
             </tr>
@@ -704,11 +715,24 @@ class htmlclass {
                 <td><textarea type="text" id="publicMessage" name="publicMessage" cols="48" rows="4">'. $banMessage .'</textarea></td>
             </tr>
             <tr>
-                <td class="accent"><label for="addSpamdb">ADD TO SPAMDB?</label></td>
-                <td><input type="checkbox" id="addSpamdb" name="addSpamdb"></td>
+                <td class="accent"><label for="isPublic">MAKE PUBLIC?</label></td>
+                <td><input type="checkbox" id="isPublic" name="isPublic"></td>
+            </tr>
+            <tr>
+                <td class="accent"><label for="category">CATEGORY</label></td>
+                <td>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>';
+                        foreach ($categories as $category) {
+                            if (is_string($category)) {
+                                $this->html .= '<option value="' . htmlspecialchars($category) . '">' . htmlspecialchars($category) . '</option>';
+                            }
+                        }
+                        $this->html .= '
+                    </select>
+                </td>
             </tr>
             </table>
-            <label>make catagory drop down for db.</label>
             <button type="submit" class="bigRedButton">BAN!</button>
         </form>
         </div>';

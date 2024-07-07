@@ -21,22 +21,24 @@ class BanRepoClass{
     }
 
 
-    public function banIP($boardID, $ip, $reason, $expireTime, $isRangeBaned=false, $isGlobal=false, $isPublic=false, $category="none"){
+    public function banIP($boardID, $ip, $reason, $expireTime, $rangeBaned="none", $isGlobal=false, $isPublic=false, $category="none"){
         global $globalConf;
 
         $time = time();
-        $range = "0";
         if($isGlobal){
             $boardID = 0;
         }
-        if($isRangeBaned){
+        if($rangeBaned == "range1"){
             $ipParts = explode('.', $ip);
-            $range = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2];
+            $ip = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2] . '.*';
+        }elseif($rangeBaned == "range2"){
+            $ipParts = explode('.', $ip);
+            $ip = $ipParts[0] . '.' . $ipParts[1] . '.*.*';
         }
 
-        $insertQuery = "INSERT INTO ipBans (boardID, ipAddress, ipRange, reason, category, createdAt, expiresAt, isPublic) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO ipBans (boardID, ipAddress, reason, category, createdAt, expiresAt, isPublic) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($insertQuery);
-        $stmt->bind_param("issssiii", $boardID, $ip, $range, $reason, $category, $time, $expireTime, $isPublic);
+        $stmt->bind_param("isssiii", $boardID, $ip, $reason, $category, $time, $expireTime, $isPublic);
         $stmt->execute();
 
         return true;
@@ -72,13 +74,14 @@ class BanRepoClass{
         return true;
     }
 
-    public function isIpBanned($boardID, $ip, $isPreceptual=false) {
+    public function isIpBanned($boardID, $ip) {
         $ipParts = explode('.', $ip);
-        $range = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2];
+        $range = $ipParts[0] . '.' . $ipParts[1] . '.' . $ipParts[2] .'.*';
+        $range2 = $ipParts[0] . '.' . $ipParts[1] . '.*.*';
 
-        $query = "SELECT * FROM ipBans WHERE (boardID = ? OR boardID = 0) AND (ipAddress = ? OR ipRange = ?)";
+        $query = "SELECT * FROM ipBans WHERE (boardID = ? OR boardID = 0) AND (ipAddress = ? OR ipAddress = ? or ipAddress = ?)";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("iss", $boardID, $ip, $range);
+        $stmt->bind_param("isss", $boardID, $ip, $range, $range2);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -107,23 +110,41 @@ class BanRepoClass{
 
         return false;
     }
-    public function isDomainBanned($boardID, $domain) {
-        $query = "SELECT * FROM stringBans WHERE (boardID = ? OR boardID = 0) AND bannedString = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("is", $boardID, $domain);
+    public function isDomainBanned($boardID, $domain, $globalCheck = false) {
+        if ($globalCheck) {
+            // Query to check for a global ban
+            $query = "SELECT * FROM stringBans WHERE bannedString = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("s", $domain);
+        } else {
+            // Query to check for a specific board or global ban
+            $query = "SELECT * FROM stringBans WHERE (boardID = ? OR boardID = 0) AND bannedString = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param("is", $boardID, $domain);
+        }
+    
         $stmt->execute();
         $result = $stmt->get_result();
-
+    
         if ($result->num_rows > 0) {
             $stmt->close();
             return true;
         }
-
+    
         $stmt->close();
-
         return false;
     }
-
+    public function loadCategories() {  
+        $query = "SELECT DISTINCT category FROM ipBans";
+        $result = $this->db->query($query);
+    
+        $categories = [];
+        while ($row = $result->fetch_assoc()) {
+            $categories[] = $row['category'];
+        }
+    
+        return $categories;
+    }
     private function checkExpiration($expiresAt) {
         if ($expiresAt === null) {
             return true;

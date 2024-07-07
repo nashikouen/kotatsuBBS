@@ -224,6 +224,20 @@ function getBoardFromRequest($allowNull=false){
     }
     return $board;
 }
+function extractUniqueDomainsFromComment($comment) {
+    $regexUrl = '/(https?:\/\/[^\s]+)/';
+    preg_match_all($regexUrl, $comment, $matches);
+    $urls = $matches[0];
+    $domains = [];
+
+    foreach ($urls as $url) {
+        $domains[] = parse_url($url, PHP_URL_HOST);
+    }
+
+    // Remove duplicate domains
+    $uniqueDomains = array_unique($domains);
+    return $uniqueDomains;
+}
 function durationToUnixTime($duration){
     $starttime = $_SERVER['REQUEST_TIME'];
     

@@ -136,11 +136,13 @@ function banPost(){
     $domain = $_POST['domainString'];
     $isBanIP = isset($_POST['banIP']) ? true : false;
     $ip = $post->getIP();
+    $rangeBan = $_POST['rangeBan'];
+    $category = $_POST['category'] ?? "none";
     $isDeletePost = isset($_POST['deletePost']) ? true : false;
     $banTime = $_POST['banTime'];
     $banReason = $_POST['banReason'];
     $publicMessage = $_POST['publicMessage'];
-    $isAddTosSpamDB = isset($_POST['addSpamdb']) ? true : false;
+    $isPublic = isset($_POST['isPublic']) ? true : false;
 
     if($isBanForerver){
         $expireTime = PHP_INT_MAX;
@@ -150,21 +152,20 @@ function banPost(){
         $expireTime = durationToUnixTime($banTime);
     }
 
-
     //ban ip
     if($isBanIP){
-        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, false, false, $isAddTosSpamDB);
+        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, $rangeBan, false, $isPublic, $category);
         $banText .= " is IP banned untill ". $expireTime. ".";
     }
     //ban domain
     if($isBanDomain){
-        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, false, $isAddTosSpamDB);
+        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, false, $isPublic, $category);
         $banText .= " domain has been banned.";
     }
     //ban file
     if($isBanFile){
         foreach($post->getFiles() as $file){
-            $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isAddTosSpamDB);
+            $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false,false, $isPublic, $category);
         }
         $banText .= " files has been banned.";
     }
@@ -179,7 +180,6 @@ function banPost(){
         $post->appendText($publicMessage);
         updatePost($post);
     }
-
 }
 
 function userPostListing(){

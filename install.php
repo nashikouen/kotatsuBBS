@@ -76,7 +76,7 @@ if(file_exists(__DIR__ . "/conf.php")){
                 isPublic BOOLEAN DEFAULT 0,
                 createdAt BIGINT NOT NULL,
                 expiresAt BIGINT NULL,
-                INDEX idx_ip (ipAddress, ipRange),
+                INDEX idx_ip (ipAddress),
                 INDEX idx_board (boardID)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
 
