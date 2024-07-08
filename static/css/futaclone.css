@@ -78,14 +78,15 @@ body {
 /* 
  *  in admin pannel there is tables, this is the table colors for easier visability and 
  */
-.adminTable tr:first-child { 
-    background-color: #eeaa88; 
-}
+
 .adminTable tr:nth-child(even) {
     background-color: #ffffee;
 }
 .adminTable tr:nth-child(odd) { 
     background-color: #f7efea; 
+}
+.adminTable tr:first-child { 
+    background-color: #eeaa88; 
 }
 .adminTable tr:hover { 
     background-color: #f0e0d6; 

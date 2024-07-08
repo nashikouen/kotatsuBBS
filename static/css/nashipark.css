@@ -90,14 +90,14 @@ body {
 /* 
  *  in admin pannel there is tables, this is the table colors for easier visability and 
  */
-.adminTable tr:first-child { 
-    background-color: #d09ac6; 
-}
 .adminTable tr:nth-child(even) {
     background-color: #fffcb9;
 }
 .adminTable tr:nth-child(odd) { 
     background-color: #fffa96; 
+}
+.adminTable tr:first-child { 
+    background-color: #d09ac6; 
 }
 .adminTable tr:hover { 
     background-color: #fff869; 
