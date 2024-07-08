@@ -47,7 +47,8 @@ class htmlclass {
             <meta name="robots" content="follow,archive">
             <!--board specific stuff-->
             <title>' . $this->conf['boardTitle'] . '</title>
-            <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="defaultcss">
+            <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="customcss">
+            <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['staticPath'] .'css/base.css" title="basecss">
             <link rel="shortcut icon" href="'. $this->conf['defaultFavicon'] .'">';
 
             if($this->conf['allowRuffle'] && $this->conf['allowJS']){

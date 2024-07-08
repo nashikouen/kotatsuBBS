@@ -37,7 +37,7 @@ return [
     ],
 
     'staticPath' => "/static/",
-    'defaultCSS' => '/static/css/fataclone.css',  //change this to use ur own css. make sure to update backgroundColor to match post reply background color 
+    'defaultCSS' => '/static/css/futaclone.css',  //change this to use ur own css. make sure to update backgroundColor to match post reply background color 
     'defaultFavicon' => '/static/image/favicon.png', 
 
     'unlisted' => true,             // this will only hide your board from the nav bar. [NOTE] new boards wont respect this by defualt. you must explicitly relist your board when creating or after creation.
