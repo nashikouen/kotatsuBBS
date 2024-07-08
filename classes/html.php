@@ -47,8 +47,8 @@ class htmlclass {
             <meta name="robots" content="follow,archive">
             <!--board specific stuff-->
             <title>' . $this->conf['boardTitle'] . '</title>
-            <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="customcss">
-            <link class="linkstyle" rel="stylesheet" type="text/css" href="'. $this->conf['staticPath'] .'css/base.css" title="basecss">
+            <link rel="stylesheet" type="text/css" href="'. $this->conf['staticPath'] .'css/base.css">
+            <link rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="boardcss">
             <link rel="shortcut icon" href="'. $this->conf['defaultFavicon'] .'">';
 
             if($this->conf['allowRuffle'] && $this->conf['allowJS']){
@@ -156,7 +156,7 @@ class htmlclass {
         <table>
         <tr>
             <td class="accent"><label for="name">Name</label></td>
-            <td><input type="text" id="name" name="name" maxlength="'.MAX_INPUT_LENGTH.'" ';
+            <td><input type="text" id="name" name="name" autocomplete="off" maxlength="'.MAX_INPUT_LENGTH.'" ';
             if($this->conf['requireName']){
                 $this->html .= 'required';
             }
@@ -166,7 +166,7 @@ class htmlclass {
         <tr>
             <td class="accent"><label for="email">Email</label></td>
             <td>
-                <input type="text" id="email" name="email" maxlength="'.MAX_INPUT_LENGTH.'" ';
+                <input type="text" id="email" name="email" autocomplete="off" maxlength="'.MAX_INPUT_LENGTH.'" ';
             if($this->conf['requireEmail']){
                 $this->html .= 'required';
             }
@@ -197,8 +197,8 @@ class htmlclass {
         if($this->conf['fileConf']['maxFiles'] >= 1){
             $this->html .='
         <tr>
-            <td class="accent"><label for="files">Files</label></td>
-            <td><input type="file" name="upfile[]" multiple=""  ';
+            <td class="accent"><label for="files[]">Files</label></td>
+            <td><input type="file" id="files" name="upfile[]" multiple=""';
             if($this->conf['requireFile']){
                 $this->html .= 'required';
             }elseif($isThread && $this->conf['opMustHaveFile']){
