@@ -1,6 +1,7 @@
 @font-face {
     font-family: 'saitamaar';
     src: url('/static/fonts/Saitamaar.woff2') format('woff2');
+    font-display: swap;
 }
 body {
     background-color: #dbff99;
