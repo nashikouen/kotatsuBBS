@@ -223,6 +223,7 @@ class htmlclass {
         $this->html .= '
         </table>';
         $this->drawFormSumbitionRules();
+        $this->html .='<script src="/static/js/kao.js" defer></script>';
     }
     private function drawFormSumbitionRules(){
         global $AUTH;
