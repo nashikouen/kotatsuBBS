@@ -3,7 +3,7 @@ const kaomojis = ["ヽ(´ー｀)ノ", "(;´Д`)", "ヽ(´∇`)ノ", "(´人｀)"
     "(´￢`)", "(´π｀)", "ヽ(ﾟρﾟ)ノ", "Σ(;ﾟДﾟ)", "Σ(ﾟдﾟ|||)", "ｷﾀ━━━(・∀・)━━━!!"];
 
 if (kaomojis.length > 0) {
-    const formThread = document.getElementById('formThread');
+    const formThread = document.getElementById('mainForm').querySelector('form');
     const details = document.createElement('details');
     const summary = document.createElement('summary');
     summary.textContent = "Kaomoji";
