@@ -1,9 +1,15 @@
-const kaomojis = ["ヽ(´ー｀)ノ", "(;´Д`)", "ヽ(´∇`)ノ", "(´人｀)", "(＾Д^)", "(´ー`)", "（ ´,_ゝ`）", "(´～`)",
-    "(;ﾟДﾟ)", "(;ﾟ∀ﾟ)", "┐(ﾟ～ﾟ)┌", "ヽ(`Д´)ノ", "( ´ω`)", "(ﾟー｀)", "(・∀・)", "（⌒∇⌒ゞ）", "(ﾟ血ﾟ#)", "(ﾟｰﾟ)",
-    "(´￢`)", "(´π｀)", "ヽ(ﾟρﾟ)ノ", "Σ(;ﾟДﾟ)", "Σ(ﾟдﾟ|||)", "ｷﾀ━━━(・∀・)━━━!!"];
+const kaomojis = [
+    "(｀・ω・´)", "(・∀・)","(＾Д^)","(´ー`)","ヽ(´ー｀)ノ", "ヽ(´∇`)ノ", "( ´ω`)", "＼（＾Ｏ＾）／",
+    "Σ(°ロ°)", "(;´Д`)","Σ(;ﾟДﾟ)", "Σ(ﾟдﾟ|||)","(;ﾟ∀ﾟ)", "(;ﾟДﾟ)",
+    "ヽ(`Д´)ノ","(ﾟ血ﾟ#)","（ ´,_ゝ`）",
+     "⊂(´(ェ)ˋ)⊃","ｷﾀ━━━(・∀・)━━━!!",
+    "(´∇`)σ","(´人｀)","(´￢`)", "(´π｀)", "ヽ(ﾟρﾟ)ノ",
+    "(´～`)","┐(ﾟ～ﾟ)┌", "(ﾟｰﾟ)",  "(・_・)", "ｍ（_ _）ｍ"
+    ];
 
 if (kaomojis.length > 0) {
-    const formThread = document.getElementById('mainForm').querySelector('form');
+    const mainForm = document.getElementById('mainForm');
+    const formThread = mainForm.querySelector('form');
     const details = document.createElement('details');
     const summary = document.createElement('summary');
     summary.textContent = "Kaomoji";
