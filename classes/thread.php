@@ -26,7 +26,7 @@ class threadClass{
 		$this->postRepo = PostRepoClass::getInstance();
 	}
     public function bump(){
-        if($this->postCount >= $this->conf['postUntilCantBump']){
+        if($this->getPostCount() >= $this->conf['postUntilCantBump']){
             return;
         }elseif($this->getOPPost()->getUnixTime() - time() > $this->conf['timeUntilCantBump']){
             return;

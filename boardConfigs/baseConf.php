@@ -52,8 +52,8 @@ return [
     'maxArchivedThreads' => 150,    // this is how many threads will be held onto after max active is reached.
     'postPerThreadListing' => 5,    // this is how many post will be shown when post lisitng on main page
     'postPerAdminPage' => 200,      // this is how many post will be shown in admin pannel
-    'postUntilCantBump' => 150,     // max number of post untill thread can be bumped any more
-    'timeUntilCantBump' => 7*24*60*60, // this is the number of days untill a thread cant be bumped anymore
+    'postUntilCantBump' => 30,      // max number of post untill thread can be bumped any more
+    'timeUntilCantBump' => 7*24*60*60, // this is the number of days untill a thread cant be bumped anymore. default is 7days from the curent time
 
     'maxCommentSize' => 2048,       // this is how many characters are allowed in your comment. there is no limit in the DB
 
