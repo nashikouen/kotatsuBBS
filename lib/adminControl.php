@@ -119,10 +119,13 @@ function editPost($post, $newComment){
     $POSTREPO->updatePost($post->getConf(), $post);
 }
 function deleteFile($file){
-    $FILEREPO = FileRepoClass::getInstance();
-
     unlink($file->getThumbnailPath());
     unlink($file->getFilePath());
+}
+
+function deleteFileHard($file){
+    $FILEREPO = FileRepoClass::getInstance();
+    deleteFile($file);
     $FILEREPO->deleteFileByID($file->getFileID());
 }
 

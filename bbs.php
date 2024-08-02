@@ -251,7 +251,13 @@ function userDeletedPost($board, $post, $password){
     if($AUTH->isAuth($board->getBoardID())){
         logAudit($board, $AUTH->getName() . " has deleted post " . $post->getPostID());
     }
-    deletePost($post);
+    if(isset($_POST['fileOnly'])){
+        foreach($post->getFiles() as $file){
+            deleteFile($file);
+        }
+    }else{
+        deletePost($post);
+    }
 }
 
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
