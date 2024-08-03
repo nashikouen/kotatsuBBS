@@ -278,7 +278,6 @@ $modules = loadModules();
 
 foreach ($modules as $module) {
     $module->init();
-    drawErrorPageAndDie($module->getName());
 }
 
 /*

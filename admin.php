@@ -208,6 +208,11 @@ function userPostListing(){
     exit();
 }
 
+$modules = loadModules();
+
+foreach ($modules as $module) {
+    $module->init();
+}
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
 /*
  *  exit if we are not authenticated.
