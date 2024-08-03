@@ -18,3 +18,57 @@ define("AUDIO_EXTENTIONS", $globalConf['AUDIO_EXTENTIONS']);
 
 ini_set('session.cookie_lifetime', $globalConf['sessionLifeTime']);
 ini_set("memory_limit", $globalConf['memoryLimit']);
+
+
+// Autoloader to automatically load class files based on their namespace and class name
+spl_autoload_register(function ($class) {
+    $prefix = 'Modules\\';
+    $base_dir = __DIR__ . '/modules/';
+    
+    // Does the class use the namespace prefix?
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        // No, move to the next registered autoloader
+        return;
+    }
+    
+    // Get the relative class name
+    $relative_class = substr($class, $len);
+    
+    // Replace the namespace prefix with the base directory, replace namespace
+    // separators with directory separators in the relative class name, append
+    // with .php
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    
+    // Handle special case for ModuleBase.php
+    if ($relative_class === 'Module') {
+        $file = $base_dir . 'ModuleBase.php';
+    }
+
+
+    // If the file exists, require it
+    if (file_exists($file)) {
+        require $file;
+    }
+});
+
+// Function to load all modules from the /modules directory
+function loadModules($modulesDir = __DIR__ . '/modules') {
+    $modules = [];
+    foreach (scandir($modulesDir) as $dir) {
+        if ($dir === '.' || $dir === '..' || is_file($modulesDir . '/' . $dir)) {
+            continue;
+        }
+
+        $mainFile = $modulesDir . '/' . $dir . '/Main.php';
+
+        if (file_exists($mainFile)) {
+            include_once $mainFile;
+            $className = 'Modules\\' . $dir . '\\Main';
+            if (class_exists($className)) {
+                $modules[] = new $className();
+            } 
+        }
+    }
+    return $modules;
+}

@@ -274,6 +274,13 @@ $board = getBoardFromRequest();
 $boardHtml = new htmlclass($board->getConf(), $board);
 
 
+$modules = loadModules();
+
+foreach ($modules as $module) {
+    $module->init();
+    drawErrorPageAndDie($module->getName());
+}
+
 /*
  *	since the webserver will be using rewrites. this next section will look a little funky and redundent.
  *  but this is wat i want to achive with rewrites. 
