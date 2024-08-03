@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ .'/../classes/repos/repoBoard.php';
+/*
+ *  this lib has things basicly used all over to get the boards to work. 
+ *  reteaving data. page redirects. 
+ */
 
 // // idk how to get this working for openbsd...
 // function postWebHook($boardID, $threadID, $postID=""){
@@ -19,6 +23,7 @@ require_once __DIR__ .'/../classes/repos/repoBoard.php';
     
 //     file_get_contents($globalConf['webhook'], false, $stream);
 // }
+
 function bytesToHumanReadable($size){
     if($size == 0){
         $format = "";

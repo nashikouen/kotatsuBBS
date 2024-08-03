@@ -1,6 +1,7 @@
 <?php
 /*
  * this lib is a set of tools of things to help control your board.
+ * delete post. edit configs. edit post. move threads across boards. list users
  */
 require_once __DIR__ .'/../classes/board.php';
 require_once __DIR__ .'/../classes/repos/repoBoard.php';

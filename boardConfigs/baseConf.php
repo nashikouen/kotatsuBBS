@@ -40,6 +40,7 @@ return [
     'defaultCSS' => '/static/css/futaclone.css',  //change this to use ur own css. make sure to update backgroundColor to match post reply background color 
     'defaultFavicon' => '/static/image/favicon.png', 
 
+    'enabledModules' => ['Example Module'],
     'unlisted' => true,             // this will only hide your board from the nav bar. [NOTE] new boards wont respect this by defualt. you must explicitly relist your board when creating or after creation.
     'timeZone' => 'UTC',            // time zone you want your board to opporate in
     'allowRuffle' => false,         // setting this to true will add the Ruffle js script to your board. this allows flash files to be played. you will also need to enable allowJS

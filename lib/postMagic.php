@@ -2,6 +2,11 @@
 require_once __DIR__ .'/../classes/repos/repoPost.php';
 require_once __DIR__ .'/common.php';
 
+/*
+ *  post magic has things that are needed by post to get up and working. tripcodes.
+ *  post sorting.
+ */
+
 // can return null if none is found
 function getExtensionByMimeType($mimeType): string {
     $mimeMap = [

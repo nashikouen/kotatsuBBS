@@ -1,4 +1,7 @@
 <?php
+/*
+ *  name as implies. this logs things to a text file.
+ */
 
 $globalConf = require __DIR__ ."/../conf.php";
 $loggingDir = $globalConf['logDir'] . 'kotatsuLog/';

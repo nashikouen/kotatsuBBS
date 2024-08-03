@@ -1,4 +1,7 @@
 <?php
+/*
+ *  this lib has ban checking. banning etc.
+ */
 require_once  __DIR__ .'/../classes/repos/DBConnection.php';
 
 $conn = DatabaseConnection::getInstance();
@@ -13,8 +16,6 @@ function banDomain($boardID, $domain,$isGlobal=false, $isPublic=false, $catagory
 
 }
 
-
-
 function isIpBanned($boardID, $ip){
 
 }
@@ -24,8 +25,6 @@ function isFileBanned($boardID, $fileHash, $isPreceptual=false){
 function isDomainBanned($boardID, $domain){
 
 }
-
-
 
 function isGlobalIpBanned($boardID, $ip){
 

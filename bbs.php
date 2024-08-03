@@ -75,7 +75,6 @@ function applyPostFilters($post){
 	// stuff like bb code, emotes, capcode, ID, should all be handled in moduels.
 	$HOOK->executeHook("filtersAppliedToPost", $post);// HOOK post with html fully loaded
 }
-
 function genUserPostFromRequest($conf, $thread, $isOp=false){
 	global $AUTH;
 	global $HOOK;
@@ -276,8 +275,12 @@ $boardHtml = new htmlclass($board->getConf(), $board);
 
 $modules = loadModules();
 
-foreach ($modules as $module) {
-    $module->init();
+foreach ($board->getConf()['enabledModules'] as $moduleName) {
+    foreach ($modules as $module) {
+        if ($module->getName() === $moduleName) {
+            $module->init();
+        }
+    }
 }
 
 /*

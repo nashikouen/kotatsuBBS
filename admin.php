@@ -210,8 +210,12 @@ function userPostListing(){
 
 $modules = loadModules();
 
-foreach ($modules as $module) {
-    $module->init();
+foreach ($board->getConf()['enabledModules'] as $moduleName) {
+    foreach ($modules as $module) {
+        if ($module->getName() === $moduleName) {
+            $module->init();
+        }
+    }
 }
 /*-------------------------------------------------------MAIN ENTRY-------------------------------------------------------*/
 /*
