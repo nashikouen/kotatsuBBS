@@ -11,6 +11,7 @@
 // the namespace should be changed. it should be name of folder this is in.
 namespace Modules\exampleModule; 
 
+require_once __DIR__ .'/../../classes/hook.php';
 
 use Modules\Module;
 
@@ -27,7 +28,10 @@ class Main extends Module {
 
     // This function will run each time PHP is invoked. Use it to set up hooks and stuff
     public function init() {
-
+        $hook = \HookClass::getInstance();
+        $hook->addHook("postDataLoaded", function($post) {
+            //drawErrorPageAndDie("example moduel is working. postDataLoaded hook was listened to");
+        });
     }
 
     // This function will print out a page for this module.
