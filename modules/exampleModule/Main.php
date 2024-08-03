@@ -18,6 +18,9 @@ require_once __DIR__ .'/../../classes/hook.php';
 use Modules\Module;
 
 class Main extends Module {
+    // the name you put in getName will be used to find the moduel. make sure you name it properly.
+    // sysadmins setting up kotatsu. please make sure no moduel abuses getName as a substiture for init() 
+    // TODO infact. use name spaces/dir name to load moduels and not getName()
     public function getName(): string {
         return "Example Module";
     }
