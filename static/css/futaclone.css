@@ -89,3 +89,10 @@ body {
 .adminTable tr:hover { 
     background-color: #f0e0d6; 
 }
+
+/*
+ *  catalog colors
+ */
+.catalogItem {
+    background: #f0e0d6;
+}

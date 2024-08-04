@@ -206,3 +206,21 @@
     display: none; 
 }
 
+/* catalog positioning */
+
+.catalogItem {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    width: 200px;
+    float: none;
+    overflow-y: auto;
+    height: 250px;
+}
+.catalogItem img{
+    max-width: 200px;
+    max-height: 200px;
+    float: none;
+    padding-right: 0px;
+}

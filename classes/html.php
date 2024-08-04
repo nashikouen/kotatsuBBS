@@ -265,6 +265,7 @@ class htmlclass {
     private function drawFormNewThread(){
         $this->html .= '
         <!--drawFormNewThread()-->
+        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/catalog/">Catalog</a>]
         <center id="mainForm">
             <form id="formThread" action="'.ROOTPATH.'bbs.php" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postNewThread">
@@ -279,6 +280,7 @@ class htmlclass {
         <!--drawFormNewPost($threadID)-->
         [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]
         [<a href="#bottom">bottom</a>]
+        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/catalog/">Catalog</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
         <center id="mainForm">
             <form id="formPost" action="'.ROOTPATH.'bbs.php" method="POST" enctype="multipart/form-data">
@@ -290,7 +292,7 @@ class htmlclass {
             </form>
         </center>';
     }
-    private function drawFiles($files, $threadID){
+    private function drawFiles($files, $threadID, $strippedDown = false) {
         $this->html .= '
         <!--drawFiles($files, $threadID)-->
         <div class="files">';
@@ -300,72 +302,104 @@ class htmlclass {
         $len = count($files);
         $float = "float";
         $inline = "";
-        if($len>1){
+        if ($len > 1) {
             $float = "nofloat";
             $inline = "inLine";
         }
-        // here we will loop thu each files per post and  get the name and file elements and attach them
-        foreach($files as $file){
-            $count = $count + 1;
-            $webLocation = ROOTPATH.'threads/'.$threadID.'/';   // location where a user can make a get request to the file.
-            $fileOnWeb = $webLocation. $file->getStoredName();  // file's location on the server.
-            $thumbnail = $webLocation. $file->getStoredTName();
-
-            $SWFThumb = $this->conf['staticPath'] . "image/flash.png";
-            $unknownFileThumb = $this->conf['staticPath'] ."image/unknownFile.png";
-            $missingFileThumb = $this->conf['staticPath'] ."image/missingFile.png";
-
-            if($file->hasThumbnail() == false){
-                $thumbnail = $this->conf['staticPath'] ."image/noThumb.png";
-            }
-            if($file->isSpoiler()){
-                $thumbnail = $this->conf['staticPath'] ."image/spoiler.png";
-            }
-
-            $fileNameS .= 
-            '<div class="fileName" id="f'.$count.'">
-                [<a href="'.$webLocation. $file->getStoredName().'" download="'. $file->getFileName() .'">
-                    download
-                </a>]
-                <small>'. $file->getSizeFormated() .'</small>
-                <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow"> 
-                    '. $file->getFileName() .'
-                </a> 
+        if (empty($files) && $strippedDown) {
+            // When there are no files and strippedDown is true, use the noThumb.png
+            $noThumb = $this->conf['staticPath'] . "image/noThumb.png";
+            $filesS .= '
+            <div class="file ' . $inline . '" id="f0">
+                <img class="' . $float . ' media" src="' . $noThumb . '">
             </div>';
-
-            $filesS .=
-            '<div class="file '.$inline.'" id="f'.$count.'">';
-                if($file->isMissing()){
+        }
+        // Loop through each file per post and get the name and file elements and attach them
+        foreach ($files as $file) {
+            $count = $count + 1;
+            $webLocation = ROOTPATH . 'threads/' . $threadID . '/';   // Location where a user can make a GET request to the file.
+            $fileOnWeb = $webLocation . $file->getStoredName();  // File's location on the server.
+            $thumbnail = $webLocation . $file->getStoredTName();
+    
+            $SWFThumb = $this->conf['staticPath'] . "image/flash.png";
+            $unknownFileThumb = $this->conf['staticPath'] . "image/unknownFile.png";
+            $missingFileThumb = $this->conf['staticPath'] . "image/missingFile.png";
+    
+            if ($file->hasThumbnail() == false) {
+                $thumbnail = $this->conf['staticPath'] . "image/noThumb.png";
+            }
+            if ($file->isSpoiler()) {
+                $thumbnail = $this->conf['staticPath'] . "image/spoiler.png";
+            }
+    
+            if (!$strippedDown) {
+                $fileNameS .= '
+                <div class="fileName" id="f' . $count . '">
+                    [<a href="' . $webLocation . $file->getStoredName() . '" download="' . $file->getFileName() . '">
+                        download
+                    </a>]
+                    <small>' . $file->getSizeFormated() . '</small>
+                    <a href="' . $webLocation . $file->getStoredName() . '" target="_blank" rel="nofollow"> 
+                        ' . $file->getFileName() . '
+                    </a> 
+                </div>';
+            }
+    
+            $filesS .= '
+            <div class="file ' . $inline . '" id="f' . $count . '">';
+            if ($file->isMissing()) {
+                $filesS .= '
+                <img class="' . $float . ' media" src="' . $missingFileThumb . '">';
+            } elseif (in_array($file->getFileExtention(), IMAGE_EXTENTIONS)) {
+                if ($strippedDown) {
                     $filesS .= '
-                    <img class="'.$float.' media" src="'.$missingFileThumb.'">';
-                }elseif(in_array($file->getFileExtention(), IMAGE_EXTENTIONS)){
+                    <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">';
+                } else {
                     $filesS .= '
-                    <a href="'.$webLocation. $file->getStoredName().'" class="image" target="_blank" rel="nofollow">
-                        <img class="'.$float.' media" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
-                    </a>';
-                }elseif(in_array($file->getFileExtention(), VIDEO_EXTENTIONS)){
-                    $filesS .=
-                    '<a href="'.$webLocation. $file->getStoredName().'" class="video" target="_blank" rel="nofollow">
-                        <img class="'.$float.' media" src="'.$thumbnail.'" title="'.$file->getStoredName().'">
-                    </a>';
-                }elseif($file->getFileExtention() == "swf"){
-                    $filesS .=
-                    '<a href="'.$webLocation. $file->getStoredName().'"class="swf" target="_blank" rel="nofollow">
-                        <img class="'.$float.' media" src="'.$SWFThumb.'" title="'.$file->getStoredName().'">
-                    </a>';
-                }elseif(in_array($file->getFileExtention(), AUDIO_EXTENTIONS)){
-                    $filesS .= '<audio loading="lazy" class="media" controls=""><source src="'.$fileOnWeb.'" type="audio/mpeg"></audio>';
-                }else{
-                    $filesS .= '
-                    <a href="'.$webLocation. $file->getStoredName().'" target="_blank" rel="nofollow">
-                        <img class="'.$float.' media" src="'.$unknownFileThumb.'" title="'.$file->getStoredName().'">
+                    <a href="' . $webLocation . $file->getStoredName() . '" class="image" target="_blank" rel="nofollow">
+                        <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">
                     </a>';
                 }
-                $filesS .= 
-            '</div>';
+            } elseif (in_array($file->getFileExtention(), VIDEO_EXTENTIONS)) {
+                if ($strippedDown) {
+                    $filesS .= '
+                    <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">';
+                } else {
+                    $filesS .= '
+                    <a href="' . $webLocation . $file->getStoredName() . '" class="video" target="_blank" rel="nofollow">
+                        <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">
+                    </a>';
+                }
+            } elseif ($file->getFileExtention() == "swf") {
+                if ($strippedDown) {
+                    $filesS .= '
+                    <img class="' . $float . ' media" src="' . $SWFThumb . '" title="' . $file->getStoredName() . '">';
+                } else {
+                    $filesS .= '
+                    <a href="' . $webLocation . $file->getStoredName() . '" class="swf" target="_blank" rel="nofollow">
+                        <img class="' . $float . ' media" src="' . $SWFThumb . '" title="' . $file->getStoredName() . '">
+                    </a>';
+                }
+            } elseif (in_array($file->getFileExtention(), AUDIO_EXTENTIONS)) {
+                if (!$strippedDown) {
+                    $filesS .= '<audio loading="lazy" class="media" controls=""><source src="' . $fileOnWeb . '" type="audio/mpeg"></audio>';
+                }
+            } else {
+                if ($strippedDown) {
+                    $filesS .= '
+                    <img class="' . $float . ' media" src="' . $unknownFileThumb . '" title="' . $file->getStoredName() . '">';
+                } else {
+                    $filesS .= '
+                    <a href="' . $webLocation . $file->getStoredName() . '" target="_blank" rel="nofollow">
+                        <img class="' . $float . ' media" src="' . $unknownFileThumb . '" title="' . $file->getStoredName() . '">
+                    </a>';
+                }
+            }
+            $filesS .= '
+            </div>';
         }
-
-        $this->html .= 
+    
+        $this->html .=
         $fileNameS .
         $filesS .
         '</div>';
@@ -454,7 +488,7 @@ class htmlclass {
         $this->html .='
         <!--drawThreadListing($threads)-->';
         foreach ($threads as $thread) {
-            //NEEDS FIXING.
+            //TODO NEEDS FIXING.
             // if op post and child has same time. there is a chance they will swap positions on thread listing and 2nd post will just be OP post.
             // maybe make a paramitr for just OP and remove op from the drawing list if it exist?
             $posts = $thread->getLastNPost($this->conf['postPerThreadListing']);
@@ -828,7 +862,48 @@ class htmlclass {
         }
         $this->html .= '</table><hr>';
     }
+    private function drawFormCatalog(){
+        $this->html .='<!--drawFormCatalog()-->
+        <form method="post" action="'.ROOTPATH.'bbs.php">
+            <input type="hidden" name="action" value="catalog">
+            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            <span>Sort by:</span>
+            <select name="sort" style="display: inline-block">
+                <option selected="" value="bump">Bump order</option>
+                <option value="dateCreated">Creation date</option>
+            </select>
+            <button type="submit">Apply</button>
+            <br>
+            [<label><input name="case" type="checkbox" value="1">Case sensitive</label>]
+            <input name="keyword" type="search" id="keywordSerch" placeholder="Search">
+		</form>';
+    }
+    private function drawCatalog($threads){
+        $this->html .='<!--drawCatalogPage($threads)-->';
+        $this->drawFormCatalog();
+        $this->html .='<center class="theading2"><b>Catalog</b></center>';
+        $this->html .='<center id=catalog>';
 
+        foreach($threads as $thread){
+            $post = $thread->getOPPost();
+            $threadID = $thread->getThreadID();
+            $sub = $post->getSubject();
+            if($sub == ''){
+                $sub = "no subject";
+            }
+            $this->html .='<div class=catalogItem>
+            <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">';
+                $this->drawFiles($post->getFiles(), $threadID, true);
+                $this->html .='
+            </a>
+            <small><b class="title">'. $sub .'</b> Replies:
+            <span title="Replies">'.$thread->getPostCount().'</span></small><br>
+	        <small class=catComment>'.$post->getComment().'</small>';
+            $this->html .='</div>';
+        }
+        $this->html .='</center>';
+
+    }
 
     private function drawFormExportDatabase(){
 
@@ -964,7 +1039,28 @@ class htmlclass {
 
         echo $this->html;
     }
+    public function drawCatalogPage($sort='bump', $keyword='', $caseSensitive=false){
+        $threads = $this->board->getThreads();
+        switch($sort){
+            case 'bump':
+                sortThreadByBump($threads);
+                break;
+            case 'dateCreated':
+                sortThreadByDateCreated($threads);
+                break;
+            default:
+                sortThreadByBump($threads);
+                break;
+        }
+        $fThreads = filterThreadsByKeyword($threads, $keyword, $caseSensitive);
+        
+        $functions = [
+            ['function' => [$this, 'drawCatalog'], 'params' => [$fThreads]],
+        ];
+        $this->drawBase($functions);
 
+        echo $this->html;
+    }
 
     public function drawAdminPage(){
         global $AUTH;

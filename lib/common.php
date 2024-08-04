@@ -160,6 +160,16 @@ function redirectToBoard($board){
     header("Location: $url");
     exit;
 }
+function redirectToCatalog($board, $sort, $keyword, $case){
+    $name = boardIDToName($board->getBoardID());
+    $url = ROOTPATH. "$name/catalog/";
+
+    $queryParams = http_build_query(['sort' => $sort, 'keyword' => $keyword, 'case' => $case]);
+    $url .= '?' . $queryParams;
+    
+    header("Location: $url");
+    exit;
+}
 function redirectToAdmin($board){
     $name = boardIDToName($board->getBoardID());
     $url = ROOTPATH. "$name/admin";

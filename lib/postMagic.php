@@ -226,3 +226,25 @@ function sortPostsByTimeAesending(&$posts){
         return $b->getUnixTime() - $a->getUnixTime();
     });
 }
+
+function sortThreadByBump(&$threads){
+    usort($threads, function ($a, $b) {
+        return $b->getLastBumpTime() - $a->getLastBumpTime();
+    });
+}
+function sortThreadByDateCreated(&$threads){
+    usort($threads, function ($a, $b) {
+        return $b->getOPPost()->getUnixTime() - $a->getOPPost()->getUnixTime();
+    });
+}
+
+function filterThreadsByKeyword(array $threads, string $keyword, bool $caseSensitive): array {
+    return array_filter($threads, function($thread) use ($keyword, $caseSensitive) {
+        $comment = $thread->getOPPost()->getComment();
+        if ($caseSensitive) {
+            return strpos($comment, $keyword) !== false;
+        } else {
+            return stripos($comment, $keyword) !== false;
+        }
+    });
+}

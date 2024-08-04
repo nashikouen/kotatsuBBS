@@ -272,7 +272,6 @@ function userDeletedPost($board, $post, $password){
 $board = getBoardFromRequest();
 $boardHtml = new htmlclass($board->getConf(), $board);
 
-
 $modules = loadModules();
 
 foreach ($board->getConf()['enabledModules'] as $moduleName) {
@@ -304,6 +303,17 @@ if (isset($_GET['thread'])){
 
 	$boardHtml->drawThreadPage($thread);
     return;
+}elseif(isset($_GET['action'])){
+    $action = $_GET['action'];
+	
+	switch ($action) {
+		case 'catalog':
+            $sort = $_GET['sort'] ?? 'bump';
+            $keyword = $_GET['keyword'] ?? '';
+            $case = isset($_GET['case']) && $_GET['case'] == '1'; 
+            $boardHtml->drawCatalogPage($sort, $keyword, $case);
+            return;
+    }
 }
 /*----------post action recived----------*/
 elseif(isset($_POST['action'])){
@@ -334,6 +344,13 @@ elseif(isset($_POST['action'])){
                 userDeletedPost($board, $post, $_POST['password']);
             }
             redirectToBoard($board);
+            break;
+        case 'catalog':
+            $sort = $_POST['sort'];
+            $keyword = $_POST['keyword'];
+            $case = isset($_POST['case']) && $_POST['case'] == '1'; 
+
+            redirectToCatalog($board, $sort, $keyword, $case);
             break;
 		default:
 			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
