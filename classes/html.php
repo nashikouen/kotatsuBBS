@@ -862,25 +862,46 @@ class htmlclass {
         }
         $this->html .= '</table><hr>';
     }
-    private function drawFormCatalog(){
+    private function drawFormCatalog($sort, $keyword, $caseSensitive){
         $this->html .='<!--drawFormCatalog()-->
         <form method="post" action="'.ROOTPATH.'bbs.php">
             <input type="hidden" name="action" value="catalog">
             <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
             <span>Sort by:</span>
-            <select name="sort" style="display: inline-block">
+            <select name="sort" style="display: inline-block">';
+            if($sort == 'dateCreated'){
+                $this->html .='
+                <option value="bump">Bump order</option>
+                <option selected="" value="dateCreated">Creation date</option>';
+
+            }else{
+                $this->html .='
                 <option selected="" value="bump">Bump order</option>
-                <option value="dateCreated">Creation date</option>
-            </select>
+                <option value="dateCreated">Creation date</option>';
+            }
+            $this->html .=
+            '</select>
             <button type="submit">Apply</button>
-            <br>
-            [<label><input name="case" type="checkbox" value="1">Case sensitive</label>]
-            <input name="keyword" type="search" id="keywordSerch" placeholder="Search">
-		</form>';
+            <br>';
+            if($caseSensitive == 1){
+                $this->html .='[<label><input name="case" type="checkbox" value="1" checked>Case sensitive</label>]';
+
+            }else{
+                $this->html .='[<label><input name="case" type="checkbox" value="1">Case sensitive</label>]';
+
+            }
+
+            if($keyword == ''){
+                $this->html .='<input name="keyword" type="search" id="keywordSerch" placeholder="Search" >';
+
+            }else{
+                $this->html .='<input name="keyword" type="search" id="keywordSerch" placeholder="Search" value="'.$keyword.'">';
+
+            }
+		$this->html .='</form>';
     }
     private function drawCatalog($threads){
         $this->html .='<!--drawCatalogPage($threads)-->';
-        $this->drawFormCatalog();
         $this->html .='<center class="theading2"><b>Catalog</b></center>';
         $this->html .='<center id=catalog>';
 
@@ -1053,8 +1074,8 @@ class htmlclass {
                 break;
         }
         $fThreads = filterThreadsByKeyword($threads, $keyword, $caseSensitive);
-        
         $functions = [
+            ['function' => [$this, 'drawFormCatalog'], 'params' => [$sort, $keyword, $caseSensitive]],
             ['function' => [$this, 'drawCatalog'], 'params' => [$fThreads]],
         ];
         $this->drawBase($functions);
