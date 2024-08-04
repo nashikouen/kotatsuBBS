@@ -214,13 +214,26 @@
     margin: 5px;
     padding: 10px;
     width: 200px;
+    height: 250px;
     float: none;
     overflow-y: auto;
-    height: 250px;
 }
 .catalogItem img{
     max-width: 200px;
     max-height: 200px;
     float: none;
     padding-right: 0px;
+}
+
+@media screen and (max-width: 480px) {
+    .catalogItem{       
+        padding: 5px;
+        margin: 2px;        
+        width: 110px;
+        height: 160px;
+    }
+    .catalogItem img{
+        max-width: 110px; 
+        max-height: 110px;
+    }
 }
