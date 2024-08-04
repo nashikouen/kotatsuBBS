@@ -902,6 +902,8 @@ class htmlclass {
     }
     private function drawCatalog($threads){
         $this->html .='<!--drawCatalogPage($threads)-->';
+        $this->html .='[<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]';
+        $this->html .='[<a href="#bottom">bottom</a>]';
         $this->html .='<center class="theading2"><b>Catalog</b></center>';
         $this->html .='<center id=catalog>';
 
@@ -923,7 +925,7 @@ class htmlclass {
             $this->html .='</div>';
         }
         $this->html .='</center>';
-
+        $this->html .= '[<a href="#top">top</a>]';
     }
 
     private function drawFormExportDatabase(){
