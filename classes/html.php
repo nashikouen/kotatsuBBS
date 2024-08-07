@@ -118,7 +118,7 @@ class htmlclass {
         <!--drawBoardTitle()-->
         <div class="boardTitle">';
         if ($conf['boardLogoPath'] != ""){
-            $this->html .= '<img class="logo" src="'.$conf['boardLogoPath'].'">';
+            $this->html .= '<img class="logo" loading="lazy" src="'.$conf['boardLogoPath'].'">';
         }
         $this->html .= '<h1 class="title">'.$conf['boardTitle'].'</h1>';
         $this->html .= '<h5 class="subtitle">'.$conf['boardSubTitle'].'</h5>
@@ -311,7 +311,7 @@ class htmlclass {
             $noThumb = $this->conf['staticPath'] . "image/noThumb.png";
             $filesS .= '
             <div class="file ' . $inline . '" id="f0">
-                <img class="' . $float . ' media" src="' . $noThumb . '">
+                <img class="' . $float . ' media" loading="lazy" src="' . $noThumb . '">
             </div>';
         }
         // Loop through each file per post and get the name and file elements and attach them
@@ -349,35 +349,35 @@ class htmlclass {
             <div class="file ' . $inline . '" id="f' . $count . '">';
             if ($file->isMissing()) {
                 $filesS .= '
-                <img class="' . $float . ' media" src="' . $missingFileThumb . '">';
+                <img class="' . $float . ' media" loading="lazy" src="' . $missingFileThumb . '">';
             } elseif (in_array($file->getFileExtention(), IMAGE_EXTENTIONS)) {
                 if ($strippedDown) {
                     $filesS .= '
-                    <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">';
+                    <img class="' . $float . ' media" src="' . $thumbnail . '" loading="lazy" title="' . $file->getStoredName() . '">';
                 } else {
                     $filesS .= '
                     <a href="' . $webLocation . $file->getStoredName() . '" class="image" target="_blank" rel="nofollow">
-                        <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">
+                        <img class="' . $float . ' media" src="' . $thumbnail . '" loading="lazy" title="' . $file->getStoredName() . '">
                     </a>';
                 }
             } elseif (in_array($file->getFileExtention(), VIDEO_EXTENTIONS)) {
                 if ($strippedDown) {
                     $filesS .= '
-                    <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">';
+                    <img class="' . $float . ' media" src="' . $thumbnail . '" loading="lazy" title="' . $file->getStoredName() . '">';
                 } else {
                     $filesS .= '
                     <a href="' . $webLocation . $file->getStoredName() . '" class="video" target="_blank" rel="nofollow">
-                        <img class="' . $float . ' media" src="' . $thumbnail . '" title="' . $file->getStoredName() . '">
+                        <img class="' . $float . ' media" src="' . $thumbnail . '" loading="lazy" title="' . $file->getStoredName() . '">
                     </a>';
                 }
             } elseif ($file->getFileExtention() == "swf") {
                 if ($strippedDown) {
                     $filesS .= '
-                    <img class="' . $float . ' media" src="' . $SWFThumb . '" title="' . $file->getStoredName() . '">';
+                    <img class="' . $float . ' media" src="' . $SWFThumb . '" loading="lazy" title="' . $file->getStoredName() . '">';
                 } else {
                     $filesS .= '
                     <a href="' . $webLocation . $file->getStoredName() . '" class="swf" target="_blank" rel="nofollow">
-                        <img class="' . $float . ' media" src="' . $SWFThumb . '" title="' . $file->getStoredName() . '">
+                        <img class="' . $float . ' media" src="' . $SWFThumb . '" loading="lazy" title="' . $file->getStoredName() . '">
                     </a>';
                 }
             } elseif (in_array($file->getFileExtention(), AUDIO_EXTENTIONS)) {
@@ -387,11 +387,11 @@ class htmlclass {
             } else {
                 if ($strippedDown) {
                     $filesS .= '
-                    <img class="' . $float . ' media" src="' . $unknownFileThumb . '" title="' . $file->getStoredName() . '">';
+                    <img class="' . $float . ' media" src="' . $unknownFileThumb . '" loading="lazy" title="' . $file->getStoredName() . '">';
                 } else {
                     $filesS .= '
                     <a href="' . $webLocation . $file->getStoredName() . '" target="_blank" rel="nofollow">
-                        <img class="' . $float . ' media" src="' . $unknownFileThumb . '" title="' . $file->getStoredName() . '">
+                        <img class="' . $float . ' media" src="' . $unknownFileThumb . '" loading="lazy" title="' . $file->getStoredName() . '">
                     </a>';
                 }
             }
@@ -724,7 +724,7 @@ class htmlclass {
         global $AUTH;
         global $BANREPO;
         $categories = $BANREPO->loadCategories();
-        $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" src="'.$this->conf['staticPath'].'image/hammer.png">');
+        $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" loading="lazy" src="'.$this->conf['staticPath'].'image/hammer.png">');
         $this->html .= '
         <!--drawFormBanPost($post)-->
         <script src="'.$this->conf['staticPath'].'js/adminForm.js"></script>
