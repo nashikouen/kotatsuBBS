@@ -97,7 +97,24 @@ class fileHandlerClass {
     
         if (strpos($fileType, 'image/') === 0) {
             $image = imagecreatefromstring(file_get_contents($filePath));
-    
+            
+            if (function_exists('exif_read_data')) {
+                $exif = exif_read_data($filePath);
+                if (!empty($exif['Orientation'])) {
+                    switch ($exif['Orientation']) {
+                        case 3:
+                            $image = imagerotate($image, 180, 0);
+                            break;
+                        case 6:
+                            $image = imagerotate($image, -90, 0);
+                            break;
+                        case 8:
+                            $image = imagerotate($image, 90, 0);
+                            break;
+                    }
+                }
+            }
+
             $width = imagesx($image);
             $height = imagesy($image);
     
