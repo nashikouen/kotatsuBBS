@@ -197,7 +197,7 @@ class htmlclass {
         if($this->conf['fileConf']['maxFiles'] >= 1){
             $this->html .='
         <tr>
-            <td class="accent"><label for="files[]">Files</label></td>
+            <td class="accent"><label for="files">Files</label></td>
             <td><input type="file" id="files" name="upfile[]" multiple=""';
             if($this->conf['requireFile']){
                 $this->html .= 'required';
