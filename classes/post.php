@@ -88,8 +88,13 @@ class PostDataClass {
     public function applyTripcode(){
         $nameXpass = splitTextAtTripcodePass($this->name);
         $gc = require __DIR__ . '/../conf.php'; 
-        $tripcode = genTripcode($nameXpass[1], $gc['tripcodeSalt']);
-        $this->name = $nameXpass[0] . $tripcode;
+        $tripcodeArray = genTripcode($nameXpass[1], $gc['tripcodeSalt']);
+
+        $this->name = $nameXpass[0] . $tripcodeArray['tripcode'];
+        
+        $special = $this->getSpecial();
+        $special = array_merge($special, $tripcodeArray);
+        $this->setSpecial($special);
     }
     public function stripTripcodePass(){
         $nameXpass = splitTextAtTripcodePass($this->name);
@@ -221,7 +226,27 @@ class PostDataClass {
     public function getIP(){
         return $this->IP;
     }
-    public function getSpecial(){
+    /* special should only be used by moduels */
+    public function getSpecial() {
+        if (!isset($this->special) || empty($this->special)) {
+            return [];
+        }
+    
+        // Explode the special string into an associative array
+        $pairs = explode('|', $this->special);
+        $assocArray = [];
+        
+        foreach ($pairs as $pair) {
+            list($key, $value) = explode(':', $pair);
+            // Properly unescape the keys and values
+            $key = str_replace(['\\:', '\\|'], [':', '|'], $key);
+            $value = str_replace(['\\:', '\\|'], [':', '|'], $value);
+            $assocArray[$key] = $value;
+        }
+        
+        return $assocArray;
+    }
+    public function getRawSpecial(){
         return $this->special;
     }
     public function getConf(){
@@ -256,7 +281,35 @@ class PostDataClass {
     public function setIP($IP){
         $this->IP = $IP;
     }
-    public function setSpecial($special){
-        $this->special = $special;
+    public function updateSpecial($key, $value) {
+        $currentSpecial = $this->getSpecial();
+        $currentSpecial[$key] = $value;
+        $this->setSpecial($currentSpecial);
+    }
+    public function setSpecial($associativeTable) {
+        // Ensure it's an associative array
+        if (!is_array($associativeTable)) {
+            throw new InvalidArgumentException('Expected an associative array.');
+        }
+    
+        $pairs = [];
+        
+        foreach ($associativeTable as $key => $value) {
+            $key = str_replace([':', '|'], ['\\:', '\\|'], $key);
+            $value = str_replace([':', '|'], ['\\:', '\\|'], $value);
+            $pairs[] = $key . ':' . $value;
+        }
+        
+        // Implode the associative array into a special string
+        $this->special = implode('|', $pairs);
+    }
+    public function getSpecialValue($key) {
+        $currentSpecial = $this->getSpecial();
+    
+        if (array_key_exists($key, $currentSpecial)) {
+            return $currentSpecial[$key];
+        }
+    
+        return null;
     }
 }

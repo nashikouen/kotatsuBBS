@@ -55,7 +55,7 @@ function userLoggingIn(){
         drawErrorPageAndDie("no password provided");
     }
     
-    $passHash = genTripcode($_POST['password'], $globalConf['tripcodeSalt']);
+    $passHash = genTripcode($_POST['password'], $globalConf['tripcodeSalt'])['hash'];
 
     /*
      *  try loggin in as what ever user it is.

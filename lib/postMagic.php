@@ -136,32 +136,37 @@ function isIPBanned($ip): bool{
 }
 
 //tripcode put this in it own lib file.
-function genTripcode(string $password, string $salt = ''): string{
+/*
+ *    return [
+ *       'hash' => $fullHash,
+ *       'tripcode' => $tripcode
+ *    ];
+ */
+function genTripcode(string $password, string $salt = ''): array {
     if (empty($password)) {
-        return '';
+       return [];
     }
 
-    //determan tripcode type
+    // Determine tripcode type
     $hashType = '';
     if (substr($password, 0, 2) === '##') {
         $hashType = 'secure';
         $password = substr($password, 2);
-        if($password == ''){
-            return '##';
+        if ($password == '') {
+            return ['tripcode' => '##'];
         }
     } elseif (substr($password, 0, 1) === '#') {
         $hashType = 'regular';
         $password = substr($password, 1);
-        if($password == ''){
-            return '#';
+        if ($password == '') {
+            return ['tripcode' => '#'];
         }
-    } else {
-        //nothing as it will fall thu all defualts.
     }
-    //traditional tripcodes use shift jis
+
+    // Traditional tripcodes use Shift_JIS
     $password = mb_convert_encoding($password, 'Shift_JIS', 'UTF-8');
 
-    //set to futaba type salt if regualr
+    // Set to Futaba-type salt if regular
     if ($hashType === 'regular') {
         $salt = substr($password . 'H.', 1, 2);
     }
@@ -170,15 +175,26 @@ function genTripcode(string $password, string $salt = ''): string{
     $salt = strtr($salt, ':;<=>?@[\\]^_`', 'ABCDEFGabcdef');  // Adjust the salt
 
     // Generate the tripcode
-    $tripcode = crypt($password, $salt);
-
     if ($hashType === 'regular') {
-        return '◆'.substr($tripcode, -10);
-    }elseif($hashType === 'secure'){
-        return '★'.substr($tripcode, -10);
+        $fullHash = crypt($password, $salt);
     }else{
-        return substr($tripcode, -10);
+        $fullHash = hash('sha256', $password . $salt);
     }
+
+    // Determine tripcode display
+    $tripcode = substr($fullHash, -10);
+    if ($hashType === 'regular') {
+        $tripcode = '◆' . $tripcode;
+    } elseif ($hashType === 'secure') {
+        $encodedHash = strtr(base64_encode(hex2bin($fullHash)), '+/', '.-');
+        $tripcode = '★' . substr($encodedHash, 0, 10); // Use the first 10 characters for the tripcode
+    }
+
+    return [
+        'hash' => $fullHash,
+        'hashType' => $hashType,
+        'tripcode' => $tripcode
+    ];
 }
 
 function splitTextAtTripcodePass(string $text): array {

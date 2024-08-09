@@ -51,7 +51,7 @@ class PostRepoClass implements PostDataRepositoryInterface {
             $pass = $post->getPassword();
             $time = $post->getUnixTime();
             $ip = $post->getIp();
-            $special = $post->getSpecial();
+            $special = $post->getRawSpecial();
     
             // create post in db
             $insertQuery = "INSERT INTO posts ( boardID, threadID, postID, name, 
@@ -96,7 +96,7 @@ class PostRepoClass implements PostDataRepositoryInterface {
             $pass = $post->getPassword();
             $time = $post->getUnixTime();
             $ip = $post->getIp();
-            $special = $post->getSpecial();
+            $special = $post->getRawSpecial();
     
             // create post in db
             $insertQuery = "INSERT INTO posts ( boardID, threadID, postID, name, 
@@ -235,7 +235,7 @@ class PostRepoClass implements PostDataRepositoryInterface {
         $time = $post->getUnixTime();
         $id = $post->getPostID();
         $ip = $post->getIp();
-        $special = $post->getSpecial();
+        $special = $post->getRawSpecial();
 
         $query = "UPDATE posts SET      boardID = ?, threadID = ?, name = ?, email = ?,
                                         subject = ?, comment = ?, password = ?, postTime = ?, 
