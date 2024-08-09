@@ -2,7 +2,7 @@ function toggleEmbed(event, element) {
     event.preventDefault();  
 
     var linkE = event.currentTarget;
-    var fileID = linkE.parentNode.getAttribute('id')
+    var fileID = linkE.parentNode.getAttribute('id');
 
     var fileNameE = linkE.parentNode.parentNode.querySelector('#' + fileID + '.fileName');
     var fileE = linkE.parentNode.parentNode.querySelector('#' + fileID + '.file');
@@ -20,12 +20,22 @@ function toggleEmbed(event, element) {
     if (fullE) {
         thumbnailE.classList.toggle('hidden');
         fullE.classList.toggle('hidden');
-        return
+        return;
     }
 
     fullE = element;
 
     if (linkE.className !== 'image') {
+        // For non-image types, wrap the <a> tag in a <div> and append the element
+        var wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'media-wrapper';
+        fileE.replaceChild(wrapperDiv, linkE); // Replace the <a> tag with the wrapper <div>
+        wrapperDiv.appendChild(linkE); // Re-add the <a> tag inside the wrapper <div>
+        wrapperDiv.appendChild(fullE); // Add the embedded media inside the wrapper <div>
+
+        // Hide the thumbnail
+        thumbnailE.classList.add('hidden');
+
         // Create a close hyperlink
         const closeLink = document.createElement('a');
         closeLink.href = '#';
@@ -33,27 +43,33 @@ function toggleEmbed(event, element) {
         closeLink.onclick = function (e) {
             e.preventDefault();
             e.stopPropagation();
-            fullE.remove(); // remove the file
+            fullE.remove(); // Remove the embedded element
             thumbnailE.classList.remove('hidden');  // Show the thumbnail again
             closeLink.parentNode.removeChild(closeLink.previousSibling); // Remove the '['
             closeLink.parentNode.removeChild(closeLink.nextSibling); // Remove the ']'
             closeLink.parentNode.removeChild(closeLink); // Remove the close link itself
+
+            // Restore the original <a> tag
+            wrapperDiv.parentNode.replaceChild(linkE, wrapperDiv);
         };
 
-        fileNameE.insertAdjacentHTML("afterbegin","]");
-        fileNameE.insertAdjacentElement("afterbegin",closeLink);
-        fileNameE.insertAdjacentHTML("afterbegin","[");
+        fileNameE.insertAdjacentHTML("afterbegin", "]");
+        fileNameE.insertAdjacentElement("afterbegin", closeLink);
+        fileNameE.insertAdjacentHTML("afterbegin", "[");
+    } else {
+        // For images, embed the element directly without wrapping
+        fullE.classList.add('full');
+        thumbnailE.classList.toggle('hidden');
+        linkE.appendChild(fullE);
     }
-
-    fullE.classList.add('full');
-    thumbnailE.classList.toggle('hidden');
-    linkE.appendChild(fullE);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     var links = document.querySelectorAll('.file a');
     links.forEach(function(link) {
         link.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default action of the <a> tag
+
             switch (link.className) {
                 case 'image':
                     var img = new Image();
