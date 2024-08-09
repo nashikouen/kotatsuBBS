@@ -58,7 +58,7 @@ class htmlclass {
                 $this->html .= 
                 '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/postidToForm.js" defer></script>
-                <script src="'.$this->conf['staticPath'].'js/autoFillCookies.js.js" defer></script>
+                <script src="'.$this->conf['staticPath'].'js/autoFillCookies.js" defer></script>
                 <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
             }
             $this->html .= 
