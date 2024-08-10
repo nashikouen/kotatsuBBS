@@ -43,7 +43,9 @@
 .boardTitle{
 	text-align: center;	
 }
-
+.logo{
+    max-width: 100%;
+}
 /* pushes board name and title together */
 .title, 
 .subtitle {

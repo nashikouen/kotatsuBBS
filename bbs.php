@@ -155,7 +155,7 @@ function genUserPostFromRequest($conf, $thread, $isOp=false){
     $skipEmbedding = false;
 
     if ($AUTH->isAdmin($conf['boardID']) || $AUTH->isModerator($conf['boardID'])) {
-        if (!isset($_POST['stripHTML'])) {
+        if (isset($_POST['embedingHTML'])) {
             $skipEmbedding = true;
         }
     }

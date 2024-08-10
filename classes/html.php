@@ -216,8 +216,8 @@ class htmlclass {
         if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
             $this->html .= '
             <tr>
-                <td class="accent"><label for="stripHTML">Strip HTML</label></td>
-                <td><input type="checkbox" id="stripHTML" name="stripHTML" checked></td>
+                <td class="accent"><label for="embedingHTML">embeding HTML</label></td>
+                <td><input type="checkbox" id="embedingHTML" name="embedingHTML"></td>
             </tr>';
         }
         $this->html .= '
