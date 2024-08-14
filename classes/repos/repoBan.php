@@ -143,4 +143,18 @@ class BanRepoClass{
         }
         return time() < $expiresAt;
     }
+    public function getAllPerceptualHashes() {
+        $query = "SELECT fileHash FROM fileBans WHERE isPerceptual = 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $hashes = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $hashes[] = $row['fileHash'];
+        }
+        
+        $stmt->close();
+        return $hashes;
+    }
 }

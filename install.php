@@ -82,7 +82,7 @@ if(file_exists(__DIR__ . "/conf.php")){
 
             "CREATE TABLE IF NOT EXISTS fileBans (
                 banID INT AUTO_INCREMENT PRIMARY KEY,
-                fileHash VARCHAR(64),
+                fileHash VARCHAR(1024),
                 isPerceptual BOOLEAN,
                 reason TEXT,
                 category VARCHAR(20),

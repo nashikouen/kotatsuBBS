@@ -6,6 +6,8 @@ require_once __DIR__ .'/classes/html.php';
 require_once __DIR__ .'/classes/auth.php';
 require_once __DIR__ .'/classes/repos/repoPost.php';
 require_once __DIR__ .'/classes/repos/repoBan.php';
+require_once __DIR__ .'/classes/fileHandler.php';
+
 
 
 require_once __DIR__ .'/lib/common.php';
@@ -154,6 +156,12 @@ function banPost(){
     $publicMessage = $_POST['publicMessage'];
     $isPublic = isset($_POST['isPublic']) ? true : false;
     $isGlobal = isset($_POST['isGlobal']) ? true : false;
+    $isPreseptual = isset($_POST['isPreseptual']) ? true : false;
+
+    // really we should only ban the file once. and preseptual should be more powerful
+    if($isPreseptual){
+        $isBanFile = false;
+    }
 
     if($AUTH->isSuper() == false){
         $isGlobal = false;
@@ -181,6 +189,14 @@ function banPost(){
     if($isBanFile){
         foreach($post->getFiles() as $file){
             $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isGlobal, $isPublic, $category);
+        }
+        $banText .= " files has been banned.";
+    }
+    if($isPreseptual){
+        $fileHandler = new fileHandlerClass($board->getConf());
+        foreach($post->getFiles() as $file){
+            $hash = $fileHandler->perceptualHash($file->getFilePath());
+            $BANREPO->banFile($board->getBoardID(), $hash, $banReason, $isPreseptual, $isGlobal, $isPublic, $category);
         }
         $banText .= " files has been banned.";
     }

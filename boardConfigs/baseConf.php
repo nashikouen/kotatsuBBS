@@ -34,6 +34,7 @@ return [
         'thumNailWidth' => 250,
         'thumNailHight' => 250,
         'allowDuplicateFiles' => false, // allow duplicate files?
+        'doPreseptualBan' => true, // do a preseptual hash and cheeck if file is preseptualy banned with given hamming in global conf
     ],
 
     'staticPath' => "/static/",

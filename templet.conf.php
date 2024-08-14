@@ -16,6 +16,8 @@ return [
         'databaseName' => 'boarddb', 
     ],
 
+    /* if you are preseptualy banning files. this will be the hamming used. 0 would be a prefect 200 would be a totaly diffrent image. */
+    'hamming' => 10,
     /*
      *  file object will be stored relitive to threads dir in the project.
      *  you should give the absolute path to the threads folder here.

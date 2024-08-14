@@ -805,6 +805,10 @@ class htmlclass {
                     </select>
                 </td>
             </tr>
+            <tr>
+                <td class="accent"><label for="isPreseptual">BAN PRESEPTUALY?</label></td>
+                <td><input type="checkbox" id="isPreseptual" name="isPreseptual"></td>
+            </tr>
             </table>
             <button type="submit" class="bigRedButton">BAN!</button>
         </form>

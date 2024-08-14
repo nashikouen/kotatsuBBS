@@ -197,8 +197,31 @@ class fileHandlerClass {
     public function procssesFiles($files, $isOp){
         $fileConf = $this->config['fileConf'];
         $FILEREPO = FileRepoClass::getInstance();
+        $BANREPO = BanRepoClass::getInstance();
         $filesProcssed = [];
+        
+        if($fileConf['doPreseptualBan'] == true){
+            $bannedHashes = $BANREPO->getAllPerceptualHashes();
+        }
+
         foreach ($files as $file) {
+
+            if($fileConf['doPreseptualBan'] == true){
+                $preseptualHash = $this->perceptualHash($file->getFilePath());
+                $globalConf = require __DIR__ ."/../conf.php";
+
+
+                foreach($bannedHashes as $badHash){
+                    $hamming = $this->calculateHammingDistance($badHash, $preseptualHash);
+                    if ($hamming <= $globalConf['hamming']) { 
+                        foreach ($files as $bfile) {
+                            unlink($bfile->getFilePath());
+                        }
+                        drawErrorPageAndDie("bad file detected... fukkin saved!");
+                    }
+                }
+            }
+            
             $md5Hash = $file->getMD5();
 
             // a good moduel would be deduplication. 
@@ -215,4 +238,55 @@ class fileHandlerClass {
         }
         return $filesProcssed;
     }
+    public function perceptualHash($filePath) {
+        // Load the image and resize to 32x32
+        $img = imagecreatefromstring(file_get_contents($filePath));
+        $smallImg = imagecreatetruecolor(32, 32);
+        imagecopyresized($smallImg, $img, 0, 0, 0, 0, 32, 32, imagesx($img), imagesy($img));
+    
+        // Convert to grayscale and calculate the average brightness
+        $totalBrightness = 0;
+        $pixels = [];
+        for ($y = 0; $y < 32; $y++) {
+            for ($x = 0; $x < 32; $x++) {
+                $rgb = imagecolorat($smallImg, $x, $y);
+                $r = ($rgb >> 16) & 0xFF;
+                $g = ($rgb >> 8) & 0xFF;
+                $b = $rgb & 0xFF;
+                $gray = (int)(($r + $g + $b) / 3);
+    
+                $pixels[$y][$x] = $gray;
+                $totalBrightness += $gray;
+            }
+        }
+        $averageBrightness = $totalBrightness / (32 * 32);
+    
+        // Generate the hash based on comparing pixel brightness to the average
+        $hash = [];
+        for ($y = 0; $y < 32; $y++) {
+            for ($x = 0; $x < 32; $x++) {
+                $hash[] = $pixels[$y][$x] > $averageBrightness ? '1' : '0';
+            }
+        }
+    
+        imagedestroy($img);
+        imagedestroy($smallImg);
+    
+        return implode('', $hash); // Return the binary string
+    }
+    public function calculateHammingDistance($hash1, $hash2) {
+        if (strlen($hash1) !== strlen($hash2)) {
+            throw new InvalidArgumentException("Hashes must be of the same length");
+        }
+    
+        $distance = 0;
+        for ($i = 0; $i < strlen($hash1); $i++) {
+            if ($hash1[$i] !== $hash2[$i]) {
+                $distance++;
+            }
+        }
+    
+        return $distance;
+    }
+
 }
