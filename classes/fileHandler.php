@@ -1,4 +1,6 @@
 <?php
+use Jenssegers\ImageHash\ImageHash;
+use Jenssegers\ImageHash\Implementations\DifferenceHash;
 
 require_once __DIR__ .'/repos/repoFile.php';
 require_once __DIR__ .'/repos/repoBan.php';
@@ -202,17 +204,18 @@ class fileHandlerClass {
         
         if($fileConf['doPreseptualBan'] == true){
             $bannedHashes = $BANREPO->getAllPerceptualHashes();
+            $hasher = new ImageHash(new DifferenceHash());
         }
 
         foreach ($files as $file) {
 
             if($fileConf['doPreseptualBan'] == true){
-                $preseptualHash = $this->perceptualHash($file->getFilePath());
+                $preseptualHash = $hasher->hash($file->getFilePath());
                 $globalConf = require __DIR__ ."/../conf.php";
 
 
                 foreach($bannedHashes as $badHash){
-                    $hamming = $this->calculateHammingDistance($badHash, $preseptualHash);
+                    $hamming = $hasher->distance($badHash, $preseptualHash);
                     if ($hamming <= $globalConf['hamming']) { 
                         foreach ($files as $bfile) {
                             unlink($bfile->getFilePath());

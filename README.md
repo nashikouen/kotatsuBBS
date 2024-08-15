@@ -15,7 +15,7 @@ PHP: PHP8.2-PHP8.3<br>
 
 install the required packages : 
 ```
-pkg_add mariadb-server php php-mysqli php-gdb ffmpeg
+pkg_add mariadb-server php php-mysqli php-gdb ffmpeg composer
 ```
 php8.2 is what i am going with for this guide.
 since OpenBSD runs php in a chroot. you will need to copy ffmpeg and all of its dependecies into the chroot.
@@ -152,8 +152,8 @@ and run ``pfctl -f /etc/pf.conf`` to reload your firewall rules
 ```
 pfctl -f /etc/pf.conf
 ```
-
-now inside of kotatsuBBS. edit ``conf .php`` file. make sure to set your mysql credentals you made earlier.
+now inside of kotatsuBBS. you are going to want to install the composter stuff. ``composer install``
+next you want to edit ``conf .php`` file. make sure to set your mysql credentals you made earlier.
 
 now you can enable and start all of the services<br>
 ```

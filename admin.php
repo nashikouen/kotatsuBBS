@@ -2,6 +2,9 @@
 
 include __DIR__ .'/includes.php';
 
+use Jenssegers\ImageHash\ImageHash;
+use Jenssegers\ImageHash\Implementations\DifferenceHash;
+
 require_once __DIR__ .'/classes/html.php';
 require_once __DIR__ .'/classes/auth.php';
 require_once __DIR__ .'/classes/repos/repoPost.php';
@@ -193,12 +196,13 @@ function banPost(){
         $banText .= " files has been banned.";
     }
     if($isPreseptual){
-        $fileHandler = new fileHandlerClass($board->getConf());
+        $hasher = new ImageHash(new DifferenceHash());
+
         foreach($post->getFiles() as $file){
-            $hash = $fileHandler->perceptualHash($file->getFilePath());
+            $hash = $hasher->hash($file->getFilePath());
             $BANREPO->banFile($board->getBoardID(), $hash, $banReason, $isPreseptual, $isGlobal, $isPublic, $category);
         }
-        $banText .= " files has been banned.";
+        $banText .= " files has been banned preseptualy.";
     }
     
     logAudit($board, $AUTH->getName() . ' a banned post. '. $banText);
