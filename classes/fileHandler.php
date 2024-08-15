@@ -1,6 +1,7 @@
 <?php
 use Jenssegers\ImageHash\ImageHash;
 use Jenssegers\ImageHash\Implementations\DifferenceHash;
+use Jenssegers\ImageHash\Hash;
 
 require_once __DIR__ .'/repos/repoFile.php';
 require_once __DIR__ .'/repos/repoBan.php';
@@ -215,7 +216,8 @@ class fileHandlerClass {
 
 
                 foreach($bannedHashes as $badHash){
-                    $hamming = $hasher->distance($badHash, $preseptualHash);
+                    $hashObject = Hash::fromBits($this->hashToBits($badHash));
+                    $hamming = $hasher->distance($hashObject, $preseptualHash);
                     if ($hamming <= $globalConf['hamming']) { 
                         foreach ($files as $bfile) {
                             unlink($bfile->getFilePath());
@@ -290,6 +292,18 @@ class fileHandlerClass {
         }
     
         return $distance;
+    }
+    public static function hashToBits(string $value): string
+    {
+        $value = hex2bin($value);
+
+        $bits = '';
+        $digits = unpack('J*', $value);
+        foreach ($digits as $digit) {
+            $bits .= sprintf('%064b', $digit);
+        }
+
+        return $bits;
     }
 
 }
