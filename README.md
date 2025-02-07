@@ -1,3 +1,8 @@
+### archived
+i thought i would one day come back to this but its been half a year.
+i regret moving nashi over to this new software as i want to keep prod and dev on the same when i got something good but it just insted made a bigger issue.
+if you do wish to fork it. check my last few comits as i dont belive i finished some things there and remeber it was something i needed to do as it could be a security issue
+
 # kotatsuBBS
 ### info
 This is an imageboard software that aims to be the best out there in terms of code readability and modularity.
