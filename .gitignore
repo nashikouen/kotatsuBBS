@@ -2,3 +2,5 @@
 conf.php
 vendor
 .composer
+.install_bypass
+cache/*

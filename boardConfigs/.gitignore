@@ -1,5 +1,0 @@
-# Ignore all config files
-*conf.php
-
-# But not the base config file
-!example.conf.php

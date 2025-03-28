@@ -3,6 +3,7 @@
  *  DO NOT DELETE THIS FILE OR TRY TO MAKE A conf.php FILE FROM THIS
  *  install.php will use this file to create the proper files. pleas edit stuff you wish to have global before installing
  *  or update the conf.php after it is installed, [note after it is installed you loses these comments in the new file]
+ *  this file is supposed to shadow the main configs if something is missing (so when version updates u dont jsut lose compatibilty)
  */
 return [
     /*
@@ -11,9 +12,9 @@ return [
     'mysqlDB' => [
         'host' => '127.0.0.1',
         'port' => '3306',
-        'username' => 'kodomo',
-        'password' => 'kodomo',
-        'databaseName' => 'boarddb', 
+        'username' => 'badName',
+        'password' => 'badPassword',
+        'databaseName' => 'db_name',
     ],
 
     /* if you are preseptualy banning files. this will be the hamming used. 0 would be a prefect 200 would be a totaly diffrent image. */
@@ -33,8 +34,8 @@ return [
     'isOpenBSD' => false,       // webhooks dont curetly work on openbsd, i am not sure how to get it working... ffmpeg command is difrent on openbsd too.
 
     // the salt for a site wide secure tripcode and logging in. [note] this code below will be evaluated and saved apon install.
-    'tripcodeSalt' => substr(str_replace('+', '.', base64_encode(random_bytes(6))), 0, 8), 
-    
+    'tripcodeSalt' => substr(str_replace('+', '.', base64_encode(random_bytes(6))), 0, 8),
+
     /* 
      * these list will hold a list of authed users, format would look like this [[hash, name], [hash, name]] 
      * these use the secure tripcode hash for names.      
@@ -55,6 +56,7 @@ return [
      *      ^^(you might have to make it manualy and give webserver premistions to it)
      * if you are keeping it in the web root. make sure you hide the logs from web srever.
      */
-    'logDir' => '/var/www/bbsLog/',
+    'logDir' => realpath(__DIR__) . '/bbsLog/',
+
 ];
 

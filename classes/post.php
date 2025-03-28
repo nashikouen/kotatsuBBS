@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ .'/file.php';
-require_once __DIR__ .'/auth.php';
-require_once __DIR__ .'/../lib/postMagic.php';
-require_once __DIR__ .'/../lib/common.php';
-require_once __DIR__ .'/repos/repoFile.php';
+require_once __DIR__ . '/file.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../lib/postMagic.php';
+require_once __DIR__ . '/../lib/common.php';
+require_once __DIR__ . '/repos/repoFile.php';
 
-class PostDataClass {
+class PostDataClass
+{
     private int $postID;//postID 
     private int $threadID;
     private array $files = [];//file objects
@@ -22,15 +23,25 @@ class PostDataClass {
 
     private $fileRepo;
     private $isFilesFullyLoaded;
-	public function __construct(array $config, string $name, string $email, string $subject, 
-                                string $comment, string $password, int $unixTime, string $IP, 
-                                int $threadID=-1, int $postID=-1, string $special='') {
+    public function __construct(
+        array $config,
+        string $name,
+        string $email,
+        string $subject,
+        string $comment,
+        string $password,
+        int $unixTime,
+        string $IP,
+        int $threadID = -1,
+        int $postID = -1,
+        string $special = ''
+    ) {
 
         $this->config = $config;
-		$this->name = $name;
-		$this->email = $email;
-		$this->subject = $subject;
-		$this->comment = $comment;
+        $this->name = $name;
+        $this->email = $email;
+        $this->subject = $subject;
+        $this->comment = $comment;
         $this->password = $password;
 
         $this->unixTime = $unixTime;
@@ -41,71 +52,84 @@ class PostDataClass {
         $this->fileRepo = FileRepoClass::getInstance();
 
     }
-    public function __toString() {
-        return  "BoardID: {$this->config['boardID']}\n" .
-                "Name: {$this->name}\n" .
-                "Email: {$this->email}\n" .
-                "Subject: {$this->subject}\n" .
-                "Comment: {$this->comment}\n" .
-                "Password: {$this->password}\n" .
-                "Unix Time: {$this->unixTime}\n" .
-                "IP Address: {$this->IP}\n" .
-                "Post ID: {$this->postID}\n" .
-                "Thread ID: {$this->threadID}\n" .
-                "Special Info: {$this->special}";
+    public function __toString()
+    {
+        return "BoardID: {$this->config['boardID']}\n" .
+            "Name: {$this->name}\n" .
+            "Email: {$this->email}\n" .
+            "Subject: {$this->subject}\n" .
+            "Comment: {$this->comment}\n" .
+            "Password: {$this->password}\n" .
+            "Unix Time: {$this->unixTime}\n" .
+            "IP Address: {$this->IP}\n" .
+            "Post ID: {$this->postID}\n" .
+            "Thread ID: {$this->threadID}\n" .
+            "Special Info: {$this->special}";
     }
-    public function validate(){
-        if (mb_strlen($this->name, 'UTF-8') > MAX_INPUT_LENGTH ){
-            drawErrorPageAndDie("your post's name is invalid. max size: ".MAX_INPUT_LENGTH);
-        }  
-        if (mb_strlen($this->email, 'UTF-8') > MAX_INPUT_LENGTH){
-            drawErrorPageAndDie("your post's email is invalid. max size : ".MAX_INPUT_LENGTH);
+    public function validate()
+    {
+        if (mb_strlen($this->name, 'UTF-8') > MAX_INPUT_LENGTH) {
+            drawErrorPageAndDie("your post's name is invalid. max size: " . MAX_INPUT_LENGTH);
+        }
+        if (mb_strlen($this->email, 'UTF-8') > MAX_INPUT_LENGTH) {
+            drawErrorPageAndDie("your post's email is invalid. max size : " . MAX_INPUT_LENGTH);
 
         }
-        if (mb_strlen($this->subject, 'UTF-8') > MAX_INPUT_LENGTH){
-            drawErrorPageAndDie("your post's subject is invalid. max size: ".MAX_INPUT_LENGTH);
+        if (mb_strlen($this->subject, 'UTF-8') > MAX_INPUT_LENGTH) {
+            drawErrorPageAndDie("your post's subject is invalid. max size: " . MAX_INPUT_LENGTH);
         }
-        if (mb_strlen($this->comment, 'UTF-8') > $this->config['maxCommentSize']){
-            drawErrorPageAndDie("your post's comment is invalid. max size: ".$this->config['maxCommentSize']);
+        if (mb_strlen($this->comment, 'UTF-8') > $this->config['maxCommentSize']) {
+            drawErrorPageAndDie("your post's comment is invalid. max size: " . $this->config['maxCommentSize']);
         }
-        if (mb_strlen($this->password, 'UTF-8') > MAX_INPUT_LENGTH_PASSWORD){
-            drawErrorPageAndDie("your post's password is invalid. max size: ".MAX_INPUT_LENGTH_PASSWORD);
+        if (mb_strlen($this->password, 'UTF-8') > MAX_INPUT_LENGTH_PASSWORD) {
+            drawErrorPageAndDie("your post's password is invalid. max size: " . MAX_INPUT_LENGTH_PASSWORD);
         }
     }
-    public function stripHtml(){
+    public function stripHtml()
+    {
         $this->name = htmlspecialchars($this->name, ENT_QUOTES, 'UTF-8');
-		$this->email = htmlspecialchars($this->email, ENT_QUOTES, 'UTF-8');
-		$this->subject = htmlspecialchars($this->subject, ENT_QUOTES, 'UTF-8');
-		$this->comment = htmlspecialchars($this->comment, ENT_QUOTES, 'UTF-8');
+        $this->email = htmlspecialchars($this->email, ENT_QUOTES, 'UTF-8');
+        $this->subject = htmlspecialchars($this->subject, ENT_QUOTES, 'UTF-8');
+        $this->comment = htmlspecialchars($this->comment, ENT_QUOTES, 'UTF-8');
     }
-    public function embedLinks(){
-        $regexUrl  = '/(https?:\/\/[^\s]+)/';
-        $this->comment = preg_replace($regexUrl , '<a href="$1" target="_blank">$1</a>', $this->comment);
+    public function embedLinks()
+    {
+        $regexUrl = '/(https?:\/\/[^\s]+)/';
+        $this->comment = preg_replace($regexUrl, '<a href="$1" target="_blank">$1</a>', $this->comment);
     }
-    public function addLineBreaks(){
+    public function addLineBreaks()
+    {
         $this->comment = nl2br($this->comment);
     }
-    public function applyTripcode(){
+    public function applyTripcode()
+    {
         $nameXpass = splitTextAtTripcodePass($this->name);
-        $gc = require __DIR__ . '/../conf.php'; 
+        $gc = require __DIR__ . '/../conf.php';
         $tripcodeArray = genTripcode($nameXpass[1], $gc['tripcodeSalt']);
 
+        if (!isset($tripcodeArray['tripcode'])) {
+            return;
+        }
         $this->name = $nameXpass[0] . $tripcodeArray['tripcode'];
-        
+
+
         $special = $this->getSpecial();
         $special = array_merge($special, $tripcodeArray);
         $this->setSpecial($special);
     }
-    public function stripTripcodePass(){
+    public function stripTripcodePass()
+    {
         $nameXpass = splitTextAtTripcodePass($this->name);
         $this->name = $nameXpass[0];
     }
-    public function applyQuoteUser(){
+    public function applyQuoteUser()
+    {
         $patternQuote = '/(^|\n)&gt;(?!&gt;)([^\n]*)/';
         $replacementQuote = '$1<div class="quote">&gt;$2</div>';
         $this->comment = preg_replace($patternQuote, $replacementQuote, $this->comment);
     }
-    public function applyPostLinks(){
+    public function applyPostLinks()
+    {
         // Convert post numbers starting with '&gt;&gt;'
         $patternPost = '/&gt;&gt;(\d+)/';
         $replacementPost = function ($matches) {
@@ -115,7 +139,8 @@ class PostDataClass {
         };
         $this->comment = preg_replace_callback($patternPost, $replacementPost, $this->comment);
     }
-    public function applyBBCode(){
+    public function applyBBCode()
+    {
         // bold
         $this->comment = preg_replace('#\[b\](.*?)\[/b\]#si', '<b>\1</b>', $this->comment);
         // spoiler
@@ -146,33 +171,37 @@ class PostDataClass {
         // ruby/furigana
         $this->comment = preg_replace('#\[ruby\](.*?)\[/ruby\]#si', '<ruby>\1</ruby>', $this->comment);
         $this->comment = preg_replace('#\[rt\](.*?)\[/rt\]#si', '<rt>\1</rt>', $this->comment);
-        $this->comment= preg_replace('#\[rp\](.*?)\[/rp\]#si', '<rp>\1</rp>', $this->comment);
+        $this->comment = preg_replace('#\[rp\](.*?)\[/rp\]#si', '<rp>\1</rp>', $this->comment);
     }
-    public function isSage(){
-        if(stripos($this->getEmail(),"sage")!== false){
-            if($this->getConf()['visableSage'] == false){
+    public function isSage()
+    {
+        if (stripos($this->getEmail(), "sage") !== false) {
+            if ($this->getConf()['visableSage'] == false) {
                 $this->isSaging = true;
             }
             return true;
-        }elseif($this->isSaging == true){
+        } elseif ($this->isSaging == true) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public function isBumpingThread(){
-        if($this->isSage()){
+    public function isBumpingThread()
+    {
+        if ($this->isSage()) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
-    public function addFile(FileDataClass $file) {
+    public function addFile(FileDataClass $file)
+    {
         $this->files[] = $file;
     }
-    public function addFilesToRepo(){
-        foreach($this->files as $file){
+    public function addFilesToRepo()
+    {
+        foreach ($this->files as $file) {
             $file->setPostID($this->postID);
             $file->setThreadID($this->threadID);
             $file->setConf($this->config);
@@ -181,61 +210,75 @@ class PostDataClass {
             $FILEREPO->createFile($this->config, $file);
         }
     }
-    public function moveFilesToDir($dir,$isImport=false){
-        foreach($this->files as $file){
-            $file->moveToDir($dir,$isImport);
+    public function moveFilesToDir($dir, $isImport = false)
+    {
+        foreach ($this->files as $file) {
+            $file->moveToDir($dir, $isImport);
         }
     }
-    public function getFiles() {
-        if($this->isFilesFullyLoaded != true){
+    public function getFiles()
+    {
+        if ($this->isFilesFullyLoaded != true) {
             $this->files = $this->fileRepo->loadFilesByPostID($this->config, $this->postID);
             $this->isFilesFullyLoaded = true;
         }
         return $this->files;
     }
-    public function appendText($text){
+    public function appendText($text)
+    {
         $this->comment .= $text;
     }
-    public function getPostID(){
+    public function getPostID()
+    {
         return $this->postID;
     }
-    public function getThreadID(){
+    public function getThreadID()
+    {
         return $this->threadID;
     }
-    public function getBoardID(){
+    public function getBoardID()
+    {
         return $this->config['boardID'];
     }
-    public function getName(){
+    public function getName()
+    {
         return $this->name;
     }
-    public function getEmail(){
+    public function getEmail()
+    {
         return $this->email;
     }
-    public function getSubject(){
+    public function getSubject()
+    {
         return $this->subject;
     }
-    public function getComment(){
+    public function getComment()
+    {
         return $this->comment;
     }
-    public function getPassword(){
+    public function getPassword()
+    {
         return $this->password;
     }
-    public function getUnixTime(){
+    public function getUnixTime()
+    {
         return $this->unixTime;
     }
-    public function getIP(){
+    public function getIP()
+    {
         return $this->IP;
     }
     /* special should only be used by moduels */
-    public function getSpecial() {
+    public function getSpecial()
+    {
         if (!isset($this->special) || empty($this->special)) {
             return [];
         }
-    
+
         // Explode the special string into an associative array
         $pairs = explode('|', $this->special);
         $assocArray = [];
-        
+
         foreach ($pairs as $pair) {
             list($key, $value) = explode(':', $pair);
             // Properly unescape the keys and values
@@ -243,73 +286,87 @@ class PostDataClass {
             $value = str_replace(['\\:', '\\|'], [':', '|'], $value);
             $assocArray[$key] = $value;
         }
-        
+
         return $assocArray;
     }
-    public function getRawSpecial(){
+    public function getRawSpecial()
+    {
         return $this->special;
     }
-    public function getConf(){
+    public function getConf()
+    {
         return $this->config;
     }
 
 
-    public function setPostID($id){
+    public function setPostID($id)
+    {
         $this->postID = $id;
     }
-    public function setThreadID($id){
+    public function setThreadID($id)
+    {
         $this->threadID = $id;
     }
-    public function setName($name){
+    public function setName($name)
+    {
         $this->name = $name;
     }
-    public function setEmail($email){
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
-    public function setSubject($subject){
+    public function setSubject($subject)
+    {
         $this->subject = $subject;
     }
-    public function setComment($comment){
+    public function setComment($comment)
+    {
         $this->comment = $comment;
     }
-    public function setPassword($password){
+    public function setPassword($password)
+    {
         $this->password = $password;
     }
-    public function setUnixTime($unixTime){
+    public function setUnixTime($unixTime)
+    {
         $this->unixTime = $unixTime;
     }
-    public function setIP($IP){
+    public function setIP($IP)
+    {
         $this->IP = $IP;
     }
-    public function updateSpecial($key, $value) {
+    public function updateSpecial($key, $value)
+    {
         $currentSpecial = $this->getSpecial();
         $currentSpecial[$key] = $value;
         $this->setSpecial($currentSpecial);
     }
-    public function setSpecial($associativeTable) {
+    public function setSpecial($associativeTable)
+    {
         // Ensure it's an associative array
         if (!is_array($associativeTable)) {
             throw new InvalidArgumentException('Expected an associative array.');
         }
-    
+
         $pairs = [];
-        
+
         foreach ($associativeTable as $key => $value) {
             $key = str_replace([':', '|'], ['\\:', '\\|'], $key);
             $value = str_replace([':', '|'], ['\\:', '\\|'], $value);
             $pairs[] = $key . ':' . $value;
         }
-        
+
         // Implode the associative array into a special string
         $this->special = implode('|', $pairs);
     }
-    public function getSpecialValue($key) {
+    public function getSpecialValue($key)
+    {
         $currentSpecial = $this->getSpecial();
-    
+
         if (array_key_exists($key, $currentSpecial)) {
             return $currentSpecial[$key];
         }
-    
+
         return null;
     }
 }

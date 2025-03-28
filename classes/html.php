@@ -8,27 +8,30 @@
  * 
  */
 
-require_once __DIR__ .'/hook.php';
-require_once __DIR__ .'/repos/repoThread.php';
-require_once __DIR__ .'/repos/repoBan.php';
-require_once __DIR__ .'/../lib/common.php';
-require_once __DIR__ .'/auth.php';
-require_once __DIR__ .'/../lib/logging.php';
+require_once __DIR__ . '/hook.php';
+require_once __DIR__ . '/repos/repoThread.php';
+require_once __DIR__ . '/repos/repoBan.php';
+require_once __DIR__ . '/../lib/common.php';
+require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../lib/logging.php';
 
 $HOOK = HookClass::getInstance();
 $THREADREPO = ThreadRepoClass::getInstance();
 $BANREPO = BanRepoClass::getInstance();
 $AUTH = AuthClass::getInstance();
 
-class htmlclass {
+class htmlclass
+{
     private string $html = "";
     private array $conf;
     private boardClass $board;
-    public function __construct(array $conf, boardClass $board) {
+    public function __construct(array $conf, boardClass $board)
+    {
         $this->conf = $conf;
         $this->board = $board;
     }
-    private function drawHead(){
+    private function drawHead()
+    {
         global $AUTH;
         $this->html .= '
         <!--drawHead() Hello!! If you are looking to modify this webapge. please check out kotatsu github and look in /classes/html.php-->
@@ -47,41 +50,43 @@ class htmlclass {
             <meta name="robots" content="follow,archive">
             <!--board specific stuff-->
             <title>' . $this->conf['boardTitle'] . '</title>
-            <link rel="stylesheet" type="text/css" href="'. $this->conf['staticPath'] .'css/base.css">
-            <link rel="stylesheet" type="text/css" href="'. $this->conf['defaultCSS'] .'" title="boardcss">
-            <link rel="shortcut icon" href="'. $this->conf['defaultFavicon'] .'">';
+            <link rel="stylesheet" type="text/css" href="' . $this->conf['staticPath'] . 'css/base.css">
+            <link rel="stylesheet" type="text/css" href="' . $this->conf['defaultCSS'] . '" title="boardcss">
+            <link rel="shortcut icon" href="' . $this->conf['defaultFavicon'] . '">';
 
-            if($this->conf['allowRuffle'] && $this->conf['allowJS']){
-                $this->html .= '<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>';
-            }
-            if($this->conf['allowJS']){
-                $this->html .= 
-                '<script src="'.$this->conf['staticPath'].'js/onClickEmbedFile.js" defer></script>
-                <script src="'.$this->conf['staticPath'].'js/postidToForm.js" defer></script>
-                <script src="'.$this->conf['staticPath'].'js/autoFillCookies.js" defer></script>
-                <script src="'.$this->conf['staticPath'].'js/highlight.js" defer></script>';
-            }
-            $this->html .= 
-            
+        if ($this->conf['allowRuffle'] && $this->conf['allowJS']) {
+            $this->html .= '<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>';
+        }
+        if ($this->conf['allowJS']) {
+            $this->html .=
+                '<script src="' . $this->conf['staticPath'] . 'js/onClickEmbedFile.js" defer></script>
+                <script src="' . $this->conf['staticPath'] . 'js/postidToForm.js" defer></script>
+                <script src="' . $this->conf['staticPath'] . 'js/autoFillCookies.js" defer></script>
+                <script src="' . $this->conf['staticPath'] . 'js/highlight.js" defer></script>';
+        }
+        $this->html .=
+
             //'<link rel="alternate" type="application/rss+xml" title="RSS 2.0 Feed" href="//nashikouen.net/main/koko.php?mode=module&amp;load=mod_rss">
-        '</head>';
+            '</head>';
     }
     /*drawNavGroup expects a key,value pair. where key is displayname and value is url*/
-    private function drawNavGroup($URLPair){
+    private function drawNavGroup($URLPair)
+    {
         //this is what i mean by grouping [ webpage1 / webpage2 / webpage3 / etc.. ]
-        if(empty($URLPair)){
+        if (empty($URLPair)) {
             return;
         }
         $pairs = '<span class="nowrap">[';
         foreach ($URLPair as $key => $value) {
-            $pairs .= '&nbsp;<a class="navLink" href="'.$value.'">'.$key.'</a>&nbsp;/';
+            $pairs .= '&nbsp;<a class="navLink" href="' . $value . '">' . $key . '</a>&nbsp;/';
         }
         $pairs = substr($pairs, 0, -1); // Remove the last "/"
-        
+
         $pairs .= ']</span>';
         $this->html .= $pairs;
     }
-    private function drawNavBar(){
+    private function drawNavBar()
+    {
         global $HOOK;
 
         $conf = $this->conf;
@@ -90,26 +95,27 @@ class htmlclass {
         <!--drawNavBar()-->
         <div class="navBar">
         <span class="navLeft">';
-            $this->drawNavGroup(getBoardListing());
-            $this->drawNavGroup($conf['navLinksLeft']);
-            $res = $HOOK->executeHook("onDrawNavLeft");// HOOK drawing to left side of nav
-            foreach ($res as $urlGroup) {
-                $this->drawNavGroup($urlGroup);
-            }
-            $this->html .= '
+        $this->drawNavGroup(getBoardListing());
+        $this->drawNavGroup($conf['navLinksLeft']);
+        $res = $HOOK->executeHook("onDrawNavLeft");// HOOK drawing to left side of nav
+        foreach ($res as $urlGroup) {
+            $this->drawNavGroup($urlGroup);
+        }
+        $this->html .= '
         </span>
         <span class="navRight">';
-            $res = $HOOK->executeHook("onDrawNavRight");// HOOK drawing to right side of nav
-            foreach ($res as $urlGroup) {
-                $this->drawNavGroup($urlGroup);
-            }
-            $this->drawNavGroup($conf['navLinksRight']);
-            $this->drawNavGroup(['admin' => ROOTPATH . $conf['boardNameID'] . '/admin/' ]);
-            $this->html .= '
+        $res = $HOOK->executeHook("onDrawNavRight");// HOOK drawing to right side of nav
+        foreach ($res as $urlGroup) {
+            $this->drawNavGroup($urlGroup);
+        }
+        $this->drawNavGroup($conf['navLinksRight']);
+        $this->drawNavGroup(['admin' => ROOTPATH . $conf['boardNameID'] . '/admin/']);
+        $this->html .= '
         </span>
         </div>';
     }
-    private function drawBoardTitle(){
+    private function drawBoardTitle()
+    {
         $conf = $this->conf;
         $conf['boardTitle'];
         $conf['boardSubTitle'];
@@ -117,38 +123,41 @@ class htmlclass {
         $this->html .= '
         <!--drawBoardTitle()-->
         <div class="boardTitle">';
-        if ($conf['boardLogoPath'] != ""){
-            $this->html .= '<img class="logo" loading="lazy" src="'.$conf['boardLogoPath'].'">';
+        if ($conf['boardLogoPath'] != "") {
+            $this->html .= '<img class="logo" loading="lazy" src="' . $conf['boardLogoPath'] . '">';
         }
-        $this->html .= '<h1 class="title">'.$conf['boardTitle'].'</h1>';
-        $this->html .= '<h5 class="subtitle">'.$conf['boardSubTitle'].'</h5>
+        $this->html .= '<h1 class="title">' . $conf['boardTitle'] . '</h1>';
+        $this->html .= '<h5 class="subtitle">' . $conf['boardSubTitle'] . '</h5>
         </div>';
     }
-    private function drawFooter(){
-        $this->html .= '<br><br><br><center>- you are running <a rel="nofollow noreferrer license" href="https://github.com/nashikouen/KotatsuBBS/" target="_blank">KotatsuBBS</a>. a clear and easy to read image board software -</center>' ;
+    private function drawFooter()
+    {
+        $this->html .= '<br><br><br><center>- you are running <a rel="nofollow noreferrer license" href="https://github.com/nashikouen/KotatsuBBS/" target="_blank">KotatsuBBS</a>. a clear and easy to read image board software -</center>';
     }
-    private function postManagerWraper($drawFunc, $parameter){
+    private function postManagerWraper($drawFunc, $parameter)
+    {
         $this->html .= '
         <!--postManagerWraper($drawFunc, $parameter)-->
-        <form name="managePost" id="managePost" action="'.ROOTPATH.'bbs.php" method="post">';
-            call_user_func_array($drawFunc, $parameter);
-            $this->html .= '
+        <form name="managePost" id="managePost" action="' . ROOTPATH . 'bbs.php" method="post">';
+        call_user_func_array($drawFunc, $parameter);
+        $this->html .= '
             <!--make dropdown with other options-->
             <table align="right">
             <tr>
             <td align="">
 			<input type="hidden" name="action" value="deletePosts">
-            <input type="hidden" name="boardID" value="'.$this->conf['boardID'].'">
+            <input type="hidden" name="boardID" value="' . $this->conf['boardID'] . '">
 
                 Delete Post: [<label><input type="checkbox" name="fileOnly" id="fileOnly" value="on">File only</label>]<br>
-                Password: <input type="password" name="password" size="16" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'">
+                Password: <input type="password" name="password" size="16" maxlength="' . MAX_INPUT_LENGTH_PASSWORD . '">
                 <input type="submit" value="Submit">
             </td>
             </tr>
             </table>
         </form>';
     }
-    private function drawMainFormBody($buttonText,$isThread=false){
+    private function drawMainFormBody($buttonText, $isThread = false)
+    {
         global $AUTH;
         global $board;
         $this->html .= '
@@ -156,64 +165,64 @@ class htmlclass {
         <table>
         <tr>
             <td class="accent"><label for="name">Name</label></td>
-            <td><input type="text" id="name" name="name" autocomplete="off" maxlength="'.MAX_INPUT_LENGTH.'" ';
-            if($this->conf['requireName']){
-                $this->html .= 'required';
-            }
-            $this->html .= 
+            <td><input type="text" id="name" name="name" autocomplete="off" maxlength="' . MAX_INPUT_LENGTH . '" ';
+        if ($this->conf['requireName']) {
+            $this->html .= 'required';
+        }
+        $this->html .=
             '></td>
         </tr>
         <tr>
             <td class="accent"><label for="email">Email</label></td>
             <td>
-                <input type="text" id="email" name="email" autocomplete="off" maxlength="'.MAX_INPUT_LENGTH.'" ';
-            if($this->conf['requireEmail']){
-                $this->html .= 'required';
-            }
-            $this->html .= 
+                <input type="text" id="email" name="email" autocomplete="off" maxlength="' . MAX_INPUT_LENGTH . '" ';
+        if ($this->conf['requireEmail']) {
+            $this->html .= 'required';
+        }
+        $this->html .=
             '">
             </td>
         </tr>
         <tr>
             <td class="accent"><label for="subject">Subject</label></td>
-	        <td><input type="text" id="subject" name="subject" maxlength="'.MAX_INPUT_LENGTH.'" ';
-            if($this->conf['requireSubject']){
-                $this->html .= 'required';
-            }
-            $this->html .= 
+	        <td><input type="text" id="subject" name="subject" maxlength="' . MAX_INPUT_LENGTH . '" ';
+        if ($this->conf['requireSubject']) {
+            $this->html .= 'required';
+        }
+        $this->html .=
             '>
-	            <button type="submit">'.$buttonText.'</button>
+	            <button type="submit">' . $buttonText . '</button>
 	        </td>
         </tr>
         <tr>
             <td class="accent"><label for="comment">Comment</label></td>
-            <td><textarea type="text" id="comment" name="comment" cols="48" rows="4" maxlength="'.$this->conf['maxCommentSize'].'" ';
-            if($this->conf['requireComment']){
-                $this->html .= 'required';
-            }
-            $this->html .= 
+            <td><textarea type="text" id="comment" name="comment" cols="48" rows="4" maxlength="' . $this->conf['maxCommentSize'] . '" ';
+        if ($this->conf['requireComment']) {
+            $this->html .= 'required';
+        }
+        $this->html .=
             '></textarea></td>
         </tr>';
-        if($this->conf['fileConf']['maxFiles'] >= 1){
-            $this->html .='
+        if ($this->conf['fileConf']['maxFiles'] >= 1) {
+            $this->html .= '
         <tr>
             <td class="accent"><label for="files">Files</label></td>
             <td><input type="file" id="files" name="upfile[]" multiple=""';
-            if($this->conf['requireFile']){
+            if ($this->conf['requireFile']) {
                 $this->html .= 'required';
-            }elseif($isThread && $this->conf['opMustHaveFile']){
+            } elseif ($isThread && $this->conf['opMustHaveFile']) {
                 $this->html .= 'required';
             }
-            $this->html .= 
-            '></td>
+            $this->html .=
+                '></td>
         </tr>';
         }
-        $this->html .='
+        $this->html .= '
         <tr>
             <td class="accent"><label for="password">Password</label></td>
-            <td><input type="password" id="password" name="password" maxlength="'.MAX_INPUT_LENGTH_PASSWORD.'"></td>
+            <td><input type="password" id="password" name="password" maxlength="' . MAX_INPUT_LENGTH_PASSWORD . '"></td>
         </tr>';
-        if($AUTH->isAuth($board->getBoardID()) && ! $AUTH->isJanitor($board->getBoardID())){
+        if ($AUTH->isAuth($board->getBoardID()) && !$AUTH->isJanitor($board->getBoardID())) {
             $this->html .= '
             <tr>
                 <td class="accent"><label for="embedingHTML">embeding HTML</label></td>
@@ -223,76 +232,80 @@ class htmlclass {
         $this->html .= '
         </table>';
         $this->drawFormSumbitionRules();
-        $this->html .='<script src="/static/js/kao.js" defer></script>';
+        $this->html .= '<script src="/static/js/kao.js" defer></script>';
     }
-    private function drawFormSumbitionRules(){
+    private function drawFormSumbitionRules()
+    {
         global $AUTH;
         global $board;
         $this->html .= '
             <details class="submitRules"><summary>submition rules</summary>';
-                if($this->conf['fileConf']['maxFiles'] >= 1){
-                    $listing = '<li>Allowed file types are: ';
-                    foreach($this->conf['fileConf']['allowedMimeTypes'] as $mimeType){
-                        $listing .= ' ' . getExtensionByMimeType($mimeType). ',';
-                    }
-                    $listing = substr($listing, 0, -1); // Remove the last ","
-                    $listing .= '</li>';
+        if ($this->conf['fileConf']['maxFiles'] >= 1) {
+            $listing = '<li>Allowed file types are: ';
+            foreach ($this->conf['fileConf']['allowedMimeTypes'] as $mimeType) {
+                $listing .= ' ' . getExtensionByMimeType($mimeType) . ',';
+            }
+            $listing = substr($listing, 0, -1); // Remove the last ","
+            $listing .= '</li>';
 
-                    $this->html .= $listing;
+            $this->html .= $listing;
 
-                    $this->html .='<li>maximum files: '.$this->conf['fileConf']['maxFiles'].'</li>';
-                    $this->html .='<li>maximum upload size: '.bytesToHumanReadable($this->conf['fileConf']['maxFileSize']).'</li>';
-                    if($this->conf['fileConf']['allowDuplicateFiles'] == false){
-                        $this->html .= '<li>duplicate files are not allowed</li>';
-                    }
-                }
-                $this->html .= '<li>posts will be saved in '.$this->conf['timeZone'].' time</li>';
-                $this->html .= '<li>max comment size is '.$this->conf['maxCommentSize'].' characters</li>';
+            $this->html .= '<li>maximum files: ' . $this->conf['fileConf']['maxFiles'] . '</li>';
+            $this->html .= '<li>maximum upload size: ' . bytesToHumanReadable($this->conf['fileConf']['maxFileSize']) . '</li>';
+            if ($this->conf['fileConf']['allowDuplicateFiles'] == false) {
+                $this->html .= '<li>duplicate files are not allowed</li>';
+            }
+        }
+        $this->html .= '<li>posts will be saved in ' . $this->conf['timeZone'] . ' time</li>';
+        $this->html .= '<li>max comment size is ' . $this->conf['maxCommentSize'] . ' characters</li>';
 
-                if($this->conf['canTripcode']){
-                    $this->html .= '<li>tripcodes are enabled</li>';
-                }
-                if($this->conf['canFortune']){
-                    $this->html .= '<li>fortunes are enabled</li>';
-                }
-                if($this->conf['allowBBcode']){
-                    $this->html .= '<li>BBCode is enabled</li>';
-                }
+        if ($this->conf['canTripcode']) {
+            $this->html .= '<li>tripcodes are enabled</li>';
+        }
+        if ($this->conf['canFortune']) {
+            $this->html .= '<li>fortunes are enabled</li>';
+        }
+        if ($this->conf['allowBBcode']) {
+            $this->html .= '<li>BBCode is enabled</li>';
+        }
 
-                $this->html .= '
+        $this->html .= '
             </details>';
     }
-    private function drawFormNewThread(){
+    private function drawFormNewThread()
+    {
         $this->html .= '
         <!--drawFormNewThread()-->
-        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/catalog/">Catalog</a>]
+        [<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/catalog/">Catalog</a>]
         <center id="mainForm">
-            <form id="formThread" action="'.ROOTPATH.'bbs.php" method="post" enctype="multipart/form-data">
+            <form id="formThread" action="' . ROOTPATH . 'bbs.php" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postNewThread">
-            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">';
-            $this->drawMainFormBody("New Thread", true);
-            $this->html .= '
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">';
+        $this->drawMainFormBody("New Thread", true);
+        $this->html .= '
             </form>
         </center>';
     }
-    private function drawFormNewPost($threadID){
+    private function drawFormNewPost($threadID)
+    {
         $this->html .= '
         <!--drawFormNewPost($threadID)-->
-        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]
+        [<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/">Return</a>]
         [<a href="#bottom">bottom</a>]
-        [<a href="'.ROOTPATH.$this->conf['boardNameID'].'/catalog/">Catalog</a>]
+        [<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/catalog/">Catalog</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
         <center id="mainForm">
-            <form id="formPost" action="'.ROOTPATH.'bbs.php" method="POST" enctype="multipart/form-data">
+            <form id="formPost" action="' . ROOTPATH . 'bbs.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postToThread">
-            <input type="hidden" name="threadID" value="'.$threadID.'">
-            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">';
-            $this->drawMainFormBody("New Post");
-            $this->html .= '
+            <input type="hidden" name="threadID" value="' . $threadID . '">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">';
+        $this->drawMainFormBody("New Post");
+        $this->html .= '
             </form>
         </center>';
     }
-    private function drawFiles($files, $threadID, $strippedDown = false) {
+    private function drawFiles($files, $threadID, $strippedDown = false)
+    {
         $this->html .= '
         <!--drawFiles($files, $threadID)-->
         <div class="files">';
@@ -320,18 +333,18 @@ class htmlclass {
             $webLocation = ROOTPATH . 'threads/' . $threadID . '/';   // Location where a user can make a GET request to the file.
             $fileOnWeb = $webLocation . $file->getStoredName();  // File's location on the server.
             $thumbnail = $webLocation . $file->getStoredTName();
-    
+
             $SWFThumb = $this->conf['staticPath'] . "image/flash.png";
             $unknownFileThumb = $this->conf['staticPath'] . "image/unknownFile.png";
             $missingFileThumb = $this->conf['staticPath'] . "image/missingFile.png";
-    
+
             if ($file->hasThumbnail() == false) {
                 $thumbnail = $this->conf['staticPath'] . "image/noThumb.png";
             }
             if ($file->isSpoiler()) {
                 $thumbnail = $this->conf['staticPath'] . "image/spoiler.png";
             }
-    
+
             if (!$strippedDown) {
                 $fileNameS .= '
                 <div class="fileName" id="f' . $count . '">
@@ -344,7 +357,7 @@ class htmlclass {
                     </a> 
                 </div>';
             }
-    
+
             $filesS .= '
             <div class="file ' . $inline . '" id="f' . $count . '">';
             if ($file->isMissing()) {
@@ -398,94 +411,98 @@ class htmlclass {
             $filesS .= '
             </div>';
         }
-    
+
         $this->html .=
-        $fileNameS .
-        $filesS .
-        '</div>';
+            $fileNameS .
+            $filesS .
+            '</div>';
     }
-    private function drawPost($post, $isOP = false, $isListingMode=false, $omitedPosts=0){
+    private function drawPost($post, $isOP = false, $isListingMode = false, $omitedPosts = 0)
+    {
         global $AUTH;
 
-        $type="reply";
-        if($isOP){
+        $type = "reply";
+        if ($isOP) {
             $type = "op";
         }
         $postID = $post->getPostID();
         $threadID = $post->getThreadID();
-        $email = $post->getEmail(); 
+        $email = $post->getEmail();
 
         $this->html .= '
-            <div class="post '.$type.'" id="p'.$postID.'">';
-                if($isOP){
-                    $this->drawFiles($post->getFiles(), $threadID);
-                    $this->html .= '<br>';
-                }
-                $this->html .= '
+            <div class="post ' . $type . '" id="p' . $postID . '">';
+        if ($isOP) {
+            $this->drawFiles($post->getFiles(), $threadID);
+            $this->html .= '<br>';
+        }
+        $this->html .= '
                 <div class="postinfo">
-                    <input type="checkbox" name="postIDs[]" value="'.$postID.'">
-                    <span class="bigger"><b class="subject">'.$post->getSubject().'</b></span>
+                    <input type="checkbox" name="postIDs[]" value="' . $postID . '">
+                    <span class="bigger"><b class="subject">' . $post->getSubject() . '</b></span>
                     <span class="name">';
-                        if($email != ""){
-                            $this->html .= '<a href="mailto:'.$email.'"><b>'.$post->getName().'</b></a>';
-                        }else{
-                            $this->html .= '<b>'.$post->getName().'</b>';
-                        }
-                        $this->html .= '
+        if ($email != "") {
+            $this->html .= '<a href="mailto:' . $email . '"><b>' . $post->getName() . '</b></a>';
+        } else {
+            $this->html .= '<b>' . $post->getName() . '</b>';
+        }
+        $this->html .= '
                     </span>
-                    <span class="time">'.date('Y-m-d H:i:s', $post->getUnixTime()).'</span>
+                    <span class="time">' . date('Y-m-d H:i:s', $post->getUnixTime()) . '</span>
                     <span class="postnum">
-                        <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#p'.$postID.'" class="no">No.</a>&nbsp;<a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/#formPost" title="Quote">'.$postID.'</a>
+                        <a href="' . ROOTPATH . $this->conf['boardNameID'] . '/thread/' . $threadID . '/#p' . $postID . '" class="no">No.</a>&nbsp;<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/thread/' . $threadID . '/#formPost" title="Quote">' . $postID . '</a>
                     </span>';
-                    if($isOP  && $isListingMode){
-                        $this->html .= '<span>[&nbsp;<a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">Reply</a>&nbsp;]</span>';
-                    }
-                    $this->html .= '
+        if ($isOP && $isListingMode) {
+            $this->html .= '<span>[&nbsp;<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/thread/' . $threadID . '/" class="no">Reply</a>&nbsp;]</span>';
+        }
+        $this->html .= '
                 </div>';
-                if($AUTH->isAuth($post->getBoardID())){
-                    $this->drawAdminViewPost($post);
-                }
-                if($isOP == false){
-                    $this->drawFiles($post->getFiles(), $threadID);
-                }
-                $this->html .= '
-                <blockquote class="comment">'.$post->getComment().'</blockquote>';
-                if($isOP && $isListingMode && $omitedPosts > 0){
-                    $this->html .= '<span class="omittedposts">'.$omitedPosts.' posts omitted. Click Reply to view.</span>';
-                }
-                $this->html .= '
+        if ($AUTH->isAuth($post->getBoardID())) {
+            $this->drawAdminViewPost($post);
+        }
+        if ($isOP == false) {
+            $this->drawFiles($post->getFiles(), $threadID);
+        }
+        $this->html .= '
+                <blockquote class="comment">' . $post->getComment() . '</blockquote>';
+        if ($isOP && $isListingMode && $omitedPosts > 0) {
+            $this->html .= '<span class="omittedposts">' . $omitedPosts . ' posts omitted. Click Reply to view.</span>';
+        }
+        $this->html .= '
             </div><br>';
     }
-    private function drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0){
+    private function drawPosts($thread, $posts, $isListingMode = false, $omitedPosts = 0)
+    {
         global $AUTH;
         $this->html .= '
         <!--drawPosts($thread, $posts, $isListingMode=false ,$omitedPosts=0)-->';
-        if(empty($posts)){
-            logError($this->board, "drawPosts() empty array for posts. treadID: ".$thread->getThreadID()." boardID: ".$thread->getBoardID());
+        if (empty($posts)) {
+            logError($this->board, "drawPosts() empty array for posts. treadID: " . $thread->getThreadID() . " boardID: " . $thread->getBoardID());
             return;
         }
-        foreach($posts as $post){
+        foreach ($posts as $post) {
             $isOP = $post->getPostID() == $thread->getOPPostID();
             $this->drawPost($post, $isOP, $isListingMode, $omitedPosts);
         }
     }
-    private function drawThread($thread){
+    private function drawThread($thread)
+    {
         $posts = $thread->getPosts();
         sortPostsByTimeDesending($posts);
 
-        $this->html .='
+        $this->html .= '
         <!--drawThread($thread)-->
-        <div id="t'.$thread->getThreadID().'" class="thread">';
-            if($thread->getStatus() == "archived"){
-                $this->html .='<div class="archived">this thread is archived</div>';
-            }
-            $this->drawPosts($thread, $posts);
-            $this->html .='
+        <div id="t' . $thread->getThreadID() . '" class="thread">';
+        if ($thread->getStatus() == "archived") {
+            $this->html .= '<div class="archived">this thread is archived</div>';
+        }
+        $this->drawPosts($thread, $posts);
+        $this->html .= '
         </div>';
         $this->html .= '[<a href="#top">top</a>]';
     }
-    private function drawThreadListing($threads){
-        $this->html .='
+    private function drawThreadListing($threads)
+    {
+        $this->html .= '
         <!--drawThreadListing($threads)-->';
         foreach ($threads as $thread) {
             //TODO NEEDS FIXING.
@@ -496,80 +513,83 @@ class htmlclass {
             $posts[0] = $thread->getPostByID($thread->getOPPostID());
             $omitedPost = $thread->getPostCount() - sizeof($posts);
 
-            $this->html .='
-            <div id="t'.$thread->getThreadID().'" class="thread">';
-                $this->drawPosts($thread, $posts, true, $omitedPost);
-                $this->html .='
+            $this->html .= '
+            <div id="t' . $thread->getThreadID() . '" class="thread">';
+            $this->drawPosts($thread, $posts, true, $omitedPost);
+            $this->html .= '
             </div>';
         }
     }
-    private function drawPageNumbers($curentPage){
+    private function drawPageNumbers($curentPage)
+    {
         global $THREADREPO;
 
         $maxThreadsPerPage = $this->conf['threadsPerPage'];
         $threadCount = $THREADREPO->getThreadCount($this->conf);
 
-        if($threadCount >= $this->conf['maxActiveThreads']){
+        if ($threadCount >= $this->conf['maxActiveThreads']) {
             $threadCount = $this->conf['maxActiveThreads'];
         }
-        
+
         $pages = ceil($threadCount / $maxThreadsPerPage);
 
-        $this->html .='
+        $this->html .= '
         <!--drawPageNumbers($curentPage)-->
         <div class="pages">';
-        if($curentPage > 1){
-            $this->html .='
-            <a href="/'. $this->conf['boardNameID'] .'/'. 1 .'">&lt;&lt;</a>
-            [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$curentPage - 1 .'">back</a>&nbsp;]';
+        if ($curentPage > 1) {
+            $this->html .= '
+            <a href="/' . $this->conf['boardNameID'] . '/' . 1 . '">&lt;&lt;</a>
+            [&nbsp;<a href="/' . $this->conf['boardNameID'] . '/' . $curentPage - 1 . '">back</a>&nbsp;]';
         }
 
-        for($i = 1; $i <=$pages ; $i++){
-            if ($curentPage == $i){
-                $this->html .='
-                [&nbsp;<b>'.$i.'</b>&nbsp;]';
-            }else{
-                $this->html .='
-                [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$i.'">'.$i.'</a>&nbsp;]';
+        for ($i = 1; $i <= $pages; $i++) {
+            if ($curentPage == $i) {
+                $this->html .= '
+                [&nbsp;<b>' . $i . '</b>&nbsp;]';
+            } else {
+                $this->html .= '
+                [&nbsp;<a href="/' . $this->conf['boardNameID'] . '/' . $i . '">' . $i . '</a>&nbsp;]';
             }
         }
-        
-        if($curentPage < $pages){
-            $this->html .='
-            [&nbsp;<a href="/'. $this->conf['boardNameID'] .'/'.$curentPage + 1 .'">next</a>&nbsp;]
-            <a href="/'. $this->conf['boardNameID'] .'/'. $pages .'">&gt;&gt;</a>';
+
+        if ($curentPage < $pages) {
+            $this->html .= '
+            [&nbsp;<a href="/' . $this->conf['boardNameID'] . '/' . $curentPage + 1 . '">next</a>&nbsp;]
+            <a href="/' . $this->conf['boardNameID'] . '/' . $pages . '">&gt;&gt;</a>';
         }
-        $this->html .='</div>';
+        $this->html .= '</div>';
     }
-    
+
     /* these functions below belong to admin useage */
-    private function drawAdminBar(){
+    private function drawAdminBar()
+    {
         // this bar is the bard you see that will be at the top when you are logged in.
         global $AUTH;
-        $this->html .='
+        $this->html .= '
         <!--drawAdminBar()-->';
-        $this->html .='<center class="theading3"><b>Logged in as a: '. $AUTH .'</b></center>';
-        $this->html .='
+        $this->html .= '<center class="theading3"><b>Logged in as a: ' . $AUTH . '</b></center>';
+        $this->html .= '
         <div class="adminbar">';
-            if($AUTH->isSuper()){
-                $this->html .='
+        if ($AUTH->isSuper()) {
+            $this->html .= '
                 <span class="unlistedBoards">
                 UNLISTED : ';
-                    $this->drawNavGroup(getBoardListing(true));
-                    $this->html .='
+            $this->drawNavGroup(getBoardListing(true));
+            $this->html .= '
                 </span>';
-            } 
-            $this->html .='
+        }
+        $this->html .= '
             ACTIONS :&nbsp;';
-            $this->drawLogOutForm();
-            $this->html .='[<a href="'.ROOTPATH. boardIDToName($this->board->getBoardID()). '/admin/postListing" >admin post view</a>]
+        $this->drawLogOutForm();
+        $this->html .= '[<a href="' . ROOTPATH . boardIDToName($this->board->getBoardID()) . '/admin/postListing" >admin post view</a>]
         </div>';
     }
-    private function drawPostIP($post){
+    private function drawPostIP($post)
+    {
         global $AUTH;
         $ip = $post->getIP();
 
-        if(!$AUTH->isAdmin($post->getBoardID())){
+        if (!$AUTH->isAdmin($post->getBoardID())) {
             $ipParts = explode('.', $ip);
 
             if (count($ipParts) == 4) {
@@ -578,27 +598,31 @@ class htmlclass {
                 $ip = 'Invalid IP';
             }
         }
-        if($AUTH->isModerator($post->getBoardID()) && $this->conf['allowModsToSeeIPs']){
+        if ($AUTH->isModerator($post->getBoardID()) && $this->conf['allowModsToSeeIPs']) {
             $ip = $post->getIP();
         }
-        $this->html .= 
-        '<span>
-            [<a class="postByIP" href="'.ROOTPATH . $post->getConf()['boardNameID'] . '/admin/postListing/byIP/'.$post->getPostID().'">'.$ip.'</a>]
+        $this->html .=
+            '<span>
+            [<a class="postByIP" href="' . ROOTPATH . $post->getConf()['boardNameID'] . '/admin/postListing/byIP/' . $post->getPostID() . '">' . $ip . '</a>]
         </span>';
     }
-    public function drawCustomButton($text, $class, $href){
-        $this->html .= 
-        '<span>
-            [<a class="'.$class.'" href="'.$href.'">'.$text.'</a>]
+    public function drawCustomButton($text, $class, $href)
+    {
+        $this->html .=
+            '<span>
+            [<a class="' . $class . '" href="' . $href . '">' . $text . '</a>]
         </span>';
     }
-    private function drawBanButton($post){
-        $this->drawCustomButton("ban", "banButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/ban/'.$post->getPostID());
+    private function drawBanButton($post)
+    {
+        $this->drawCustomButton("ban", "banButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/ban/' . $post->getPostID());
     }
-    private function drawEditButton($post){
-        $this->drawCustomButton("edit", "editButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/edit/'.$post->getPostID());
+    private function drawEditButton($post)
+    {
+        $this->drawCustomButton("edit", "editButton", ROOTPATH . $post->getConf()['boardNameID'] . '/admin/edit/' . $post->getPostID());
     }
-    private function drawAdminViewPost($post){
+    private function drawAdminViewPost($post)
+    {
         // this is what gets attached to every post when you are logged in
         $this->html .= '
         <!--drawAdminViewPost($post)-->
@@ -608,37 +632,40 @@ class htmlclass {
         $this->drawBanButton($post);
         $this->html .= '</div><br>';
     }
-    private function drawLoginForm() {
-        $this->html .='
+    private function drawLoginForm()
+    {
+        $this->html .= '
         <!--drawLoginForm()-->
         <center class="loginForm">
-        <form method="POST" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+        <form method="POST" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="login">
-            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <input type="password" id="password" name="password" required>
             <button type="submit">Login</button>
         </form>
         </center>';
     }
-    private function drawLogOutForm(){
-        $this->html .='
+    private function drawLogOutForm()
+    {
+        $this->html .= '
         <!--drawLogOutForm()-->
-        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="logout">
-            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             [<button type="submit" class="hyperButton">Logout</button>]
         </form>';
     }
 
-    private function drawFormCreateCatagory(){
+    private function drawFormCreateCatagory()
+    {
         global $BANREPO;
         $categories = $BANREPO->loadCategories();
-        $this->html .='
+        $this->html .= '
         <!--drawFormCreateBoard()-->
         <center class="adminForm">
         <h3><b>Create Ban Catagories</b></h3>
-        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
-            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <input type="hidden" name="action" value="createCategory">
             <table>
             <tr>
@@ -649,37 +676,38 @@ class htmlclass {
             </table>
         </form>
         <details><summary>Current Categories</summary>';
-            foreach ($categories as $category) {
-                $this->html .= '<div>' . htmlspecialchars($category) . '</div>';
-            }
-            $this->html .= '
+        foreach ($categories as $category) {
+            $this->html .= '<div>' . htmlspecialchars($category) . '</div>';
+        }
+        $this->html .= '
         </details>
         </center>';
-        
+
     }
 
-    private function drawFormCreateBoard(){
-        $this->html .='
+    private function drawFormCreateBoard()
+    {
+        $this->html .= '
         <!--drawFormCreateBoard()-->
         <center class="adminForm">
         <h3><b>Create board form</b></h3>
-        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="createBoard">
-            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <table>
             <tr>
                 <td class="accent"><label for="boardURLName">BOARD URL NAME</label></td>
-                <td><input type="text" id="boardURLName" name="boardURLName" maxlength="'.MAX_INPUT_LENGTH.'"></td>
+                <td><input type="text" id="boardURLName" name="boardURLName" maxlength="' . MAX_INPUT_LENGTH . '"></td>
             </tr>
             <tr>
                 <td class="accent"><label for="boardTitle">BOARD TITLE</label></td>
-                <td><input type="text" id="boardTitle" name="boardTitle" maxlength="'.MAX_INPUT_LENGTH.'">
+                <td><input type="text" id="boardTitle" name="boardTitle" maxlength="' . MAX_INPUT_LENGTH . '">
                     <button type="submit">Create Board</button>
                 </td>
             </tr>
             <tr>
                 <td class="accent"><label for="boardDescription">BOARD DESCRIPTION</label></td>
-                <td><textarea type="text" id="boardDescription" name="boardDescription" cols="48" rows="4" maxlength="'.MAX_INPUT_LENGTH.'"></textarea></td>
+                <td><textarea type="text" id="boardDescription" name="boardDescription" cols="48" rows="4" maxlength="' . MAX_INPUT_LENGTH . '"></textarea></td>
             </tr>
             <tr>
                 <td class="accent"><label for="boardUnlisted">IS UNLISTED</label></td>
@@ -689,9 +717,9 @@ class htmlclass {
         </form>
         </center>';
     }
-    private function drawFormDeleteBoard(){
-        // Assuming you have a method to get all boards
-        $boardConfs = getAllBoardConfs();
+    private function drawFormDeleteBoard()
+    {
+        $boardConfs = getAllBoardConfs(); // Now from DB
         $currentBoardID = $this->board->getBoardID();
 
         $this->html .= '
@@ -700,18 +728,19 @@ class htmlclass {
         <h3><b>Delete board form</b></h3>
         <form method="post" action="' . ROOTPATH . 'admin.php">
             <input type="hidden" name="action" value="deleteBoard">
-            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
+            <input type="hidden" name="boardID" value="' . $currentBoardID . '">
             <table>
             <tr>
                 <td class="accent"><label for="boardList">SELECT BOARD TO DELETE</label></td>
                 <td>
                     <select id="boardList" name="boardList">';
-                        // Add options for each board
-                        foreach ($boardConfs as $boardConf) {
-                            $selected = ($boardConf['boardID'] == $currentBoardID) ? ' selected' : '';
-                            $this->html .= '<option value="' . $boardConf['boardID'] . '"' . $selected . '>' . $boardConf['boardNameID'] . '</option>';
-                        }
-                        $this->html .= '
+        foreach ($boardConfs as $conf) {
+            $boardID = $conf['boardID'];
+            $boardNameID = $conf['config']['boardNameID'] ?? 'unknown';
+            $selected = ($boardID == $currentBoardID) ? ' selected' : '';
+            $this->html .= '<option value="' . $boardID . '"' . $selected . '>' . $boardNameID . '</option>';
+        }
+        $this->html .= '
                     </select>
                 </td>
                 <td><details><summary>show delete button</summary><button type="submit">Delete Board</button></td></details>
@@ -720,20 +749,21 @@ class htmlclass {
         </form>
         </center>';
     }
-    private function drawFormBanPost($post){
+    private function drawFormBanPost($post)
+    {
         global $AUTH;
         global $BANREPO;
         $categories = $BANREPO->loadCategories();
-        $banMessage = htmlspecialchars('<br><br><b class="warning">'.$this->conf['banMessage'].'</b><img style="vertical-align: baseline;" loading="lazy" src="'.$this->conf['staticPath'].'image/hammer.png">');
+        $banMessage = htmlspecialchars('<br><br><b class="warning">' . $this->conf['banMessage'] . '</b><img style="vertical-align: baseline;" loading="lazy" src="' . $this->conf['staticPath'] . 'image/hammer.png">');
         $this->html .= '
         <!--drawFormBanPost($post)-->
-        <script src="'.$this->conf['staticPath'].'js/adminForm.js"></script>
+        <script src="' . $this->conf['staticPath'] . 'js/adminForm.js"></script>
         <div class=banForm>
-        <form method="post" action="'.ROOTPATH.'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
             <input type="hidden" name="action" value="banPost">
-            <input type="hidden" name="boardID" value="'. $this->board->getBoardID().'">
-            <input type="hidden" name="postID" value="'. $post->getPostID().'">';
-            $this->html .= '
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
+            <input type="hidden" name="postID" value="' . $post->getPostID() . '">';
+        $this->html .= '
             <table>
             <tr>
                 <td class="accent"><label for="banForever">BAN FOREVER?</label></td>
@@ -766,18 +796,18 @@ class htmlclass {
                 <td class="accent"><label for="deletePost">DELETE POST?</label></td>
                 <td><input type="checkbox" id="deletePost" name="deletePost"></td>
             </tr>';
-            if($AUTH->isSuper()){
-                $this->html .= '
+        if ($AUTH->isSuper()) {
+            $this->html .= '
                 <tr>
                     <td class="accent"><label for="isGlobal">BAN GLOBALY?</label></td>
                     <td><input type="checkbox" id="isGlobal" name="isGlobal"></td>
                 </tr>';
-            }
+        }
 
-            $this->html .= '
+        $this->html .= '
             <tr>
                 <td class="accent"><label for="banTime">BANED TIME</label></td>
-                <td><input type="text" id="banTime" name="banTime" value="'.$this->conf['defaultBanTime'].'">(ex. 1w 2d 3h 4min, 0 for warning)</td>
+                <td><input type="text" id="banTime" name="banTime" value="' . $this->conf['defaultBanTime'] . '">(ex. 1w 2d 3h 4min, 0 for warning)</td>
             </tr>
             <tr>
                 <td class="accent"><label for="banReason">BAN REASON</label></td>
@@ -785,7 +815,7 @@ class htmlclass {
             </tr>
             <tr>
                 <td class="accent"><label for="publicMessage">BAN MESSAGE</label></td>
-                <td><textarea type="text" id="publicMessage" name="publicMessage" cols="48" rows="4">'. $banMessage .'</textarea></td>
+                <td><textarea type="text" id="publicMessage" name="publicMessage" cols="48" rows="4">' . $banMessage . '</textarea></td>
             </tr>
             <tr>
                 <td class="accent"><label for="isPublic">MAKE IP PUBLIC?</label></td>
@@ -796,12 +826,12 @@ class htmlclass {
                 <td>
                     <select id="category" name="category" required>
                         <option value="" disabled selected>Select a category</option>';
-                        foreach ($categories as $category) {
-                            if (is_string($category)) {
-                                $this->html .= '<option value="' . htmlspecialchars($category) . '">' . htmlspecialchars($category) . '</option>';
-                            }
-                        }
-                        $this->html .= '
+        foreach ($categories as $category) {
+            if (is_string($category)) {
+                $this->html .= '<option value="' . htmlspecialchars($category) . '">' . htmlspecialchars($category) . '</option>';
+            }
+        }
+        $this->html .= '
                     </select>
                 </td>
             </tr>
@@ -815,15 +845,17 @@ class htmlclass {
         </div>';
     }
 
-    private function drawAdminFileListing($files,$threadID){
-        if(empty($files)){
+    private function drawAdminFileListing($files, $threadID)
+    {
+        if (empty($files)) {
             return;
         }
         $this->html .= '<details><summary>preview</summary>';
         $this->drawFiles($files, $threadID);
         $this->html .= '</details>';
     }
-    private function drawPostsAdminListing($posts){
+    private function drawPostsAdminListing($posts)
+    {
         $this->html .= '<!-- drawPostsAdminListing($posts)-->
         <hr><table class="adminTable" width="100%" style="font-size:10pt;">
         <tr>
@@ -838,133 +870,158 @@ class htmlclass {
             <td width="4%"><tt><b>Board</b></tt></td>
             <td width="2%"><tt><b>TID</b></tt></td>
         </tr>';
-        foreach($posts as $post){
-            $this->html .= 
-            '<tr>
-                <td><font size="2">'. $post->getPostID() .'</font></td>
-                <td><font size="2">'; $this->drawPostIP($post); $this->html .= '</font></td>
+        foreach ($posts as $post) {
+            $this->html .=
+                '<tr>
+                <td><font size="2">' . $post->getPostID() . '</font></td>
+                <td><font size="2">';
+            $this->drawPostIP($post);
+            $this->html .= '</font></td>
                 <td>';
-                    $this->drawBanButton($post);
-                    $this->drawEditButton($post);
-                    $this->html .= 
+            $this->drawBanButton($post);
+            $this->drawEditButton($post);
+            $this->html .=
                 '</td>
-                <td><font size="2">'. $post->getName().'</font></td>
+                <td><font size="2">' . $post->getName() . '</font></td>
                 <td>
                     <div class="comment">
-                        <div class="comment-box">'. $post->getComment() .'</div>
+                        <div class="comment-box">' . $post->getComment() . '</div>
                     </div>
                 </td>
                 <td>';
-                $this->drawAdminFileListing($post->getFiles(), $post->getThreadID());
-                $this->html .= '
+            $this->drawAdminFileListing($post->getFiles(), $post->getThreadID());
+            $this->html .= '
                 </td>
-                <td><font size="2">'. $post->getSubject() .'</font></td>
-                <td><font size="2">'. $post->getEmail() .'</font></td>
-                <td><font size="2">'. boardIDToName($post->getBoardID()) .'</font></td>
-                <td><font size="2">'. $post->getThreadID() .'</font></td>
+                <td><font size="2">' . $post->getSubject() . '</font></td>
+                <td><font size="2">' . $post->getEmail() . '</font></td>
+                <td><font size="2">' . boardIDToName($post->getBoardID()) . '</font></td>
+                <td><font size="2">' . $post->getThreadID() . '</font></td>
             </tr>';
         }
         $this->html .= '</table><hr>';
     }
-    private function drawFormCatalog($sort, $keyword, $caseSensitive){
-        $this->html .='<!--drawFormCatalog()-->
-        <form method="post" action="'.ROOTPATH.'bbs.php">
+    private function drawFormCatalog($sort, $keyword, $caseSensitive)
+    {
+        $this->html .= '<!--drawFormCatalog()-->
+        <form method="post" action="' . ROOTPATH . 'bbs.php">
             <input type="hidden" name="action" value="catalog">
-            <input type="hidden" name="boardID" value="'.$this->board->getBoardID().'">
+            <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <span>Sort by:</span>
             <select name="sort" style="display: inline-block">';
-            if($sort == 'dateCreated'){
-                $this->html .='
+        if ($sort == 'dateCreated') {
+            $this->html .= '
                 <option value="bump">Bump order</option>
                 <option selected="" value="dateCreated">Creation date</option>';
 
-            }else{
-                $this->html .='
+        } else {
+            $this->html .= '
                 <option selected="" value="bump">Bump order</option>
                 <option value="dateCreated">Creation date</option>';
-            }
-            $this->html .=
+        }
+        $this->html .=
             '</select>
             <button type="submit">Apply</button>
             <br>';
-            if($caseSensitive == 1){
-                $this->html .='[<label><input name="case" type="checkbox" value="1" checked>Case sensitive</label>]';
+        if ($caseSensitive == 1) {
+            $this->html .= '[<label><input name="case" type="checkbox" value="1" checked>Case sensitive</label>]';
 
-            }else{
-                $this->html .='[<label><input name="case" type="checkbox" value="1">Case sensitive</label>]';
+        } else {
+            $this->html .= '[<label><input name="case" type="checkbox" value="1">Case sensitive</label>]';
 
-            }
+        }
 
-            if($keyword == ''){
-                $this->html .='<input name="keyword" type="search" id="keywordSerch" placeholder="Search" >';
+        if ($keyword == '') {
+            $this->html .= '<input name="keyword" type="search" id="keywordSerch" placeholder="Search" >';
 
-            }else{
-                $this->html .='<input name="keyword" type="search" id="keywordSerch" placeholder="Search" value="'.$keyword.'">';
+        } else {
+            $this->html .= '<input name="keyword" type="search" id="keywordSerch" placeholder="Search" value="' . $keyword . '">';
 
-            }
-		$this->html .='</form>';
+        }
+        $this->html .= '</form>';
     }
-    private function drawCatalog($threads){
-        $this->html .='<!--drawCatalogPage($threads)-->';
-        $this->html .='[<a href="'.ROOTPATH.$this->conf['boardNameID'].'/">Return</a>]';
-        $this->html .='[<a href="#bottom">bottom</a>]';
-        $this->html .='<center class="theading2"><b>Catalog</b></center>';
-        $this->html .='<center id=catalog>';
+    private function drawCatalog($threads)
+    {
+        $this->html .= '<!--drawCatalogPage($threads)-->';
+        $this->html .= '[<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/">Return</a>]';
+        $this->html .= '[<a href="#bottom">bottom</a>]';
+        $this->html .= '<center class="theading2"><b>Catalog</b></center>';
+        $this->html .= '<center id=catalog>';
 
-        foreach($threads as $thread){
+        foreach ($threads as $thread) {
             $post = $thread->getOPPost();
             $threadID = $thread->getThreadID();
             $sub = $post->getSubject();
-            if($sub == ''){
+            if ($sub == '') {
                 $sub = "no subject";
             }
-            $this->html .='<div class=catalogItem>
-            <a href="'. ROOTPATH . $this->conf['boardNameID'].'/thread/'.$threadID.'/" class="no">';
-                $this->drawFiles($post->getFiles(), $threadID, true);
-                $this->html .='
+            $this->html .= '<div class=catalogItem>
+            <a href="' . ROOTPATH . $this->conf['boardNameID'] . '/thread/' . $threadID . '/" class="no">';
+            $this->drawFiles($post->getFiles(), $threadID, true);
+            $this->html .= '
             </a>
-            <small><b class="title">'. $sub .'</b> Replies:
-            <span title="Replies">'.$thread->getPostCount().'</span></small><br>
-	        <small class=catComment>'.$post->getComment().'</small>';
-            $this->html .='</div>';
+            <small><b class="title">' . $sub . '</b> Replies:
+            <span title="Replies">' . $thread->getPostCount() . '</span></small><br>
+	        <small class=catComment>' . $post->getComment() . '</small>';
+            $this->html .= '</div>';
         }
-        $this->html .='</center>';
+        $this->html .= '</center>';
         $this->html .= '[<a href="#top">top</a>]';
     }
 
-    private function drawFormExportDatabase(){
+    public function drawFormBoardConfigEditor()
+    {
+        $boardNameID = htmlspecialchars($this->board->getBoardNameID());
+
+        $this->html .= <<<HTML
+        <!-- drawFormBoardConfigEditor() -->
+        <center class="adminForm">
+        <h3><b>Edit Board Config</b></h3>
+        <form method="get" action="/{$boardNameID}/admin/edit">
+            <button type="submit">Open Config Editor</button>
+        </form>
+        </center>
+        HTML;
+    }
+
+    private function drawFormExportDatabase()
+    {
 
     }
-    private function drawFormPremoteUser(){
+    private function drawFormPremoteUser()
+    {
 
     }
-    private function drawFormDemoteUser(){
+    private function drawFormDemoteUser()
+    {
 
     }
-    private function drawFormChangeBoardSettings(){
+    private function drawFormChangeBoardSettings()
+    {
 
     }
-    private function drawFormManageBans(){
+    private function drawFormManageBans()
+    {
 
     }
 
 
 
     /* drawBase is the defualt templet that all pages will be built from unless specifies else wize */
-    private function drawBase(array $functions){
+    private function drawBase(array $functions)
+    {
         global $AUTH;
         global $board;
-        $this->html .='
+        $this->html .= '
         <!DOCTYPE html>
         <html lang="en-US">';
         $this->drawHead();
         $this->html .= '<body><div id="top"></div>';
         $this->drawNavBar();
-        if($AUTH->isAuth($board->getBoardID())){
+        if ($AUTH->isAuth($board->getBoardID())) {
             $this->drawAdminBar();
         }
         $this->drawBoardTitle();
-        
+
         foreach ($functions as $func) {
             if (isset($func['function']) && isset($func['params'])) {
                 call_user_func_array($func['function'], $func['params']);
@@ -972,21 +1029,25 @@ class htmlclass {
         }
 
         $this->html .= '</body><div id="bottom"></div>';
-        if ($this->conf['drawFooter']){
+        if ($this->conf['drawFooter']) {
             $this->drawFooter();
         }
     }
 
-    public function draw404($text){
+    public function draw404($text)
+    {
         header("HTTP/1.1 404 Not Found");
 
         $functions = [
-            ['function' => function() use ($text) {
-                $this->html .="
+            [
+                'function' => function () use ($text) {
+                    $this->html .= "
                 <center><h1>404 page not found</h1>
                 <h4>$text</h4></center>";
-            }, 'params' => []],
-    
+                },
+                'params' => []
+            ],
+
             ['function' => [$this, 'drawPageNumbers'], 'params' => [-1]]
         ];
         $this->drawBase($functions);
@@ -994,22 +1055,23 @@ class htmlclass {
         echo $this->html;
 
     }
-    public function drawThreadListingPage($pageNumber = 1){
+    public function drawThreadListingPage($pageNumber = 1)
+    {
         global $THREADREPO;
 
         $maxPage = ceil($this->conf['maxActiveThreads'] / $this->conf['threadsPerPage']);
-        if($pageNumber -1 >= $maxPage || $pageNumber == 0){
+        if ($pageNumber - 1 >= $maxPage || $pageNumber == 0) {
             echo $this->draw404("invalid page number");
             return;
         }
 
         // as the threads start at 0 but drawing starts at page 1
-        $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber -1);
+        $threads = $THREADREPO->loadThreadsByPage($this->conf, $pageNumber - 1);
 
-        $drawThreadListingWraped = function($threads){
+        $drawThreadListingWraped = function ($threads) {
             $this->postManagerWraper([$this, 'drawThreadListing'], [$threads]);
         };
-        
+
         $functions = [
             ['function' => [$this, 'drawFormNewThread'], 'params' => []],
             ['function' => $drawThreadListingWraped, 'params' => [$threads]],
@@ -1019,8 +1081,9 @@ class htmlclass {
 
         echo $this->html;
     }
-    public function drawThreadPage($thread){
-        $drawThreadWraped = function($thread){
+    public function drawThreadPage($thread)
+    {
+        $drawThreadWraped = function ($thread) {
             $this->postManagerWraper([$this, 'drawThread'], [$thread]);
         };
 
@@ -1032,7 +1095,8 @@ class htmlclass {
 
         echo $this->html;
     }
-    public function drawLoginPage(){
+    public function drawLoginPage()
+    {
         $functions = [
             ['function' => [$this, 'drawLoginForm'], 'params' => []]
         ];
@@ -1042,7 +1106,8 @@ class htmlclass {
     }
 
 
-    public function drawBanUserPage($post){
+    public function drawBanUserPage($post)
+    {
         $functions = [
             ['function' => [$this, 'drawFormBanPost'], 'params' => [$post]],
             ['function' => [$this, 'drawPost'], 'params' => [$post]],
@@ -1053,10 +1118,12 @@ class htmlclass {
 
         echo $this->html;
     }
-    public function drawEditPostPage($post){
-        
+    public function drawEditPostPage($post)
+    {
+
     }
-    public function drawAdminPostListingPage($posts){
+    public function drawAdminPostListingPage($posts)
+    {
         $functions = [
             ['function' => [$this, 'drawPostsAdminListing'], 'params' => [$posts]],
             //['function' => [$this, 'drawFormBanPost'], 'params' => [$post]]
@@ -1066,9 +1133,10 @@ class htmlclass {
 
         echo $this->html;
     }
-    public function drawCatalogPage($sort='bump', $keyword='', $caseSensitive=false){
+    public function drawCatalogPage($sort = 'bump', $keyword = '', $caseSensitive = false)
+    {
         $threads = $this->board->getThreads();
-        switch($sort){
+        switch ($sort) {
             case 'bump':
                 sortThreadByBump($threads);
                 break;
@@ -1089,9 +1157,10 @@ class htmlclass {
         echo $this->html;
     }
 
-    public function drawAdminPage(){
+    public function drawAdminPage()
+    {
         global $AUTH;
-        $this->html .='
+        $this->html .= '
         <!--drawAdminPage()-->';
 
         $functions = [];
@@ -1101,18 +1170,19 @@ class htmlclass {
         $isMod = $AUTH->isModerator($id);
         $isSuper = $AUTH->isSuper();
 
-        if($isAdmin){
-            if($isSuper){
+        if ($isAdmin) {
+            if ($isSuper) {
                 $functions[] = ['function' => [$this, 'drawFormCreateBoard'], 'params' => []];
                 $functions[] = ['function' => [$this, 'drawFormDeleteBoard'], 'params' => []];
                 $functions[] = ['function' => [$this, 'drawFormExportDatabase'], 'params' => []];
             }
+            $functions[] = ['function' => [$this, 'drawFormBoardConfigEditor'], 'params' => []];
             $functions[] = ['function' => [$this, 'drawFormPremoteUser'], 'params' => []];
             $functions[] = ['function' => [$this, 'drawFormDemoteUser'], 'params' => []];
             $functions[] = ['function' => [$this, 'drawFormChangeBoardSettings'], 'params' => []];
         }
-        if($isMod or $isAdmin){
-            if($isSuper){
+        if ($isMod or $isAdmin) {
+            if ($isSuper) {
                 $functions[] = ['function' => [$this, 'drawFormCreateCatagory'], 'params' => []];
             }
         }

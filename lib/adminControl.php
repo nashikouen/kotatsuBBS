@@ -3,61 +3,62 @@
  * this lib is a set of tools of things to help control your board.
  * delete post. edit configs. edit post. move threads across boards. list users
  */
-require_once __DIR__ .'/../classes/board.php';
-require_once __DIR__ .'/../classes/repos/repoBoard.php';
-require_once __DIR__ .'/../classes/repos/repoThread.php';
-require_once __DIR__ .'/../classes/repos/repoPost.php';
-require_once __DIR__ .'/../classes/repos/repoFile.php';
+require_once __DIR__ . '/../classes/board.php';
+require_once __DIR__ . '/../classes/repos/repoBoard.php';
+require_once __DIR__ . '/../classes/repos/repoThread.php';
+require_once __DIR__ . '/../classes/repos/repoPost.php';
+require_once __DIR__ . '/../classes/repos/repoFile.php';
 
-require_once __DIR__ .'/common.php';
+require_once __DIR__ . '/common.php';
 
-$globalConf = require __DIR__ ."/../conf.php";
+$globalConf = require __DIR__ . "/../conf.php";
 
-function getFirstValidBoard(){
+function getFirstValidBoard()
+{
     $BOARDREPO = BoardRepoClass::getInstance();
 
     $files = glob(__DIR__ . '/../boardConfigs/*.php');
 
-	foreach($files as $file){
-		$conf = include($file);
-		if($conf['boardID'] == -1 ){
-			continue;
-		}
-		return $BOARDREPO->loadBoardByID($conf['boardID']);
-	}
-	return null;
+    foreach ($files as $file) {
+        $conf = include($file);
+        if ($conf['boardID'] == -1) {
+            continue;
+        }
+        return $BOARDREPO->loadBoardByID($conf['boardID']);
+    }
+    return null;
 }
-function createBoard($name, $desc, $smallName, $isUnlisted=true){
+function createBoard($name, $desc, $smallName, $isUnlisted = true)
+{
     $BOARDREPO = BoardRepoClass::getInstance();
-    $confDir = realpath(__DIR__ . "/../boardConfigs/") . '/';
-    $confName = $smallName . ".php";
 
-    if(file_exists($confDir . $confName)){
-        drawErrorPageAndDie("there is already a board using this boardNameID");
+    // Check if the board already exists
+    $existing = $BOARDREPO->loadBoardByNameID($smallName);
+    if ($existing !== null) {
+        drawErrorPageAndDie("There is already a board using this boardNameID");
     }
 
-    copy($confDir . "baseConf.php", $confDir . $confName);
+    $conf = [
+        'boardNameID' => $smallName,
+        'boardTitle' => $name,
+        'boardSubTitle' => $desc,
+        'unlisted' => $isUnlisted,
+        // optionally preload other defaults
+    ];
 
-    $board = new boardClass($confDir . $confName, 0);
+    $board = new boardClass(0, 0, $conf);
 
-    $conf = $board->getConf();
-    $conf['boardTitle'] = $name;
-    $conf['boardSubTitle'] = $desc;
-    $conf["boardNameID"] = $smallName;
-    $conf['unlisted'] = $isUnlisted;
-
-    // bc pass my ref.
-    $board->setConf($conf);
-
-    if($BOARDREPO->createBoard($board) == false){
-        unlink($confName);
-        drawErrorPageAndDie("failed to create a new board");
+    if (!$BOARDREPO->createBoard($board)) {
+        drawErrorPageAndDie("Failed to create a new board");
     }
+
     return $board;
 }
 
-function deleteFilesInThreadByID($id){
-    $dir = __DIR__."/../threads/".$id;
+
+function deleteFilesInThreadByID($id)
+{
+    $dir = __DIR__ . "/../threads/" . $id;
 
     $files = scandir($dir);
     foreach ($files as $file) {
@@ -71,66 +72,73 @@ function deleteFilesInThreadByID($id){
     }
     rmdir($dir);
 }
-function deleteBoardByID($boardID){
-    if(getBoardCount() <= 1){
+function deleteBoardByID($boardID)
+{
+    if (getBoardCount() <= 1) {
         drawErrorPageAndDie("can not delete. you must have one active board at any time.");
     }
     $BOARDREPO = BoardRepoClass::getInstance();
     $board = $BOARDREPO->loadBoardByID($boardID);
 
     $threads = $board->getThreads();
-    foreach($threads as $thread){
+    foreach ($threads as $thread) {
         deleteFilesInThreadByID($thread->getThreadID());
     }
-    unlink($board->getConfPath());
     $BOARDREPO->deleteBoardByID($boardID);
 }
-function deleteThread($thread){
+function deleteThread($thread)
+{
     global $globalConf;
     $THREADREPO = ThreadRepoClass::getInstance();
     deleteFilesInThreadByID($thread->getThreadID());
-    foreach($thread->getPosts() as $post){
+    foreach ($thread->getPosts() as $post) {
         deletePost($post, true);
     }
     $THREADREPO->deleteThreadByID($thread->getConf(), $thread->getThreadID());
 }
-function deletePost($post, $isDeletingThread=false){
+function deletePost($post, $isDeletingThread = false)
+{
     $THREADREPO = ThreadRepoClass::getInstance();
     $thread = $THREADREPO->loadThreadByID($post->getConf(), $post->getThreadID());
-    if($post->getPostID() == $thread->getOPPostID() && $isDeletingThread == false){
+    if ($post->getPostID() == $thread->getOPPostID() && $isDeletingThread == false) {
         deleteThread($thread);
         return;
-    }else{
+    } else {
         $conf = $post->getConf();
-        foreach($post->getFiles() as $file){
+        foreach ($post->getFiles() as $file) {
             deleteFile($file);
         }
         $POSTREPO = PostRepoClass::getInstance();
         $POSTREPO->deletePostByID($conf, $post->getPostID());
     }
 }
-function updatePost($post){
+function updatePost($post)
+{
     $POSTREPO = PostRepoClass::getInstance();
     $POSTREPO->updatePost($post->getConf(), $post);
 }
-function editPost($post, $newComment){
+function editPost($post, $newComment)
+{
     $POSTREPO = PostRepoClass::getInstance();
 
     $post->setComment($newComment);
     $POSTREPO->updatePost($post->getConf(), $post);
 }
-function deleteFile($file){
+function deleteFile($file)
+{
     unlink($file->getThumbnailPath());
     unlink($file->getFilePath());
 }
 
-function deleteFileHard($file){
+function deleteFileHard($file)
+{
     $FILEREPO = FileRepoClass::getInstance();
     deleteFile($file);
     $FILEREPO->deleteFileByID($file->getFileID());
 }
 
-function moveTreadToNewBoard($thread, $newBoardID){
+function moveTreadToNewBoard($thread, $newBoardID)
+{
     $BOARDREPO = BoardRepoClass::getInstance();
     $POSTREPO = PostRepoClass::getInstance();
     $THREADREPO = ThreadRepoClass::getInstance();
@@ -138,7 +146,7 @@ function moveTreadToNewBoard($thread, $newBoardID){
     $destBoard = $BOARDREPO->loadBoardByID($newBoardID);
 
     $srcPosts = $thread->getPosts();
-    foreach ($srcPosts as $post){
+    foreach ($srcPosts as $post) {
         // we are using the dest board for configs. this has board id in it.
         $POSTREPO->createPost($destBoard->getConf(), $post);
         //make sure to add files to new posts.
@@ -152,6 +160,7 @@ function moveTreadToNewBoard($thread, $newBoardID){
 
     return;
 }
-function changeBoardConf($boardID, $key, $value){
+function changeBoardConf($boardID, $key, $value)
+{
 
 }

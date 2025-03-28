@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 require 'vendor/autoload.php';
 
-$globalConf = require __DIR__ ."/conf.php";
+$globalConf = require __DIR__ . "/conf.php";
 
 define("ROOTPATH", $globalConf['webRootPath']);
 define("DOMAIN", $globalConf['domain']);
@@ -26,22 +26,22 @@ ini_set("memory_limit", $globalConf['memoryLimit']);
 spl_autoload_register(function ($class) {
     $prefix = 'Modules\\';
     $base_dir = __DIR__ . '/modules/';
-    
+
     // Does the class use the namespace prefix?
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) {
         // No, move to the next registered autoloader
         return;
     }
-    
+
     // Get the relative class name
     $relative_class = substr($class, $len);
-    
+
     // Replace the namespace prefix with the base directory, replace namespace
     // separators with directory separators in the relative class name, append
     // with .php
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-    
+
     // Handle special case for ModuleBase.php
     if ($relative_class === 'Module') {
         $file = $base_dir . 'ModuleBase.php';
@@ -55,7 +55,8 @@ spl_autoload_register(function ($class) {
 });
 
 // Function to load all modules from the /modules directory
-function loadModules($modulesDir = __DIR__ . '/modules') {
+function loadModules($modulesDir = __DIR__ . '/modules')
+{
     $modules = [];
     foreach (scandir($modulesDir) as $dir) {
         if ($dir === '.' || $dir === '..' || is_file($modulesDir . '/' . $dir)) {
@@ -69,7 +70,7 @@ function loadModules($modulesDir = __DIR__ . '/modules') {
             $className = 'Modules\\' . $dir . '\\Main';
             if (class_exists($className)) {
                 $modules[] = new $className();
-            } 
+            }
         }
     }
     return $modules;

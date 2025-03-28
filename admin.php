@@ -1,20 +1,18 @@
 <?php
 
-include __DIR__ .'/includes.php';
+include __DIR__ . '/includes.php';
 
-use Jenssegers\ImageHash\ImageHash;
-use Jenssegers\ImageHash\Implementations\DifferenceHash;
 
-require_once __DIR__ .'/classes/html.php';
-require_once __DIR__ .'/classes/auth.php';
-require_once __DIR__ .'/classes/repos/repoPost.php';
-require_once __DIR__ .'/classes/repos/repoBan.php';
-require_once __DIR__ .'/classes/fileHandler.php';
+require_once __DIR__ . '/classes/html.php';
+require_once __DIR__ . '/classes/auth.php';
+require_once __DIR__ . '/classes/repos/repoPost.php';
+require_once __DIR__ . '/classes/repos/repoBan.php';
+require_once __DIR__ . '/classes/fileHandler.php';
 
 
 
-require_once __DIR__ .'/lib/common.php';
-require_once __DIR__ .'/lib/adminControl.php';
+require_once __DIR__ . '/lib/common.php';
+require_once __DIR__ . '/lib/adminControl.php';
 
 $AUTH = AuthClass::getInstance();
 $board = getBoardFromRequest(true);
@@ -29,37 +27,53 @@ $POSTREPO = PostRepoClass::getInstance();
  */
 
 $noBoard = false;
-if(is_null($board)){
+if (is_null($board)) {
     $noBoard = true;
-    $board = new boardClass(__DIR__ . '/boardConfigs/baseConf.php', -1, -1);
+    $board = new boardClass(
+        -1,
+        -1,
+        [
+            'boardID' => -1,
+            'boardNameID' => 'admin',
+            'boardTitle' => 'Admin Mode',
+            'timeZone' => 'UTC',
+            'adminHashes' => $conf['adminHashes'] ?? [],
+            'moderatorHashes' => $conf['moderatorHashes'] ?? [],
+            'janitorHashes' => $conf['janitorHashes'] ?? [],
+            'maxActiveThreads' => 0,
+            'maxArchivedThreads' => 0,
+        ]
+    );
 }
 
 $boardHtml = new htmlclass($board->getConf(), $board);
 
-function goToRealboard(){
+function goToRealboard()
+{
     global $AUTH;
     global $noBoard;
 
-    if($AUTH->isSuper() && $noBoard){
+    if ($AUTH->isSuper() && $noBoard) {
         $board = getFirstValidBoard();
-        if(is_null($board)){
+        if (is_null($board)) {
             drawErrorPageAndDie("something is seriously wrong. contact kotatsuBBS and report this");
         }
         redirectToAdmin($board);
-    }else{
+    } else {
         redirectToHome();
     }
 }
-function userLoggingIn(){
+function userLoggingIn()
+{
     global $globalConf;
     global $AUTH;
     global $board;
     global $noBoard;
 
-    if(!isset($_POST['password'])){
+    if (!isset($_POST['password'])) {
         drawErrorPageAndDie("no password provided");
     }
-    
+
     $passHash = genTripcode($_POST['password'], $globalConf['tripcodeSalt'])['hash'];
 
     /*
@@ -67,19 +81,21 @@ function userLoggingIn(){
      */
     $AUTH->setRoleByHash($passHash, $board->getBoardID());
     logAudit($board, $AUTH->getName() . " has logged in as a " . $AUTH);
-    if($noBoard){
+    if ($noBoard) {
         goToRealboard();
     }
 }
 
-function userLoggingOut(){
+function userLoggingOut()
+{
     global $AUTH;
     $AUTH->clearRole();
 }
 
-function userCreatingBoard(){
+function userCreatingBoard()
+{
     global $AUTH;
-    if($AUTH->isAdmin() && $AUTH->isSuper()){
+    if ($AUTH->isAdmin() && $AUTH->isSuper()) {
         $name = htmlspecialchars($_POST['boardTitle']);
         $desc = htmlspecialchars($_POST['boardDescription']);
         $smallName = htmlspecialchars($_POST['boardURLName']);
@@ -108,12 +124,13 @@ function userCreatingBoard(){
     return null;
 }
 
-function userDeletingBoard(){
+function userDeletingBoard()
+{
     global $AUTH;
     global $board;
-    if($AUTH->isAdmin() && $AUTH->isSuper()){
-        $boardID = $_POST['boardList']; 
-        if(!is_numeric($boardID)){
+    if ($AUTH->isAdmin() && $AUTH->isSuper()) {
+        $boardID = $_POST['boardList'];
+        if (!is_numeric($boardID)) {
             drawErrorPageAndDie("invalid board id? how?");
         }
         logAudit($board, $AUTH->getName() . " has deleted a board");
@@ -124,7 +141,8 @@ function userDeletingBoard(){
     drawErrorPageAndDie("you are not authorized.");
     return -1;
 }
-function userCreateCatagory(){
+function userCreateCatagory()
+{
     global $BANREPO;
     global $board;
     global $AUTH;
@@ -135,7 +153,8 @@ function userCreateCatagory(){
 
     logAudit($board, $AUTH->getName() . ' created a new category: ' . $newCategoryName);
 }
-function banPost(){
+function banPost()
+{
     global $board;
     global $AUTH;
     $POSTREPO = PostRepoClass::getInstance();
@@ -162,62 +181,54 @@ function banPost(){
     $isPreseptual = isset($_POST['isPreseptual']) ? true : false;
 
     // really we should only ban the file once. and preseptual should be more powerful
-    if($isPreseptual){
+    if ($isPreseptual) {
         $isBanFile = false;
     }
 
-    if($AUTH->isSuper() == false){
+    if ($AUTH->isSuper() == false) {
         $isGlobal = false;
     }
 
-    if($isBanForerver){
+    if ($isBanForerver) {
         $expireTime = PHP_INT_MAX;
-    }elseif(empty($banTime)){
+    } elseif (empty($banTime)) {
         $expireTime = durationToUnixTime($board->getConf()['defaultBanTime']);
-    }else{
+    } else {
         $expireTime = durationToUnixTime($banTime);
     }
 
     //ban ip
-    if($isBanIP){
-        $BANREPO->banIP($board->getBoardID(),$ip, $banReason, $expireTime, $rangeBan, $isGlobal, $isPublic, $category);
-        $banText .= " is IP banned untill ". $expireTime. ".";
+    if ($isBanIP) {
+        $BANREPO->banIP($board->getBoardID(), $ip, $banReason, $expireTime, $rangeBan, $isGlobal, $isPublic, $category);
+        $banText .= " is IP banned untill " . $expireTime . ".";
     }
     //ban domain
-    if($isBanDomain){
-        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, $isGlobal , $isPublic, $category);
+    if ($isBanDomain) {
+        $BANREPO->banDomain($board->getBoardID(), $domain, $banReason, $isGlobal, $isPublic, $category);
         $banText .= " domain has been banned.";
     }
     //ban file
-    if($isBanFile){
-        foreach($post->getFiles() as $file){
+    if ($isBanFile) {
+        foreach ($post->getFiles() as $file) {
             $BANREPO->banFile($board->getBoardID(), $file->getMD5(), $banReason, false, $isGlobal, $isPublic, $category);
         }
         $banText .= " files has been banned.";
     }
-    if($isPreseptual){
-        $hasher = new ImageHash(new DifferenceHash());
 
-        foreach($post->getFiles() as $file){
-            $hash = $hasher->hash($file->getFilePath());
-            $BANREPO->banFile($board->getBoardID(), $hash, $banReason, $isPreseptual, $isGlobal, $isPublic, $category);
-        }
-        $banText .= " files has been banned preseptualy.";
-    }
-    
-    logAudit($board, $AUTH->getName() . ' a banned post. '. $banText);
+    logAudit($board, $AUTH->getName() . ' a banned post. ' . $banText);
 
     //delete post
-    if($isDeletePost){
+    if ($isDeletePost) {
         logAudit($board, $AUTH->getName() . " has deleted post " . $post->getPostID());
         deletePost($post);
-    }else{
+    } else {
         $post->appendText($publicMessage);
         updatePost($post);
     }
 }
 
-function userPostListing(){
+function userPostListing()
+{
     global $POSTREPO;
     global $board;
     global $boardHtml;
@@ -241,12 +252,12 @@ foreach ($board->getConf()['enabledModules'] as $moduleName) {
 /*
  *  exit if we are not authenticated.
  */
-if($AUTH->isNotAuth()){
-    if(isset($_POST['action']) && $_POST['action'] == "login"){
+if ($AUTH->isNotAuth()) {
+    if (isset($_POST['action']) && $_POST['action'] == "login") {
         userLoggingIn();
-        
+
         redirectToAdmin($board);
-    }else{
+    } else {
         $boardHtml->drawLoginPage();
     }
     exit;
@@ -254,17 +265,17 @@ if($AUTH->isNotAuth()){
 /*
  *  this workes exactly like bbs.php you will have a list of actions and they will map to functions.
  */
-if(isset($_POST['action'])){
-	$action = $_POST['action'];
-	switch ($action) {
+if (isset($_POST['action'])) {
+    $action = $_POST['action'];
+    switch ($action) {
         case 'logout':
             userLoggingOut();
             redirectToBoard($board);
-			break;
-		case 'login':
+            break;
+        case 'login':
             userLoggingIn();
             redirectToAdmin($board);
-			break;
+            break;
         case 'createBoard':
             $board = userCreatingBoard();
             redirectToAdmin($board);
@@ -275,9 +286,9 @@ if(isset($_POST['action'])){
             break;
         case 'deleteBoard':
             $id = userDeletingBoard();
-            if($id == $board->getBoardID()){
+            if ($id == $board->getBoardID()) {
                 redirectToHome();
-            }else{
+            } else {
                 redirectToAdmin($board);
             }
             break;
@@ -285,47 +296,47 @@ if(isset($_POST['action'])){
             banPost();
             redirectToBoard($board);
             break;
-		default:
-			$stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
-			drawErrorPageAndDie("invalid action: " . $stripedInput);
-			break;
-	}
-}elseif (isset($_GET['action'])){
-    if($noBoard){
+        default:
+            $stripedInput = htmlspecialchars($_POST['action'], ENT_QUOTES, 'UTF-8');
+            drawErrorPageAndDie("invalid action: " . $stripedInput);
+            break;
+    }
+} elseif (isset($_GET['action'])) {
+    if ($noBoard) {
         goToRealboard();
     }
-	$action = $_GET['action'];
-	switch ($action) {
+    $action = $_GET['action'];
+    switch ($action) {
         case 'postListing':
             userPostListing();
             //redirectToBoard($board);
-			break;
+            break;
         case 'editPost':
             //userLoggingIn();
             //redirectToAdmin($board);
             break;
         case 'banPost':
             $postID = $_GET['postID'];
-            if(is_numeric($postID) == false){
+            if (is_numeric($postID) == false) {
                 drawErrorPageAndDie("not a valid post id");
             }
             $POSTREPO = PostRepoClass::getInstance();
-            $post = $POSTREPO->loadPostByID($board->getConf(),$postID);
-            if(is_null($post)){
+            $post = $POSTREPO->loadPostByID($board->getConf(), $postID);
+            if (is_null($post)) {
                 drawErrorPageAndDie("can not find post");
             }
             $boardHtml->drawBanUserPage($post);
             return;
-		default:
-			$stripedInput = htmlspecialchars($_GET['action'], ENT_QUOTES, 'UTF-8');
-			drawErrorPageAndDie("invalid action: " . $stripedInput);
-			break;
-	}
+        default:
+            $stripedInput = htmlspecialchars($_GET['action'], ENT_QUOTES, 'UTF-8');
+            drawErrorPageAndDie("invalid action: " . $stripedInput);
+            break;
+    }
     return;
 }
 
-if($noBoard){
+if ($noBoard) {
     goToRealboard();
-}else{
+} else {
     $boardHtml->drawAdminPage();
 }

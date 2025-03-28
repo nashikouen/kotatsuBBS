@@ -11,35 +11,34 @@ return [
     'boardLogoPath' => "",              //leave blank for no logo, or put in a path to a image.
 
     //these are the hard coded nav links on each page.
-    'navLinksLeft'=> [
+    'navLinksLeft' => [
         'cgi' => 'https://example.com/cgi-bin/',
-        'upload' => 'https://up.example.com/', 
+        'upload' => 'https://up.example.com/',
         // just copy this format above to add another link.
     ],
-    'navLinksRight'=> [
+    'navLinksRight' => [
         'wiki' => 'https://wiki.example.com/'
     ],
 
-    'fileConf' =>[
-        'allowedMimeTypes'=> [   
+    'fileConf' => [
+        'allowedMimeTypes' => [
             'image/jpeg',
-            'image/png', 
+            'image/png',
             'image/gif'
             // add more mimetypes here to allow more types of files to be uploaded
         ],
-        'maxFileSize'=> 5242880,    // 5mb (remember to edit php's setting to increese the limit)
-        'maxFiles'=> 3,             // max amount of files a user can upload
+        'maxFileSize' => 5242880,    // 5mb (remember to edit php's setting to increese the limit)
+        'maxFiles' => 3,             // max amount of files a user can upload
         'compressQuality' => 65,    // amount of compresstion added to thumbnails
         'backgroundColor' => "#f0e0d6",  //thumbnail background color
         'thumNailWidth' => 250,
         'thumNailHight' => 250,
         'allowDuplicateFiles' => false, // allow duplicate files?
-        'doPreseptualBan' => true, // do a preseptual hash and cheeck if file is preseptualy banned with given hamming in global conf
     ],
 
     'staticPath' => "/static/",
     'defaultCSS' => '/static/css/futaclone.css',  //change this to use ur own css. make sure to update backgroundColor to match post reply background color 
-    'defaultFavicon' => '/static/image/favicon.png', 
+    'defaultFavicon' => '/static/image/favicon.png',
 
     'enabledModules' => ['Example Module'],
     'unlisted' => true,             // this will only hide your board from the nav bar. [NOTE] new boards wont respect this by defualt. you must explicitly relist your board when creating or after creation.
@@ -47,7 +46,7 @@ return [
     'allowRuffle' => false,         // setting this to true will add the Ruffle js script to your board. this allows flash files to be played. you will also need to enable allowJS
     'allowJS' => true,              // this will enbable js on the board. if you want ruffle you need this enabled too.
 
-    'cookieExpireTime'=> 7*24*60*60,    //the day the cookie will expire. default is 7days from the curent time
+    'cookieExpireTime' => 7 * 24 * 60 * 60,    //the day the cookie will expire. default is 7days from the curent time
 
     'threadsPerPage' => 15,         // this is how many threads will be showed per page
     'maxActiveThreads' => 150,      // this is how many threads can be active at once
@@ -55,7 +54,7 @@ return [
     'postPerThreadListing' => 5,    // this is how many post will be shown when post lisitng on main page
     'postPerAdminPage' => 200,      // this is how many post will be shown in admin pannel
     'postUntilCantBump' => 30,      // max number of post untill thread can be bumped any more
-    'timeUntilCantBump' => 7*24*60*60, // this is the number of days untill a thread cant be bumped anymore. default is 7days from the curent time
+    'timeUntilCantBump' => 7 * 24 * 60 * 60, // this is the number of days untill a thread cant be bumped anymore. default is 7days from the curent time
 
     'maxCommentSize' => 2048,       // this is how many characters are allowed in your comment. there is no limit in the DB
 
@@ -66,10 +65,10 @@ return [
     'requireSubject' => false,
     'requireComment' => false,
     'requireFile' => false,
-    'defaultName'=> 'Anonymous', 
-    'defaultEmail'=> '', 
-    'defaultSubject'=> '',
-    'defaultComment'=> '', 
+    'defaultName' => 'Anonymous',
+    'defaultEmail' => '',
+    'defaultSubject' => '',
+    'defaultComment' => '',
 
     'canTripcode' => true,         // true will allow you to tripcode
     'canFortune' => false,
@@ -80,10 +79,10 @@ return [
     'moderatorHashes' => [],    // list of moderator hashes
     'adminHashes' => [],        // board owner hashes
 
-    'allowPostLinking'=> true,      // allow quoting a postid to create a hyperlink to the post
+    'allowPostLinking' => true,      // allow quoting a postid to create a hyperlink to the post
     'allowQuoteing' => true,        // allows text to be quoted
     'allowBBcode' => true,          // allows users to use [s1]text[/s1]
-    'autoEmbedLinks'=> true,        // allow converting all links to hyperlinks
+    'autoEmbedLinks' => true,        // allow converting all links to hyperlinks
     'visableSage' => true,          // when ever you sage. it will be know to others you are saging.
 
     'allowModsToSeeIPs' => false,

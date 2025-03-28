@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ .'/../classes/repos/repoBoard.php';
+require_once __DIR__ . '/../classes/repos/repoBoard.php';
 /*
  *  this lib has things basicly used all over to get the boards to work. 
  *  reteaving data. page redirects. 
@@ -10,7 +10,7 @@ require_once __DIR__ .'/../classes/repos/repoBoard.php';
 //     global $globalConf;
 
 //     $url = 'https://'.DOMAIN.ROOTPATH.boardIDToName($boardID).'/thread/'.$threadID.'/#p'.$postID;
-    
+
 //     $stream = stream_context_create([
 //         'http' => [
 //             'method' => 'POST',
@@ -20,171 +20,160 @@ require_once __DIR__ .'/../classes/repos/repoBoard.php';
 //             ]),
 //         ]
 //     ]);
-    
+
 //     file_get_contents($globalConf['webhook'], false, $stream);
 // }
 
-function bytesToHumanReadable($size){
-    if($size == 0){
+function bytesToHumanReadable($size)
+{
+    if ($size == 0) {
         $format = "";
-    }
-    elseif($size <= 1024){
-        $format = $size." B";
-    }
-    elseif($size <= (1024*1024)){
-        $format = sprintf ("%d KB",($size/1024));
-    }
-    elseif($size <= (1000*1024*1024)){
-        $format = sprintf ("%.2f MB",($size/(1024*1024)));
-    }
-    elseif($size <= (1000*1024*1024*1024)){
-        $format = sprintf ("%.2f GB",($size/(1024*1024*1024)));
-    }
-    elseif($size <= (1000*1024*1024*1024*1024)  || $size >= (1000*1024*1024*1024*1024)){
-        $format = sprintf ("%.2f TB",($size/(1024*1024*1024*1024)));
-    }
-    else{ 
-        $format = $size."B";
+    } elseif ($size <= 1024) {
+        $format = $size . " B";
+    } elseif ($size <= (1024 * 1024)) {
+        $format = sprintf("%d KB", ($size / 1024));
+    } elseif ($size <= (1000 * 1024 * 1024)) {
+        $format = sprintf("%.2f MB", ($size / (1024 * 1024)));
+    } elseif ($size <= (1000 * 1024 * 1024 * 1024)) {
+        $format = sprintf("%.2f GB", ($size / (1024 * 1024 * 1024)));
+    } elseif ($size <= (1000 * 1024 * 1024 * 1024 * 1024) || $size >= (1000 * 1024 * 1024 * 1024 * 1024)) {
+        $format = sprintf("%.2f TB", ($size / (1024 * 1024 * 1024 * 1024)));
+    } else {
+        $format = $size . "B";
     }
 
     return $format;
 }
-function nameIDToBoardID($nameID){
-	$files = glob(__DIR__ . '/../boardConfigs/*.php');
-
-	foreach($files as $file){
-		$conf = require($file);
-		if($conf['boardNameID'] == $nameID){
-			return $conf['boardID'];
-		}
-	}
-	return '';
+function nameIDToBoardID($nameID)
+{
+    $repo = BoardRepoClass::getInstance();
+    $board = $repo->loadBoardByNameID($nameID);
+    return $board ? $board->getBoardID() : '';
 }
-function boardIDToName($boardID){
-    static $boardCache = null;
 
-    if ($boardCache === null) {
-        $boardCache = [];
-        $files = glob(__DIR__ . '/../boardConfigs/*.php');
+function boardIDToName(int $boardID): ?string
+{
+    $BOARDREPO = BoardRepoClass::getInstance();
+    $board = $BOARDREPO->loadBoardByID($boardID);
+    return $board?->getConf()['boardNameID'] ?? null;
+}
+function getBoardListing(bool $getUnlisted = false): array
+{
+    $db = DatabaseConnection::getInstance();
+    $listing = [];
 
-        foreach($files as $file){
-            $conf = require($file);
-            $boardCache[$conf['boardID']] = $conf['boardNameID'];
+    $query = "SELECT boardNameID, config FROM boards";
+    $result = $db->query($query);
+
+    while ($row = $result->fetch_assoc()) {
+        $config = json_decode($row['config'], true);
+        $isUnlisted = $config['unlisted'] ?? false;
+
+        if ($isUnlisted === $getUnlisted) {
+            $listing[$row['boardNameID']] = '/' . $row['boardNameID'] . '/';
         }
     }
 
-    return isset($boardCache[$boardID]) ? $boardCache[$boardID] : '';
+    return $listing;
 }
-function getBoardListing($getUnlited=false){
-	$files = glob(__DIR__ . '/../boardConfigs/*.php');
-	$listing = [];
 
-	foreach($files as $file){
-		$conf = include($file);
-		if($conf['boardID'] == -1){
-            continue;
-        }elseif($conf['unlisted'] == true && $getUnlited == true){
-			$listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
-            continue;
-		}elseif($conf['unlisted'] == false && $getUnlited == false){
-            $listing[$conf['boardNameID']] = '/' . $conf['boardNameID'] . '/';
-            continue;
-        }
-	}
-	return $listing;
-}
-function getAllBoardConfs(){
-	$files = glob(__DIR__ . '/../boardConfigs/*.php');
-	$listing = [];
+function getAllBoardConfs(): array
+{
+    $db = DatabaseConnection::getInstance();
+    $boards = [];
 
-	foreach($files as $file){
-		$conf = include($file);
-		if($conf['boardID'] == -1 ){
-			continue;
-		}
-		$listing[] =  $conf;
-	}
-	return $listing;
-}
-function getBoardCount(){
-    $files = glob(__DIR__ . '/../boardConfigs/*.php');
-	$count = 0;
+    $query = "SELECT boardID, config FROM boards";
+    $result = $db->query($query);
 
-	foreach($files as $file){
-		$conf = include($file);
-		if($conf['boardID'] == -1 ){
-			continue;
-		}
-		$count = $count + 1;
-	}
-	return $count;
-}
-function getBoardConfByID($id){
-    $files = glob(__DIR__ . '/../boardConfigs/*.php');
+    while ($row = $result->fetch_assoc()) {
+        $row['config'] = json_decode($row['config'], true) ?? [];
+        $boards[] = $row;
+    }
 
-	foreach($files as $file){
-		$conf = require($file);
-		if($conf['boardID'] == $id){
-			return $conf;
-		}
-	}
-	return '';
+    return $boards;
 }
-function getBoardByID($boardID){
+
+
+function getBoardCount()
+{
+    $db = DatabaseConnection::getInstance();
+    $res = $db->query("SELECT COUNT(*) as count FROM boards");
+    return $res->fetch_assoc()['count'] ?? 0;
+}
+
+function getBoardConfByID($id): array
+{
+    $repo = BoardRepoClass::getInstance();
+    $board = $repo->loadBoardByID($id);
+    if ($board === null) {
+        return [];
+    }
+    return $board->getConf();
+}
+
+function getBoardByID($boardID)
+{
     $BOARDREPO = BoardRepoClass::getInstance();
     return $BOARDREPO->loadBoardByID($boardID);
 }
-function redirectToPost($post){
+function redirectToPost($post)
+{
     $name = boardIDToName($post->getBoardID());
     $threadID = $post->getThreadID();
     $postID = $post->getPostID();
 
-    $url = ROOTPATH. "$name/thread/$threadID/#p$postID";
+    $url = ROOTPATH . "$name/thread/$threadID/#p$postID";
 
     header("Location: $url");
     exit;
 }
-function redirectToThread($thread){
+function redirectToThread($thread)
+{
     $name = boardIDToName($thread->getBoardID());
     $threadID = $thread->getThreadID();
 
-    $url = ROOTPATH. "$name/thread/$threadID/";
+    $url = ROOTPATH . "$name/thread/$threadID/";
 
     header("Location: $url");
     exit;
 }
-function redirectToBoard($board){
+function redirectToBoard($board)
+{
     $name = boardIDToName($board->getBoardID());
-    $url = ROOTPATH. "$name";
+    $url = ROOTPATH . "$name";
 
     header("Location: $url");
     exit;
 }
-function redirectToCatalog($board, $sort, $keyword, $case){
+function redirectToCatalog($board, $sort, $keyword, $case)
+{
     $name = boardIDToName($board->getBoardID());
-    $url = ROOTPATH. "$name/catalog/";
+    $url = ROOTPATH . "$name/catalog/";
 
     $queryParams = http_build_query(['sort' => $sort, 'keyword' => $keyword, 'case' => $case]);
     $url .= '?' . $queryParams;
-    
-    header("Location: $url");
-    exit;
-}
-function redirectToAdmin($board){
-    $name = boardIDToName($board->getBoardID());
-    $url = ROOTPATH. "$name/admin";
 
     header("Location: $url");
     exit;
 }
-function redirectToHome(){
+function redirectToAdmin($board)
+{
+    $name = boardIDToName($board->getBoardID());
+    $url = ROOTPATH . "$name/admin";
+
+    header("Location: $url");
+    exit;
+}
+function redirectToHome()
+{
     $url = ROOTPATH;
 
     header("Location: $url");
     exit;
 }
-function drawErrorPageAndDie($txt){
-	$html ='
+function drawErrorPageAndDie($txt)
+{
+    $html = '
 	<!DOCTYPE html>
 	<html lang="en">
 	<head>
@@ -208,38 +197,55 @@ function drawErrorPageAndDie($txt){
 	<body>
 
 	<div class="postblock">
-		<p>'; 
-            if(is_array($txt)){
-                print_r($txt);
-            }else{
-                echo($txt);
-            }
-            $html ='</p>
+		<p>';
+    if (is_array($txt)) {
+        print_r($txt);
+    } else {
+        echo ($txt);
+    }
+    $html = '</p>
 	</div>
 
 	</body>
 	</html>';
-	echo $html;
-	die();
+    echo $html;
+    die();
 }
-function getBoardFromRequest($allowNull=false){
+function getBoardFromRequest($allowNull = false)
+{
     $BOARDREPO = BoardRepoClass::getInstance();
-    $boardID = $_POST['boardID'] ?? @nameIDToBoardID($_GET['boardNameID']) ?? '';
 
-    if (!is_numeric($boardID)) {
-        if($allowNull == false){
-            drawErrorPageAndDie("you must have a boardID");
+    // Try POST first
+    if (isset($_POST['boardID']) && is_numeric($_POST['boardID'])) {
+        $boardID = (int) $_POST['boardID'];
+    } elseif (isset($_GET['boardNameID'])) {
+        // Lookup boardID by boardNameID
+        $boardNameID = $_GET['boardNameID'];
+        $board = $BOARDREPO->loadBoardByNameID($boardNameID);
+        if ($board) {
+            return $board;
         }
+        $boardID = null;
+    } else {
+        $boardID = null;
     }
+
+    if ($boardID === null) {
+        if (!$allowNull) {
+            drawErrorPageAndDie("you must have a boardID or boardNameID");
+        }
+        return null;
+    }
+
     $board = $BOARDREPO->loadBoardByID($boardID);
-    if(is_null($board)) {
-        if($allowNull == false){
-            drawErrorPageAndDie("board with the boardID of \"".$boardID."\"dose not exist");
-        }
+    if (!$board && !$allowNull) {
+        drawErrorPageAndDie("board with the boardID of \"$boardID\" does not exist");
     }
+
     return $board;
 }
-function extractUniqueDomainsFromComment($comment) {
+function extractUniqueDomainsFromComment($comment)
+{
     $regexUrl = '/(https?:\/\/[^\s]+)/';
     preg_match_all($regexUrl, $comment, $matches);
     $urls = $matches[0];
@@ -253,13 +259,14 @@ function extractUniqueDomainsFromComment($comment) {
     $uniqueDomains = array_unique($domains);
     return $uniqueDomains;
 }
-function durationToUnixTime($duration){
+function durationToUnixTime($duration)
+{
     $starttime = $_SERVER['REQUEST_TIME'];
-    
-    $durationWeeks = preg_match("/(\d+)w/", $duration, $matchWeeks) ? (int)$matchWeeks[1] : 0;
-    $durationDays = preg_match("/(\d+)d/", $duration, $matchDays) ? (int)$matchDays[1] : 0;
-    $durationHours = preg_match("/(\d+)h/", $duration, $matchHours) ? (int)$matchHours[1] : 0;
-    $durationMinutes = preg_match("/(\d+)min/", $duration, $matchMinutes) ? (int)$matchMinutes[1] : 0;
+
+    $durationWeeks = preg_match("/(\d+)w/", $duration, $matchWeeks) ? (int) $matchWeeks[1] : 0;
+    $durationDays = preg_match("/(\d+)d/", $duration, $matchDays) ? (int) $matchDays[1] : 0;
+    $durationHours = preg_match("/(\d+)h/", $duration, $matchHours) ? (int) $matchHours[1] : 0;
+    $durationMinutes = preg_match("/(\d+)min/", $duration, $matchMinutes) ? (int) $matchMinutes[1] : 0;
 
     return $starttime + ($durationWeeks * 604800) + ($durationDays * 86400) + ($durationHours * 3600) + ($durationMinutes * 60);
 }

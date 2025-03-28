@@ -1,1 +1,0 @@
-this place holds each config for each board.
