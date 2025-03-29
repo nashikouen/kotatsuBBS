@@ -1,9 +1,24 @@
 <?php
 
+require_once __DIR__ . '/lib/common.php';
+
+if (file_exists(__DIR__ . "/.install_bypass")) {
+	drawErrorPageAndDie("delete .install_bypass and comer back");
+}
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require 'vendor/autoload.php';
+
 
 $status = null;
 $messages = [];
 $errors = [];
+
+require_once __DIR__ . '/lib/postMagic.php';
+$conf = require __DIR__ . '/baseConfig.php';
 
 function checkRequirements(): array
 {
@@ -21,38 +36,25 @@ function checkRequirements(): array
 	if (!extension_loaded('exif')) {
 		$errors[] = 'Missing PHP extension: exif (enable in php.ini)';
 	}
-	// PHP CLI tools
-	if (!function_exists('shell_exec')) {
-		$errors[] = 'shell_exec is disabled';
-	}
 
-	if (!file_exists('/usr/bin/ffmpeg')) {
-		$errors[] = 'ffmpeg not found at <code>/usr/bin/ffmpeg</code> (move it in the chroot if on openbsd)';
-	}
+	# needed for ffmpeg, video screen shot
+	#if (!function_exists('shell_exec')) {
+	#	$errors[] = 'shell_exec is disabled';
+	#}
 
-	if (!file_exists('/usr/bin/composer')) {
-		$errors[] = 'composer not found at <code>/usr/bin/composer</code> (move it in the chroot if on openbsd)';
-	}
+	# fix this
+	#if (!file_exists('/usr/bin/ffmpeg')) {
+	#	$errors[] = 'ffmpeg not found at <code>/usr/bin/ffmpeg</code> (move it in the chroot if on openbsd)';
+	#}
+
+	#if (!file_exists('/usr/bin/composer')) {
+	#	$errors[] = 'composer not found at <code>/usr/bin/composer</code> (move it in the chroot if on openbsd)';
+	#}
 
 	return $errors;
 }
 
-
 $errors = checkRequirements();
-
-
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-require 'vendor/autoload.php';
-require_once __DIR__ . '/lib/postMagic.php';
-
-use duncan3dc\Laravel\BladeInstance;
-$blade = new BladeInstance(__DIR__ . "/views", __DIR__ . "/cache");
-
-$conf = require __DIR__ . '/baseConfig.php';
 
 function createDB($conn)
 {
@@ -226,29 +228,35 @@ function updateConf()
 }
 function validateInstallInputs(): array
 {
-	$requiredFields = ['host', 'port', 'username', 'password', 'databaseName', 'domain', 'adminPassword'];
-	$missing = [];
+	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+		$requiredFields = ['host', 'port', 'username', 'password', 'databaseName', 'domain', 'adminPassword'];
+		$missing = [];
 
-	foreach ($requiredFields as $field) {
-		if (empty($_POST[$field])) {
-			$missing[] = $field;
+		foreach ($requiredFields as $field) {
+			if (empty($_POST[$field])) {
+				$missing[] = $field;
+			}
 		}
+		return $missing;
 	}
-	return $missing;
+	return [];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($errors)) {
 	$status = "error";
 	$messages[] = "Cannot install — missing required system dependencies.";
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$missing = validateInstallInputs();
-
+} elseif (file_exists(__DIR__ . '/conf.php')) {
+	$status = "error";
+	$messages[] = "config install detected. please remove install.php or clean up config files";
+} elseif (!empty($list = validateInstallInputs())) {
 	if (!empty($missing)) {
 		$status = "error";
 		foreach ($missing as $field) {
 			$messages[] = "Missing required field: $field";
 		}
 	}
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
 	updateConf();
 
 	try {
@@ -302,16 +310,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($errors)) {
 	} catch (Exception $e) {
 		$status = "error";
 		$messages[] = "Installation failed: " . $e->getMessage();
+
 	}
 }
 
-$confPath = __DIR__ . '/conf.php';
 
-if (file_exists($confPath)) {
-	$messages[] = "config install detected. please remove install.php or clean up config files";
-}
-
-
+use duncan3dc\Laravel\BladeInstance;
+$blade = new BladeInstance(__DIR__ . "/views", __DIR__ . "/cache");
 
 echo $blade->render("install", [
 	"conf" => $conf,

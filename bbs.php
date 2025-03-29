@@ -306,11 +306,6 @@ foreach ($board->getConf()['enabledModules'] as $moduleName) {
     }
 }
 
-/*
- *	since the webserver will be using rewrites. this next section will look a little funky and redundent.
- *  but this is wat i want to achive with rewrites. 
- * 
- */
 
 /*----------get action recived----------*/
 if (isset($_GET['thread'])) {

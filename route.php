@@ -18,6 +18,10 @@ if (!file_exists($bypassFile)) {
     }
 }
 
+if (function_exists('pledge')) {
+    pledge('stdio rpath wpath cpath inet unix fattr proc flock', null);
+}
+
 $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = trim($requestPath, '/');
 

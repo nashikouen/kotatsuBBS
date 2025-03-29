@@ -17,21 +17,19 @@ return [
         'databaseName' => 'db_name',
     ],
 
-    /* if you are preseptualy banning files. this will be the hamming used. 0 would be a prefect 200 would be a totaly diffrent image. */
-    'hamming' => 10,
+    'debug' => true,
     /*
      *  file object will be stored relitive to threads dir in the project.
      *  you should give the absolute path to the threads folder here.
      *  openbsd guys are /htdocs/kotatsuBBS/threads/
+     *  this gets changed from install.php
      */
     'threadsDir' => '/var/www/html/kotatsuBBS/threads/',
     /* this is how long a log in session last for. (1 hour) */
     'sessionLifeTime' => 3600,
     'memoryLimit' => '128M',    // the ammount of memeory kotatsu can use 
-    'webRootPath' => '/',       // the location where the software is found relitive to your web root.
-    'domain' => 'example.com',  // doamin of ur site
-    'webhook' => '',            // discord webhook
-    'isOpenBSD' => false,       // webhooks dont curetly work on openbsd, i am not sure how to get it working... ffmpeg command is difrent on openbsd too.
+    'webRootPath' => '/',       // the uri location where the software is found publicly
+    'domain' => 'example.com',  // doamin of ur site, install will try to get this
 
     // the salt for a site wide secure tripcode and logging in. [note] this code below will be evaluated and saved apon install.
     'tripcodeSalt' => substr(str_replace('+', '.', base64_encode(random_bytes(6))), 0, 8),

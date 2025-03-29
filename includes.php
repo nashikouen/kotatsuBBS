@@ -1,12 +1,14 @@
 <?php
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-
 require 'vendor/autoload.php';
 
 $globalConf = require __DIR__ . "/conf.php";
+
+if ($globalConf['debug'] == true) {
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+}
 
 define("ROOTPATH", $globalConf['webRootPath']);
 define("DOMAIN", $globalConf['domain']);

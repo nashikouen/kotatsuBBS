@@ -4,7 +4,7 @@
  */
 
 $globalConf = require __DIR__ . "/../conf.php";
-$loggingDir = $globalConf['logDir'] . 'kotatsuLog/';
+$loggingDir = $globalConf['logDir'];
 
 $auditLogPath = $loggingDir . "audit.log";
 $errorLogPath = $loggingDir . "error.log";
