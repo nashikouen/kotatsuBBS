@@ -4,3 +4,6 @@ vendor
 .composer
 .install_bypass
 cache/*
+threads/*
+!threads/staging/readme.txt
+!threads/readme.txt

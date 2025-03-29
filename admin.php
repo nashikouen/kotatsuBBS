@@ -2,14 +2,11 @@
 
 include __DIR__ . '/includes.php';
 
-
 require_once __DIR__ . '/classes/html.php';
 require_once __DIR__ . '/classes/auth.php';
 require_once __DIR__ . '/classes/repos/repoPost.php';
 require_once __DIR__ . '/classes/repos/repoBan.php';
 require_once __DIR__ . '/classes/fileHandler.php';
-
-
 
 require_once __DIR__ . '/lib/common.php';
 require_once __DIR__ . '/lib/adminControl.php';
