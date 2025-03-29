@@ -138,7 +138,7 @@ class htmlclass
     {
         $this->html .= '
         <!--postManagerWraper($drawFunc, $parameter)-->
-        <form name="managePost" id="managePost" action="' . ROOTPATH . 'bbs.php" method="post">';
+        <form name="managePost" id="managePost" action="' . ROOTPATH . $this->conf['boardNameID'] . '" method="post">';
         call_user_func_array($drawFunc, $parameter);
         $this->html .= '
             <!--make dropdown with other options-->
@@ -278,7 +278,7 @@ class htmlclass
         <!--drawFormNewThread()-->
         [<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/catalog/">Catalog</a>]
         <center id="mainForm">
-            <form id="formThread" action="' . ROOTPATH . 'bbs.php" method="post" enctype="multipart/form-data">
+            <form id="formThread" action="' . ROOTPATH . $this->conf['boardNameID'] . '" method="post" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postNewThread">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">';
         $this->drawMainFormBody("New Thread", true);
@@ -295,7 +295,7 @@ class htmlclass
         [<a href="' . ROOTPATH . $this->conf['boardNameID'] . '/catalog/">Catalog</a>]
         <center class="theading"><b>Posting mode: Reply</b></center>
         <center id="mainForm">
-            <form id="formPost" action="' . ROOTPATH . 'bbs.php" method="POST" enctype="multipart/form-data">
+            <form id="formPost" action="' . ROOTPATH . $this->conf['boardNameID'] . '" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="postToThread">
             <input type="hidden" name="threadID" value="' . $threadID . '">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">';
@@ -637,7 +637,7 @@ class htmlclass
         $this->html .= '
         <!--drawLoginForm()-->
         <center class="loginForm">
-        <form method="POST" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
+        <form method="POST" action="' . ROOTPATH . 'admin" enctype="multipart/form-data">
             <input type="hidden" name="action" value="login">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <input type="password" id="password" name="password" required>
@@ -649,7 +649,7 @@ class htmlclass
     {
         $this->html .= '
         <!--drawLogOutForm()-->
-        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . $this->conf['boardNameID'] . '/admin" enctype="multipart/form-data">
             <input type="hidden" name="action" value="logout">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             [<button type="submit" class="hyperButton">Logout</button>]
@@ -664,7 +664,7 @@ class htmlclass
         <!--drawFormCreateBoard()-->
         <center class="adminForm">
         <h3><b>Create Ban Catagories</b></h3>
-        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . $this->conf['boardNameID'] . '/admin" enctype="multipart/form-data">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <input type="hidden" name="action" value="createCategory">
             <table>
@@ -691,7 +691,7 @@ class htmlclass
         <!--drawFormCreateBoard()-->
         <center class="adminForm">
         <h3><b>Create board form</b></h3>
-        <form method="post" action="' . ROOTPATH . 'admin.php" enctype="multipart/form-data">
+        <form method="post" action="' . ROOTPATH . $this->conf['boardNameID'] . '/admin" enctype="multipart/form-data">
             <input type="hidden" name="action" value="createBoard">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <table>
@@ -726,7 +726,7 @@ class htmlclass
         <!--drawFormDeleteBoard()-->
         <center class="adminForm">
         <h3><b>Delete board form</b></h3>
-        <form method="post" action="' . ROOTPATH . 'admin.php">
+        <form method="post" action="' . ROOTPATH . $this->conf['boardNameID'] . '/admin">
             <input type="hidden" name="action" value="deleteBoard">
             <input type="hidden" name="boardID" value="' . $currentBoardID . '">
             <table>
@@ -903,7 +903,7 @@ class htmlclass
     private function drawFormCatalog($sort, $keyword, $caseSensitive)
     {
         $this->html .= '<!--drawFormCatalog()-->
-        <form method="post" action="' . ROOTPATH . 'bbs.php">
+        <form method="post" action="' . ROOTPATH . $this->conf['boardNameID'] . '">
             <input type="hidden" name="action" value="catalog">
             <input type="hidden" name="boardID" value="' . $this->board->getBoardID() . '">
             <span>Sort by:</span>
