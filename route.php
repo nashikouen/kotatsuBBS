@@ -49,6 +49,11 @@ if (preg_match('#^([a-zA-Z0-9_]+)/?$#', $path, $m)) {
     $_GET['boardNameID'] = $m[1];
     require 'admin.php';
 
+} elseif (preg_match('#^([a-zA-Z0-9_]+)/admin/postListing/?$#', $path, $m)) {
+    $_GET['boardNameID'] = $m[1];
+    $_GET['action'] = 'postListing';
+    require 'admin.php';
+
 } elseif (preg_match('#^([a-zA-Z0-9_]+)/admin/ban/([0-9]+)/?$#', $path, $m)) {
     $_GET['boardNameID'] = $m[1];
     $_GET['action'] = 'banPost';

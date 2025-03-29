@@ -628,7 +628,7 @@ class htmlclass
         <!--drawAdminViewPost($post)-->
         <div class="adminView">';
         $this->drawPostIP($post);
-        $this->drawEditButton($post);
+        //$this->drawEditButton($post);
         $this->drawBanButton($post);
         $this->html .= '</div><br>';
     }
@@ -879,7 +879,7 @@ class htmlclass
             $this->html .= '</font></td>
                 <td>';
             $this->drawBanButton($post);
-            $this->drawEditButton($post);
+            //$this->drawEditButton($post);
             $this->html .=
                 '</td>
                 <td><font size="2">' . $post->getName() . '</font></td>
