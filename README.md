@@ -1,10 +1,15 @@
-### archived
+### Project Archived
 
-i thought i would one day come back to this but its been half a year.
-i regret moving nashi over to this new software as i didnt have a proper dev to prod or prod to dev.
-aka, i was making custom hacks to nashi's verstion of the software but not the dev. and then dev would have some changes that prod didnt have and i could not just copy and paste the change file, as it would over write the hacks i put on nashi's version.
+This project is no longer maintained. dont worry! keep reading to see where to get the improved software!
 
-this software is now at the end of what i will develop for it. file handeling may have some bugs still. i removed presespual hashing and file viewing.
+I originally moved nashi to this codebase, but without a proper dev-to-prod sync, it quickly diverged. Production had one-off hacks that weren't in dev, and dev had changes that couldn't safely be merged back. This made it impossible to apply updates without overwriting or losing custom work.
+this is why the software never got updated. nashi had also fallen out as the main owner stepped down due to the userbase insted of just swining a ban hammer.
+
+File handling in this project may still have unresolved bugs, and perceptual hashing and some smaller things have been removed.
+
+# denpabbs!
+I've since started a new fork. It's been heavily rewritten to remove prior constraints. The new version is easier to customize, and designed to stay in sync — so custom changes can coexist cleanly with upstream updates, without merge conflicts.
+that whole monster of a html.php has been removed, it was my first time writing php and no one told me about temples ヽ(`Д´)ノ. lot of other small changes but now its a lot more stable
 
 # kotatsuBBS
 
